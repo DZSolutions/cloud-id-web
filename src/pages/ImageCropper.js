@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import Cropper from "react-easy-crop";
-import { generateDownload } from "./utils/cropImage";
+import { generateDownload } from "../utils/cropImage";
 export function ImageCropper() {
   const inputRef = useRef();
 

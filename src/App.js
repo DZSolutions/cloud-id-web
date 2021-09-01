@@ -4,19 +4,21 @@ import {
   Switch,
   Route,
   NavLink,
-  Link,
+  Redirect,
 } from "react-router-dom";
 
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { BellIcon, MenuIcon, XIcon } from "@heroicons/react/outline";
-import { ImageCropper } from "./ImageCropper";
-import { ImageEditor } from "./ImageEditor";
+import { ImageCropper } from "./pages/ImageCropper";
+import { ImageEditor } from "./pages/ImageEditor";
+import { Upload } from "./pages/Upload";
 import DZ from "./images/DZ.png";
 import DZLOGO from "./images/dzcard.png";
-import templateDZ from "./images/templateDZ.jpg";
+import { Login } from "./pages/Login";
+import AuthService from "./services/auth.service";
 
-const navigation = ["Home", "Crop Image", "Image Editor"];
-const navigationRoute = ["/", "/CropImage", "/ImageEditor"];
+const navigation = ["Upload", "Crop Image", "Image Editor"];
+const navigationRoute = ["/Upload", "/CropImage", "/ImageEditor"];
 const profile = ["Your Profile", "Settings", "Sign out"];
 
 function App() {
@@ -24,8 +26,15 @@ function App() {
     return classes.filter(Boolean).join(" ");
   }
 
-  return (
-    <Router>
+  const LoginContainer = () => (
+    <div>
+      <Route exact path="/logout" render={() => <Redirect to="/login" />} />
+      <Route exact path="/" render={() => <Redirect to="/login" />} />
+      <Route path="/login" component={Login} />
+    </div>
+  )
+
+  const DefaultContainer = () => (
       <div>
         <Disclosure as="nav" className="bg-gray-800">
           {({ open }) => (
@@ -39,19 +48,19 @@ function App() {
                     <div className="hidden md:block">
                       <div className="ml-10 flex items-baseline space-x-4">
                         {navigation.map((item, itemIdx) =>
-                          itemIdx === 0 ? (
-                            <Fragment key={item}>
-                              {/* Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" */}
-                              <NavLink
-                                exact
-                                to={"/"}
-                                activeClassName="active"
-                                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                              >
-                                {item}
-                              </NavLink>
-                            </Fragment>
-                          ) : (
+                          // itemIdx === 0 ? (
+                          //   <Fragment key={item}>
+                          //     {/* Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" */}
+                          //     <NavLink
+                          //       exact
+                          //       to={"/"}
+                          //       activeClassName="active"
+                          //       className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                          //     >
+                          //       {item}
+                          //     </NavLink>
+                          //   </Fragment>
+                          // ) : (
                             <NavLink
                               key={item}
                               to={navigationRoute[itemIdx]}
@@ -60,7 +69,7 @@ function App() {
                             >
                               {item}
                             </NavLink>
-                          )
+                          // )
                         )}
                       </div>
                     </div>
@@ -104,7 +113,8 @@ function App() {
                                   <Menu.Item key={item}>
                                     {({ active }) => (
                                       <a
-                                        href={"FF"}
+                                        href={"logout"}
+                                        onClick={AuthService.logout}
                                         className={classNames(
                                           active ? "bg-gray-100" : "",
                                           "block px-4 py-2 text-sm text-gray-700"
@@ -205,15 +215,15 @@ function App() {
             <h1 className="text-3xl font-bold text-gray-900">
               <Switch>
                 {navigation.map((item, itemIdx) =>
-                  itemIdx === 0 ? (
-                    <Route key={item} exact path="/">
-                      Home
-                    </Route>
-                  ) : (
+                  // itemIdx === 0 ? (
+                  //   <Route key={item} exact path="/">
+                  //     Home
+                  //   </Route>
+                  // ) : (
                     <Route key={item} path={navigationRoute[itemIdx]}>
                       {navigation[itemIdx]}
                     </Route>
-                  )
+                  // )
                 )}
               </Switch>
             </h1>
@@ -222,151 +232,29 @@ function App() {
         <main>
           <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
             <Switch>
-              <Route exact path="/">
-                <Home />
-              </Route>
-              <Route path="/CropImage">
-                <ImageCropper />
-              </Route>
-              <Route path="/ImageEditor">
-                <ImageEditor />
-              </Route>
+              <Route path="/Upload" component={Upload}/>
+              <Route path="/CropImage" component={ImageCropper}/>
+              <Route path="/ImageEditor" component={ImageEditor}/>
             </Switch>
           </div>
         </main>
       </div>
-    </Router>
-  );
-}
+  )
 
-function Home() {
   return (
-    // <div classNameName="px-4 py-6 sm:px-0">
-    //   <div classNameName="border-4 border-dashed border-gray-200 rounded-lg h-96" />
-    // </div>
-    <div className="relative mt-12 sm:mt-4 lg:mt-12">
-      <div className="lg:grid lg:grid-flow-row-dense lg:grid-cols-2 lg:gap-8 lg:items-center">
-        <div className="mt-10 -mx-4 relative lg:mt-0 lg:col-start-1">
-          <img className="relative mx-auto" src={templateDZ} alt="" />
-        </div>
-
-        <div className="lg:col-start-2 md:mt-4 lg:mt-0">
-          <div className="shadow overflow-hidden sm:rounded-md">
-            <div className="px-4 py-5 bg-white sm:p-6">
-              <div className="grid gap-6 grid-cols-6">
-                <div className="col-span-6 sm:col-span-4">
-                  <p className="block text-gray-700 text-sm font-medium">
-                    Employee/Student ID
-                  </p>
-                  <input
-                    readOnly
-                    type="text"
-                    className="block mt-1 w-full border-gray-300 focus:border-blue-500 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
-                  />
-                </div>
-                <div className="col-span-6 sm:col-span-3">
-                  <p className="block text-gray-700 text-sm font-medium">
-                    First name
-                  </p>
-                  <input
-                    readOnly
-                    type="text"
-                    className="block mt-1 w-full border-gray-300 focus:border-blue-500 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
-                  />
-                </div>
-
-                <div className="col-span-6 sm:col-span-3">
-                  <p className="block text-gray-700 text-sm font-medium">
-                    Last name
-                  </p>
-                  <input
-                    readOnly
-                    type="text"
-                    className="block mt-1 w-full border-gray-300 focus:border-blue-500 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
-                  />
-                </div>
-
-                <div className="col-span-6 sm:col-span-6 lg:col-span-2">
-                  <p className="block text-gray-700 text-sm font-medium">
-                    Mobile No.
-                  </p>
-                  <input
-                    readOnly
-                    type="text"
-                    className="block mt-1 w-full border-gray-300 focus:border-blue-500 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
-                  />
-                </div>
-
-                <div className="col-span-6 sm:col-span-4">
-                  <p className="block text-gray-700 text-sm font-medium">
-                    Email address
-                  </p>
-                  <input
-                    readOnly
-                    type="text"
-                    autoComplete="email"
-                    className="block mt-1 w-full border-gray-300 focus:border-blue-500 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
-                  />
-                </div>
-
-                <div className="col-span-6">
-                  <p className="block text-gray-700 text-sm font-medium">
-                    Department / Faculty
-                  </p>
-                  <input
-                    readOnly
-                    type="text"
-                    className="block mt-1 w-full border-gray-300 focus:border-blue-500 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
-                  />
-                </div>
-
-                <div className="col-span-6 sm:col-span-6 lg:col-span-2">
-                  <p className="block text-gray-700 text-sm font-medium">
-                    Issue Date
-                  </p>
-                  <input
-                    readOnly
-                    type="text"
-                    className="block mt-1 w-full border-gray-300 focus:border-blue-500 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
-                  />
-                </div>
-
-                <div className="col-span-6 sm:col-span-3 lg:col-span-2">
-                  <p className="block text-gray-700 text-sm font-medium">
-                    Expire Date
-                  </p>
-                  <input
-                    readOnly
-                    type="text"
-                    className="block mt-1 w-full border-gray-300 focus:border-blue-500 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
-                  />
-                </div>
-                <div className="col-span-6"></div>
-              </div>
-            </div>
-            <div className="px-4 py-3 text-center bg-gray-100 sm:px-6">
-              <div className="flex items-center justify-center col-span-2">
-                <input
-                  id="accept_tos"
-                  name="accept_tos"
-                  type="checkbox"
-                  className="h-8 w-8 text-indigo-600 focus:ring-indigo-500 border-gray-700 rounded"
-                ></input>
-                <label className="ml-2 block text-sm font-medium text-gray-700">
-                  I agree to the terms and conditions and the privacy policy
-                </label>
-              </div>
-              <Link
-                to="/CropImage"
-                className="inline-flex justify-center px-4 py-2 text-white text-3xl font-medium bg-rose-600 hover:bg-rose-500 border border-transparent rounded-full focus:outline-none shadow-sm focus:ring-rose-500 focus:ring-offset-2 focus:ring-2"
-              >
-                Upload Photo
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
+  <Router>
+    <Switch>
+    <div className="App">
+      {/* <Route exact path="/(login)" component={LoginContainer}/> */}
+      <Route 
+        render={({ location }) => ['/', '/login', '/logout'].includes(location.pathname)
+            ? <LoginContainer/>
+            : <DefaultContainer/>
+        }
+    />
     </div>
+    </Switch>
+  </Router>
   );
 }
 
