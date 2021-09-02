@@ -1,10 +1,36 @@
 import {
     Link,
   } from "react-router-dom";
+  import {useState, useEffect} from "react";
 import templateDZ from "../images/templateDZ.jpg";
 import AuthService from "../services/auth.service";
+import axios from "axios";
+// import mergeImages from 'merge-images';
 export function Upload() {
   const currentUser = AuthService.getCurrentUser();
+  const accessToken = localStorage.getItem('accessToken');
+  const [post, setPost] = useState(null);
+  // const [image, setImage] = useState(null);
+
+  useEffect(() => {
+    axios.get("http://localhost:8000/api/v1/userlist/?profile_id="+currentUser,{
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        }
+    }).then((response) => {
+      setPost(response.data);
+    })
+  }, []);
+    
+    if (!post) return "No post!"
+    // setImage(post.results[0].photo)
+
+    // mergeImages([templateDZ,{src:templateDZ, x:41, y:123 }])
+    // .then(b64 => setImage(b64))
+
+
+    
+
     return (
       // <div classNameName="px-4 py-6 sm:px-0">
       //   <div classNameName="border-4 border-dashed border-gray-200 rounded-lg h-96" />
@@ -12,9 +38,9 @@ export function Upload() {
       <div className="relative mt-12 sm:mt-4 lg:mt-12">
         <div className="lg:grid lg:grid-flow-row-dense lg:grid-cols-2 lg:gap-8 lg:items-center">
           <div className="mt-10 -mx-4 relative lg:mt-0 lg:col-start-1">
-            <img className="relative mx-auto" src={templateDZ} alt="" />
+            <img className="absolute mx-auto" src={templateDZ} alt="" />
+            <img className="relative mx-auto" src={post.results[0].photo} alt="" />
           </div>
-  
           <div className="lg:col-start-2 md:mt-4 lg:mt-0">
             <div className="shadow overflow-hidden sm:rounded-md">
               <div className="px-4 py-5 bg-white sm:p-6">
@@ -29,7 +55,7 @@ export function Upload() {
                       value={currentUser}
                       className="block mt-1 w-full border-gray-300 focus:border-blue-500 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
                     />
-                    
+                    {console.log(post.results[0])}
                   </div>
                   <div className="col-span-6 sm:col-span-3">
                     <p className="block text-gray-700 text-sm font-medium">
@@ -38,6 +64,7 @@ export function Upload() {
                     <input
                       readOnly
                       type="text"
+                      value={post.results[0].first_name_en}
                       className="block mt-1 w-full border-gray-300 focus:border-blue-500 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
                     />
                   </div>
@@ -49,6 +76,7 @@ export function Upload() {
                     <input
                       readOnly
                       type="text"
+                      value={post.results[0].last_name_en}
                       className="block mt-1 w-full border-gray-300 focus:border-blue-500 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
                     />
                   </div>
@@ -60,6 +88,7 @@ export function Upload() {
                     <input
                       readOnly
                       type="text"
+                      value={post.results[0].phone}
                       className="block mt-1 w-full border-gray-300 focus:border-blue-500 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
                     />
                   </div>
@@ -71,7 +100,6 @@ export function Upload() {
                     <input
                       readOnly
                       type="text"
-                      autoComplete="email"
                       className="block mt-1 w-full border-gray-300 focus:border-blue-500 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
                     />
                   </div>
@@ -83,6 +111,7 @@ export function Upload() {
                     <input
                       readOnly
                       type="text"
+                      value={post.results[0].faculty}
                       className="block mt-1 w-full border-gray-300 focus:border-blue-500 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
                     />
                   </div>
@@ -94,6 +123,7 @@ export function Upload() {
                     <input
                       readOnly
                       type="text"
+                      value={post.results[0].issue_date}
                       className="block mt-1 w-full border-gray-300 focus:border-blue-500 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
                     />
                   </div>
@@ -105,6 +135,7 @@ export function Upload() {
                     <input
                       readOnly
                       type="text"
+                      value={post.results[0].expire_date}
                       className="block mt-1 w-full border-gray-300 focus:border-blue-500 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
                     />
                   </div>
