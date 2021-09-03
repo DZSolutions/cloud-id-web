@@ -5,11 +5,11 @@ import AuthService from "../services/auth.service";
 import axios from "axios";
 // import mergeImages from 'merge-images';
 export function Upload() {
-  const currentUser = AuthService.getCurrentUser();
-  const accessToken = localStorage.getItem("accessToken");
   const [post, setPost] = useState(null);
   // const [image, setImage] = useState(null);
-
+  const currentUser = AuthService.getCurrentUser();
+  AuthService.getAccessToken();
+  const accessToken = localStorage.getItem("accessToken");
   useEffect(() => {
     axios
       .get("http://localhost:8000/api/v1/userlist/?profile_id=" + currentUser, {
@@ -20,6 +20,7 @@ export function Upload() {
       .then((response) => {
         setPost(response.data);
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (!post) return "No post!";
