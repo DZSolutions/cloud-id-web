@@ -3,10 +3,11 @@ import { useState, useEffect } from "react";
 import templateDZ from "../images/templateDZ.jpg";
 import AuthService from "../services/auth.service";
 import axios from "axios";
-// import mergeImages from 'merge-images';
+import mergeImages from "merge-images";
 export function Upload() {
   const [post, setPost] = useState(null);
-  // const [image, setImage] = useState(null);
+  const [image, setImage] = useState(templateDZ);
+  const [start, setStart] = useState(0);
   const currentUser = AuthService.getCurrentUser();
   AuthService.getAccessToken();
   const accessToken = localStorage.getItem("accessToken");
@@ -23,22 +24,60 @@ export function Upload() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (!post) return "No post!";
-  // setImage(post.results[0].photo)
+  if (!post) return "Loading";
 
-  // mergeImages([templateDZ,{src:templateDZ, x:41, y:123 }])
-  // .then(b64 => setImage(b64))
+  const fetchData = async () => {
+    const cardPlusMan = await mergeImages(
+      [templateDZ, { src: post.results[0].photo, x: 41, y: 123 }],
+      {
+        crossOrigin: "*",
+      }
+    );
+    var temp = new Image();
+    temp.src = cardPlusMan;
+
+    let canvasWidth = 340;
+    let canvasHeight = 534;
+    let canvas = new OffscreenCanvas(canvasWidth, canvasHeight);
+    let fontColor = "#000000";
+    let textPosX = 20;
+    let firstNamePosY = 345;
+    let lastNamePosY = 455;
+    let picPosX = 38;
+    let picPosY = 117;
+    let croppieWidth = 298;
+    let croppieHeight = 195;
+    let previewHeight = 500;
+    let profile_id_PosY = 511;
+    let facultyPosY = 369;
+    var ctx = canvas.getContext("2d");
+    console.log(ctx);
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
+    temp.onload = function () {
+      // ctx.drawImage(image, 0, 0);
+      // ctx.fillText(
+      //   post.results[0].first_name_en + " " + post.results[0].last_name_en,
+      //   textPosX,
+      //   firstNamePosY
+      // );
+      // ctx.fillText({ currentUser }, textPosX, profile_id_PosY);
+      // ctx.fillText(post.results[0].faculty, textPosX, facultyPosY);
+    };
+
+    setImage(cardPlusMan);
+  };
+
+  if (post.results[0].photo != null && start === 0) {
+    fetchData();
+    setStart(1);
+  }
 
   return (
     <div className="relative mt-12 sm:mt-4 lg:mt-12">
       <div className="lg:grid lg:grid-flow-row-dense lg:grid-cols-2 lg:gap-8 lg:items-center">
         <div className="mt-10 -mx-4 relative lg:mt-0 lg:col-start-1">
-          <img className="absolute mx-auto" src={templateDZ} alt="" />
-          <img
-            className="relative mx-auto"
-            src={post.results[0].photo}
-            alt=""
-          />
+          <img className="mx-auto" src={image} alt="" />
         </div>
         <div className="lg:col-start-2 md:mt-4 lg:mt-0">
           <div className="shadow overflow-hidden sm:rounded-md">
