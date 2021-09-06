@@ -13,7 +13,7 @@ export function Upload() {
   const accessToken = localStorage.getItem("accessToken");
   useEffect(() => {
     axios
-      .get("http://localhost:8000/api/v1/userlist/?profile_id=" + currentUser, {
+      .get("http://localhost:8000/api/v1/userlist", {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
@@ -26,7 +26,7 @@ export function Upload() {
 
   if (!post) return "Loading";
 
-  const fetchData = async () => {
+  const mixImage = async () => {
     const cardPlusMan = await mergeImages(
       [templateDZ, { src: post.results[0].photo, x: 41, y: 123 }],
       {
@@ -69,7 +69,7 @@ export function Upload() {
   };
 
   if (post.results[0].photo != null && start === 0) {
-    fetchData();
+    mixImage();
     setStart(1);
   }
 
