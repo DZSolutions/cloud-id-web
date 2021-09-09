@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AuthService from "../services/auth.service";
+import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/solid";
 // import jwt_decode from "jwt-decode";
 import DZLOGO from "../images/dzcard.png";
 export function Login(props) {
+  const { state } = props.location;
+
   const [username, setUsername] = useState("1001000"); /** Thitikorn.s */
   const [password, setPassword] = useState("1001000"); /** .5yw8smrwxcp */
   const [loading, setLoading] = useState(false);
@@ -35,15 +38,17 @@ export function Login(props) {
         window.location.reload();
       },
       (error) => {
-        const resMessage =
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message ||
-          error.toString();
-
         setLoading(false);
-        setMessage(resMessage);
+        setMessage(error.response.data.detail);
+        // const resMessage =
+        //   (error.response &&
+        //     error.response.data &&
+        //     error.response.data.message) ||
+        //   error.message ||
+        //   error.toString();
+
+        // setLoading(false);
+        // setMessage(resMessage);
       }
     );
   };
@@ -58,8 +63,41 @@ export function Login(props) {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" action="#" method="POST">
+            {state ? (
+              <div className="rounded-md bg-green-50 p-4">
+                <div className="flex">
+                  <div className="flex-shrink-0">
+                    <CheckCircleIcon
+                      className="h-5 w-5 text-green-400"
+                      aria-hidden="true"
+                    />
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm font-medium text-green-800">
+                      {state}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ) : null}
+            {message ? (
+              <div className="rounded-md bg-red-50 p-4">
+                <div className="flex">
+                  <div className="flex-shrink-0">
+                    <XCircleIcon
+                      className="h-5 w-5 text-red-400"
+                      aria-hidden="true"
+                    />
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm font-medium text-red-800">
+                      {message}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ) : null}
             <div>
-              {message}
               <label
                 htmlFor="username"
                 className="block text-sm font-medium text-gray-700"

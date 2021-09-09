@@ -32,7 +32,7 @@ export function Register(props) {
     organization: "",
     username: "",
     email: "",
-    title: "",
+    title: "Mr",
     password: "",
     confirmPassword: "",
     firstName: "",
@@ -88,7 +88,7 @@ export function Register(props) {
 
     axios
       // .post(API_URL + "signin", {
-      .post(API_BASE_URL + "/v1/user/", {
+      .post(API_BASE_URL + "/v1/register", {
         organization: state.organization,
         username: state.username,
         email: state.email,
@@ -102,7 +102,10 @@ export function Register(props) {
       })
       .then((response) => {
         if (response.status === 200) {
-          props.history.push("/login");
+          props.history.push({
+            pathname: "/login",
+            state: response.data.message,
+          });
           window.location.reload();
         } else {
           props.showError("Some error ocurred");
@@ -245,8 +248,10 @@ export function Register(props) {
                   name="title"
                   className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
                 >
-                  <option defaultValue>Mr</option>
-                  <option>Ms</option>
+                  <option defaultValue value="Mr">
+                    Mr
+                  </option>
+                  <option value="Ms">Ms</option>
                 </select>
               </div>
               <div className="col-span-6 sm:col-span-4">
