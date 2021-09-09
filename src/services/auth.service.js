@@ -1,12 +1,13 @@
 import axios from "axios";
+import { API_BASE_URL } from "../constrants/apiConstrants";
 
-const API_URL = "http://localhost:8000/api/token-jwt/";
+const API_TOKEN_JWT = API_BASE_URL + "/token-jwt/";
 
 const login = (username, password) => {
   return (
     axios
       // .post(API_URL + "signin", {
-      .post(API_URL, {
+      .post(API_TOKEN_JWT, {
         username,
         password,
       })
@@ -72,7 +73,7 @@ function getTokenExp(accessToken) {
 }
 
 async function doRefreshToken(refreshToken) {
-  const url = API_URL + "refresh/";
+  const url = API_TOKEN_JWT + "refresh/";
   const res = await fetch(url, {
     method: "POST",
     headers: {

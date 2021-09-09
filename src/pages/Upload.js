@@ -4,6 +4,7 @@ import templateDZ from "../images/templateDZ.jpg";
 import AuthService from "../services/auth.service";
 import axios from "axios";
 import mergeImages from "merge-images";
+import { API_BASE_URL } from "../constrants/apiConstrants";
 export function Upload() {
   const [post, setPost] = useState(null);
   const [image, setImage] = useState(templateDZ);
@@ -13,7 +14,7 @@ export function Upload() {
   const accessToken = localStorage.getItem("accessToken");
   useEffect(() => {
     axios
-      .get("http://localhost:8000/api/v1/userlist", {
+      .get(API_BASE_URL + "/v1/userlist", {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
@@ -39,17 +40,17 @@ export function Upload() {
     let canvasWidth = 340;
     let canvasHeight = 534;
     let canvas = new OffscreenCanvas(canvasWidth, canvasHeight);
-    let fontColor = "#000000";
-    let textPosX = 20;
-    let firstNamePosY = 345;
-    let lastNamePosY = 455;
-    let picPosX = 38;
-    let picPosY = 117;
-    let croppieWidth = 298;
-    let croppieHeight = 195;
-    let previewHeight = 500;
-    let profile_id_PosY = 511;
-    let facultyPosY = 369;
+    // let fontColor = "#000000";
+    // let textPosX = 20;
+    // let firstNamePosY = 345;
+    // let lastNamePosY = 455;
+    // let picPosX = 38;
+    // let picPosY = 117;
+    // let croppieWidth = 298;
+    // let croppieHeight = 195;
+    // let previewHeight = 500;
+    // let profile_id_PosY = 511;
+    // let facultyPosY = 369;
     var ctx = canvas.getContext("2d");
     console.log(ctx);
     canvas.width = canvasWidth;

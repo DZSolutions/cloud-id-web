@@ -1,6 +1,33 @@
-import { useState } from "react";
+import axios from "axios";
+import { useState, useEffect } from "react";
 import dzLogo from "../images/dzcard.png";
+import { API_BASE_URL } from "../constrants/apiConstrants";
 export function Register(props) {
+  const [organizationList, setOrganizationList] = useState([]);
+
+  // const onChangeOrganization = (e) => {
+  //   const organization = e.target.value;
+  //   setOrganization(organization);
+  // };
+
+  useEffect(() => {
+    fetch("http://localhost:8000/api/v1/organizationlist", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((resp) => resp.json())
+      .then((resp) => setOrganizationList(resp));
+  }, []);
+
+  // const onChangeOrganization = (e) => {
+  //   console.log(e.target);
+  //   const organizationId = e.target;
+  //   const organization = e.target.value;
+  //   setOrganization({ organizationId, organization });
+  // };
+
   const [state, setState] = useState({
     organization: "",
     username: "",
@@ -14,6 +41,7 @@ export function Register(props) {
     major: "",
     phone: "",
   });
+
   const handleChange = (e) => {
     const { id, value } = e.target;
     setState((prevState) => ({
@@ -25,11 +53,66 @@ export function Register(props) {
   const handleSubmitClick = (e) => {
     e.preventDefault();
     if (state.password === state.confirmPassword) {
-      //   sendDetailsToServer();
+      sendDetailsToServer();
     } else {
-      //   props.showError("Passwords do not match");
+      props.showError("Passwords do not match");
     }
   };
+
+  const sendDetailsToServer = () => {
+    // console.log(organization);
+    // console.log(state);
+    // const payload = {
+    //   email: state.email,
+    //   password: state.password,
+    // };
+    // axios
+    //   .post(API_BASE_URL + "/user/", payload)
+    //   .then(function (response) {
+    //     if (response.status === 200) {
+    //       setState((prevState) => ({
+    //         ...prevState,
+    //         successMessage:
+    //           "Registration successful. Redirecting to home page..",
+    //       }));
+    //       // localStorage.setItem(ACCESS_TOKEN_NAME, response.data.token);
+    //       // redirectToHome();
+    //       props.showError(null);
+    //     } else {
+    //       props.showError("Some error ocurred");
+    //     }
+    //   })
+    //   .catch(function (error) {
+    //     console.log(error);
+    //   });
+
+    axios
+      // .post(API_URL + "signin", {
+      .post(API_BASE_URL + "/v1/user/", {
+        organization: state.organization,
+        username: state.username,
+        email: state.email,
+        title: state.title,
+        password: state.password,
+        firstName: state.firstName,
+        lastName: state.lastName,
+        faculty: state.faculty,
+        major: state.major,
+        phone: state.phone,
+      })
+      .then((response) => {
+        if (response.status === 200) {
+          props.history.push("/login");
+          window.location.reload();
+        } else {
+          props.showError("Some error ocurred");
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-4 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -44,23 +127,28 @@ export function Register(props) {
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-3">
             <div>
-              <label
-                htmlFor="organization"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Organization
-              </label>
               <div className="mt-1">
+                <label
+                  htmlFor="organiation"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Organization
+                </label>
                 <input
-                  value={state.organization}
-                  onChange={handleChange}
+                  type="text"
                   id="organization"
                   name="organization"
-                  type="text"
-                  autoComplete="organization"
-                  required
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
+                  autoComplete="off"
+                  placeholder="Choose your organization"
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-rose-500 focus:border-rose-500 sm:text-sm"
+                  list="organizations"
+                  onChange={handleChange}
                 />
+                <datalist id="organizations">
+                  {organizationList.map((organization) => (
+                    <option key={organization.id} value={organization.name} />
+                  ))}
+                </datalist>
               </div>
             </div>
             <div>
