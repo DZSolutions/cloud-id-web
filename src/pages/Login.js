@@ -3,6 +3,7 @@ import AuthService from "../services/auth.service";
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/solid";
 // import jwt_decode from "jwt-decode";
 import DZLOGO from "../images/dzcard.png";
+import { Link } from "react-router-dom";
 export function Login(props) {
   const { state } = props.location;
 
@@ -206,9 +207,8 @@ export function Login(props) {
                 )}
                 Login
               </button>
-
-              <a
-                href="register"
+              <Link
+                to="register"
                 className="w-1/2 flex items-center justify-center rounded-full bg-red-600 text-white h-10 hover:bg-red-700"
               >
                 <svg
@@ -225,11 +225,11 @@ export function Login(props) {
                   />
                 </svg>
                 Register
-              </a>
+              </Link>
             </div>
             <div className="flex justify-center mt-3">
-              <a
-                href="addticket"
+              <Link
+                to="ticket"
                 className="w-1/2 flex items-center justify-center text-xs"
               >
                 <svg
@@ -247,7 +247,7 @@ export function Login(props) {
                   />
                 </svg>
                 Report Issue
-              </a>
+              </Link>
             </div>
           </form>
         </div>

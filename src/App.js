@@ -11,6 +11,7 @@ import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { BellIcon, MenuIcon, XIcon } from "@heroicons/react/outline";
 import { ImageCropper } from "./pages/ImageCropper";
 import { ImageEditor } from "./pages/ImageEditor";
+import { Ticket } from "./pages/Ticket";
 import { Upload } from "./pages/Upload";
 import DZ from "./images/DZ.png";
 import DZLOGO from "./images/dzcard.png";
@@ -18,8 +19,8 @@ import { Login } from "./pages/Login";
 import AuthService from "./services/auth.service";
 import { Register } from "./pages/Register";
 
-const navigation = ["Upload", "Crop Image", "Image Editor"];
-const navigationRoute = ["/Upload", "/CropImage", "/ImageEditor"];
+const navigation = ["Upload", "Crop Image", "Image Editor", "Ticket"];
+const navigationRoute = ["/Upload", "/CropImage", "/ImageEditor", "/Ticket"];
 const profile = ["Your Profile", "Settings", "Sign out"];
 
 function App() {
@@ -33,6 +34,11 @@ function App() {
       <Route exact path="/" render={() => <Redirect to="/login" />} />
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
+      <Route path="/ticket">
+        <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-4 sm:px-6 lg:px-8">
+          <Ticket />
+        </div>
+      </Route>
     </div>
   );
 
@@ -238,6 +244,7 @@ function App() {
             <Route path="/Upload" component={Upload} />
             <Route path="/CropImage" component={ImageCropper} />
             <Route path="/ImageEditor" component={ImageEditor} />
+            <Route path="/Ticket" component={Ticket} />
           </Switch>
         </div>
       </main>
@@ -250,7 +257,7 @@ function App() {
         <Switch>
           <Route
             render={({ location }) =>
-              ["/", "/login", "/logout", "/register"].includes(
+              ["/", "/login", "/logout", "/register", "/ticket"].includes(
                 location.pathname
               ) ? (
                 <LoginContainer />

@@ -8,7 +8,7 @@ import mergeImages from "merge-images";
 import { API_BASE_URL } from "../constrants/apiConstrants";
 import Select, { components } from "react-select";
 
-export function Upload() {
+export function Upload(props) {
   const [post, setPost] = useState(null);
   const [image, setImage] = useState(templateDZ);
   const [start, setStart] = useState(0);
@@ -255,6 +255,10 @@ export function Upload() {
   const accessToken = localStorage.getItem("accessToken");
 
   useEffect(() => {
+    if (!accessToken) {
+      props.history.push("/login");
+      window.location.reload();
+    }
     axios
       .get(API_BASE_URL + "/v1/userlist", {
         headers: {
@@ -482,6 +486,7 @@ export function Upload() {
                           Email address
                         </p>
                         <input
+                          value={post.results[0].user.email}
                           readOnly
                           type="text"
                           className="block mt-1 w-full border-gray-300 focus:border-blue-500 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"

@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import dzLogo from "../images/dzcard.png";
 import { API_BASE_URL } from "../constrants/apiConstrants";
+import { Link } from "react-router-dom";
 export function Register(props) {
   const [organizationList, setOrganizationList] = useState([]);
 
@@ -11,7 +12,7 @@ export function Register(props) {
   // };
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/v1/organizationlist", {
+    fetch(API_BASE_URL + "/v1/organizationlist", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -350,10 +351,11 @@ export function Register(props) {
               </div>
             </div>
             <div className="flex space-x-2">
-              <a
-                href="/"
+              <Link
+                to="/"
                 className="flex justify-center py-2 px-2 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
               >
+                {" "}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-6 w-6"
@@ -368,7 +370,7 @@ export function Register(props) {
                     d="M15 19l-7-7 7-7"
                   />
                 </svg>
-              </a>
+              </Link>
               <button
                 type="submit"
                 onClick={handleSubmitClick}
