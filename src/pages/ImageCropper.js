@@ -1,11 +1,13 @@
-import { useRef, useState, Fragment } from "react";
+import { useRef, useState, Fragment, useEffect } from "react";
 import Cropper from "react-easy-crop";
 import getCroppedImg, { generateDownload } from "../utils/cropImage";
 import { Dialog, Transition } from "@headlessui/react";
 import { CheckIcon } from "@heroicons/react/outline";
 import { API_BASE_URL } from "../constrants/apiConstrants";
 import axios from "axios";
-export function ImageCropper() {
+import AuthService from "../services/auth.service";
+export function ImageCropper(props) {
+  const [post, setPost] = useState(null);
   const inputRef = useRef();
 
   const triggerFileSelectPopup = () => inputRef.current.click();
@@ -18,6 +20,7 @@ export function ImageCropper() {
   const [uploaded, setUploaded] = useState([]);
   const cancelButtonRef = useRef(null);
   const [open, setOpen] = useState(false);
+  const [confirm, setConfirm] = useState(false);
   const [isUploading, setIsUpLoading] = useState(false);
 
   const onCropComplete = (croppedAreaPercentage, croppedAreaPixels) => {
@@ -63,6 +66,63 @@ export function ImageCropper() {
     setUploaded(response.data);
     setOpen(true);
     setIsUpLoading(false);
+  };
+
+  AuthService.getAccessToken();
+  const accessToken = localStorage.getItem("accessToken");
+
+  useEffect(() => {
+    if (!accessToken) {
+      props.history.push("/login");
+      window.location.reload();
+    }
+    axios
+      .get(API_BASE_URL + "/v1/userlist", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((response) => {
+        setPost(response.data);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  let payload = {
+    image: uploaded.image,
+  };
+
+  const onUploadToServer = async () => {
+    let serverHeader = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    };
+    let dataToUpload = `data:image/jpeg;base64,${uploaded.image}`;
+    const file = dataURLtoFile(dataToUpload);
+    const data = new FormData();
+    data.append("photo", file, post.results[0].id + ".jpg");
+    // put file into form data
+    const response = await axios.patch(
+      API_BASE_URL + "/v1/userlist/" + post.results[0].id + "/",
+      data,
+      serverHeader
+    );
+    setOpen(false);
+    setConfirm(true);
+  };
+
+  const dataURLtoFile = (dataurl, filename) => {
+    const arr = dataurl.split(",");
+    const mime = arr[0].match(/:(.*?);/)[1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n) {
+      u8arr[n - 1] = bstr.charCodeAt(n - 1);
+      n -= 1; // to make eslint happy
+    }
+    return new File([u8arr], filename, { type: mime });
   };
 
   return (
@@ -157,7 +217,7 @@ export function ImageCropper() {
         <Dialog
           as="div"
           className="fixed z-10 inset-0 overflow-y-auto"
-          initialFocus={cancelButtonRef}
+          // initialFocus={cancelButtonRef}
           onClose={setOpen}
         >
           <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -220,7 +280,7 @@ export function ImageCropper() {
                   <button
                     type="button"
                     className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm"
-                    onClick={() => setOpen(false)}
+                    onClick={onUploadToServer}
                   >
                     Upload
                   </button>
@@ -231,6 +291,80 @@ export function ImageCropper() {
                     ref={cancelButtonRef}
                   >
                     Cancel
+                  </button>
+                </div>
+              </div>
+            </Transition.Child>
+          </div>
+        </Dialog>
+      </Transition.Root>
+      <Transition.Root show={confirm} as={Fragment}>
+        <Dialog
+          as="div"
+          className="fixed z-10 inset-0 overflow-y-auto"
+          onClose={setConfirm}
+        >
+          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <Dialog.Overlay className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+            </Transition.Child>
+
+            {/* This element is to trick the browser into centering the modal contents. */}
+            <span
+              className="hidden sm:inline-block sm:align-middle sm:h-screen"
+              aria-hidden="true"
+            >
+              &#8203;
+            </span>
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              enterTo="opacity-100 translate-y-0 sm:scale-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+              leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+            >
+              <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6">
+                <div>
+                  <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+                    <CheckIcon
+                      className="h-6 w-6 text-green-600"
+                      aria-hidden="true"
+                    />
+                  </div>
+                  <div className="mt-3 text-center sm:mt-5">
+                    <Dialog.Title
+                      as="h3"
+                      className="text-lg leading-6 font-medium text-gray-900"
+                    >
+                      Upload Successful
+                    </Dialog.Title>
+                    <div className="mt-2">
+                      <p className="text-sm text-gray-500">
+                        Your photo will be reviewed and printed.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-5 sm:mt-6">
+                  <button
+                    type="button"
+                    className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
+                    onClick={() => {
+                      props.history.push("/upload");
+                      window.location.reload();
+                    }}
+                  >
+                    Confirm
                   </button>
                 </div>
               </div>

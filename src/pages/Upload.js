@@ -298,7 +298,6 @@ export function Upload(props) {
     // let profile_id_PosY = 511;
     // let facultyPosY = 369;
     // var ctx = canvas.getContext("2d");
-    // console.log(ctx);
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
     temp.onload = function () {
