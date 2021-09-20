@@ -6,11 +6,6 @@ import { Link } from "react-router-dom";
 export function Register(props) {
   const [organizationList, setOrganizationList] = useState([]);
 
-  // const onChangeOrganization = (e) => {
-  //   const organization = e.target.value;
-  //   setOrganization(organization);
-  // };
-
   useEffect(() => {
     fetch(API_BASE_URL + "/v1/organizationlist", {
       method: "GET",
@@ -21,13 +16,6 @@ export function Register(props) {
       .then((resp) => resp.json())
       .then((resp) => setOrganizationList(resp));
   }, []);
-
-  // const onChangeOrganization = (e) => {
-  //   console.log(e.target);
-  //   const organizationId = e.target;
-  //   const organization = e.target.value;
-  //   setOrganization({ organizationId, organization });
-  // };
 
   const [state, setState] = useState({
     organization: "",
@@ -352,10 +340,9 @@ export function Register(props) {
             </div>
             <div className="flex space-x-2">
               <Link
-                to="/"
+                to={"/" + props.match.params.org}
                 className="flex justify-center py-2 px-2 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
               >
-                {" "}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-6 w-6"

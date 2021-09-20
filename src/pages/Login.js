@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AuthService from "../services/auth.service";
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/solid";
 // import jwt_decode from "jwt-decode";
 import DZLOGO from "../images/dzcard.png";
 import { Link } from "react-router-dom";
+
 export function Login(props) {
   const { state } = props.location;
 
@@ -11,6 +12,19 @@ export function Login(props) {
   const [password, setPassword] = useState("1001000"); /** .5yw8smrwxcp */
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+
+  AuthService.getAccessToken();
+  const [accessToken, setAccessToken] = useState(
+    localStorage.getItem("accessToken")
+  );
+  useEffect(() => {
+    if (accessToken) {
+      // console.log(props.history);
+      props.history.push(`/${props.match.params.org}/upload`);
+      window.location.reload();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onChangeUsername = (e) => {
     const username = e.target.value;
@@ -35,7 +49,7 @@ export function Login(props) {
     setLoading(true);
     AuthService.login(username, password).then(
       () => {
-        props.history.push("/upload");
+        props.history.push(`/${props.match.params.org}/upload`);
         window.location.reload();
       },
       (error) => {
@@ -208,7 +222,7 @@ export function Login(props) {
                 Login
               </button>
               <Link
-                to="register"
+                to={`/${props.match.params.org}/register`}
                 className="w-1/2 flex items-center justify-center rounded-full bg-red-600 text-white h-10 hover:bg-red-700"
               >
                 <svg
@@ -229,7 +243,10 @@ export function Login(props) {
             </div>
             <div className="flex justify-center mt-3">
               <Link
-                to="ticket"
+                to={{
+                  pathname: `/${props.match.params.org}/ticket`,
+                  state: [{ org: props.match.params.org }],
+                }}
                 className="w-1/2 flex items-center justify-center text-xs"
               >
                 <svg

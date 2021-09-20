@@ -253,12 +253,14 @@ export function Upload(props) {
   const currentUser = AuthService.getCurrentUser();
   AuthService.getAccessToken();
   const accessToken = localStorage.getItem("accessToken");
-
+  // const [accessToken, setAccessToken] = useState(
+  //   localStorage.getItem("accessToken")
+  // );
   useEffect(() => {
-    if (!accessToken) {
-      props.history.push("/login");
-      window.location.reload();
-    }
+    // if (!accessToken) {
+    //   props.history.push("/login");
+    //   window.location.reload();
+    // }
     axios
       .get(API_BASE_URL + "/v1/userlist", {
         headers: {
@@ -422,7 +424,7 @@ export function Upload(props) {
                   </div>
                   <div className="px-4 py-3 text-center bg-gray-100 sm:px-6">
                     <Link
-                      to="/CropImage"
+                      to="CropImage"
                       className="inline-flex justify-center px-4 py-2 text-white text-3xl font-medium bg-blue-600 hover:bg-blue-500 border border-transparent rounded-full focus:outline-none shadow-sm focus:ring-blue-500 focus:ring-offset-2 focus:ring-2"
                     >
                       Print Card
@@ -543,7 +545,7 @@ export function Upload(props) {
                       </label>
                     </div>
                     <Link
-                      to="/CropImage"
+                      to="CropImage"
                       className="inline-flex justify-center px-4 py-2 text-white text-3xl font-medium bg-rose-600 hover:bg-rose-500 border border-transparent rounded-full focus:outline-none shadow-sm focus:ring-rose-500 focus:ring-offset-2 focus:ring-2"
                     >
                       Upload Photo
