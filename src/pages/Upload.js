@@ -256,7 +256,7 @@ export function Upload(props) {
 
   useEffect(() => {
     if (!accessToken) {
-      props.history.push("/login");
+      props.history.push("login");
       window.location.reload();
     }
     axios
@@ -543,7 +543,7 @@ export function Upload(props) {
                       </label>
                     </div>
                     <Link
-                      to="/CropImage"
+                      to={"/" + props.match.params.org + "/CropImage"}
                       className="inline-flex justify-center px-4 py-2 text-white text-3xl font-medium bg-rose-600 hover:bg-rose-500 border border-transparent rounded-full focus:outline-none shadow-sm focus:ring-rose-500 focus:ring-offset-2 focus:ring-2"
                     >
                       Upload Photo

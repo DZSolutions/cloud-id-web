@@ -1,12 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AuthService from "../services/auth.service";
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/solid";
 // import jwt_decode from "jwt-decode";
 import DZLOGO from "../images/dzcard.png";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
+import { API_BASE_URL } from "../constrants/apiConstrants";
 export function Login(props) {
+  let history = useHistory();
   const { state } = props.location;
-
+  const accessToken = localStorage.getItem("accessToken");
+  useEffect(() => {
+    if (accessToken) {
+      props.history.push("upload");
+      window.location.reload();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [username, setUsername] = useState("1001000"); /** Thitikorn.s */
   const [password, setPassword] = useState("1001000"); /** .5yw8smrwxcp */
   const [loading, setLoading] = useState(false);
@@ -35,7 +44,7 @@ export function Login(props) {
     setLoading(true);
     AuthService.login(username, password).then(
       () => {
-        props.history.push("/upload");
+        history.push("upload");
         window.location.reload();
       },
       (error) => {

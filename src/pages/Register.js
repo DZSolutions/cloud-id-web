@@ -30,7 +30,7 @@ export function Register(props) {
   // };
 
   const [state, setState] = useState({
-    organization: "",
+    organization: props.match.params.org,
     username: "",
     email: "",
     title: "Mr",
@@ -147,6 +147,8 @@ export function Register(props) {
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-rose-500 focus:border-rose-500 sm:text-sm"
                   list="organizations"
                   onChange={handleChange}
+                  value={props.match.params.org}
+                  disabled
                 />
                 <datalist id="organizations">
                   {organizationList.map((organization) => (
@@ -352,10 +354,9 @@ export function Register(props) {
             </div>
             <div className="flex space-x-2">
               <Link
-                to="/"
+                to={"/" + props.match.params.org}
                 className="flex justify-center py-2 px-2 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
               >
-                {" "}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-6 w-6"
