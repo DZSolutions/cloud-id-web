@@ -1,13 +1,12 @@
 import { useParams } from "react-router-dom";
-import { useEffect, Fragment, useState } from "react";
-import { API_BASE_URL } from "../constrants/apiConstrants";
-import axios from "axios";
+import { Fragment } from "react";
+// import { API_BASE_URL } from "../constrants/apiConstrants";
+// import axios from "axios";
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   NavLink,
-  Redirect,
 } from "react-router-dom";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { BellIcon, MenuIcon, XIcon } from "@heroicons/react/outline";

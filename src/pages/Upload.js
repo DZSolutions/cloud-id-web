@@ -255,10 +255,6 @@ export function Upload(props) {
   const accessToken = localStorage.getItem("accessToken");
 
   useEffect(() => {
-    if (!accessToken) {
-      props.history.push("login");
-      window.location.reload();
-    }
     axios
       .get(API_BASE_URL + "/v1/userlist", {
         headers: {

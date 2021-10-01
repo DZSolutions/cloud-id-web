@@ -104,7 +104,7 @@ export function Register(props) {
       .then((response) => {
         if (response.status === 200) {
           props.history.push({
-            pathname: "/login",
+            pathname: "login",
             state: response.data.message,
           });
           window.location.reload();

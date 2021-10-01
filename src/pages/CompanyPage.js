@@ -2,7 +2,12 @@ import { useParams } from "react-router-dom";
 import { useEffect, Fragment, useState } from "react";
 import { API_BASE_URL } from "../constrants/apiConstrants";
 import axios from "axios";
-import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Redirect,
+  Switch,
+} from "react-router-dom";
 import { Login } from "./Login";
 import { Register } from "./Register";
 import { Ticket } from "./Ticket";
@@ -13,6 +18,7 @@ export function CompanyPage(props) {
   const { orgName } = useParams();
   const [organizationExists, setOrganizationExists] = useState();
   const [loading, setLoading] = useState(true);
+  const accessToken = localStorage.getItem("accessToken");
 
   useEffect(() => {
     axios
@@ -37,13 +43,13 @@ export function CompanyPage(props) {
     <>
       {loading ? (
         <>
-          <body class="flex justify-center items-center h-screen">
-            <div class="bg-black flex space-x-2 p-5 rounded-full justify-center items-center">
-              <div class="bg-blue-600 p-2  w-4 h-4 rounded-full animate-bounce blue-circle"></div>
-              <div class="bg-green-600 p-2 w-4 h-4 rounded-full animate-bounce green-circle"></div>
-              <div class="bg-red-600 p-2  w-4 h-4 rounded-full animate-bounce red-circle"></div>
+          <div className="flex justify-center items-center h-screen">
+            <div className="bg-black flex space-x-2 p-5 rounded-full justify-center items-center">
+              <div className="bg-blue-600 p-2  w-4 h-4 rounded-full animate-bounce blue-circle"></div>
+              <div className="bg-green-600 p-2 w-4 h-4 rounded-full animate-bounce green-circle"></div>
+              <div className="bg-red-600 p-2  w-4 h-4 rounded-full animate-bounce red-circle"></div>
             </div>
-          </body>
+          </div>
         </>
       ) : null}
       {/* Organization Name {orgName} <br />
@@ -53,18 +59,17 @@ export function CompanyPage(props) {
           <Route path="/:org/logout">
             <Redirect to={`/${orgName}/login`} />
           </Route>
-          <Route path="/:org/login" component={Login}></Route>
+          <Route path="/:org/login" component={Login} />
           <Route exact path="/:org">
             <Redirect to={`/${orgName}/login`} />
           </Route>
           <Route path="/:org/register" component={Register} />
-          <Route path="/:org/ticket" component={Ticket} />
-
-          <NavBar />
+          <Route path="/:org/issue" component={Ticket} />
         </>
       ) : (
         "THIS ORGANIZATION DOES NOT EXISTS"
       )}
+      {organizationExists && accessToken ? <NavBar /> : null}
     </>
   );
 }

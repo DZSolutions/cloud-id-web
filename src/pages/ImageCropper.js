@@ -72,10 +72,6 @@ export function ImageCropper(props) {
   const accessToken = localStorage.getItem("accessToken");
 
   useEffect(() => {
-    if (!accessToken) {
-      props.history.push("/login");
-      window.location.reload();
-    }
     axios
       .get(API_BASE_URL + "/v1/userlist", {
         headers: {
@@ -88,9 +84,9 @@ export function ImageCropper(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  let payload = {
-    image: uploaded.image,
-  };
+  // let payload = {
+  //   image: uploaded.image,
+  // };
 
   const onUploadToServer = async () => {
     let serverHeader = {
@@ -103,7 +99,7 @@ export function ImageCropper(props) {
     const data = new FormData();
     data.append("photo", file, post.results[0].id + ".jpg");
     // put file into form data
-    const response = await axios.patch(
+    axios.patch(
       API_BASE_URL + "/v1/userlist/" + post.results[0].id + "/",
       data,
       serverHeader

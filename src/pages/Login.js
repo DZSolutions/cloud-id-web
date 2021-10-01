@@ -4,7 +4,7 @@ import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/solid";
 // import jwt_decode from "jwt-decode";
 import DZLOGO from "../images/dzcard.png";
 import { Link, useHistory } from "react-router-dom";
-import { API_BASE_URL } from "../constrants/apiConstrants";
+// import { API_BASE_URL } from "../constrants/apiConstrants";
 export function Login(props) {
   let history = useHistory();
   const { state } = props.location;
@@ -238,7 +238,7 @@ export function Login(props) {
             </div>
             <div className="flex justify-center mt-3">
               <Link
-                to="ticket"
+                to="issue"
                 className="w-1/2 flex items-center justify-center text-xs"
               >
                 <svg

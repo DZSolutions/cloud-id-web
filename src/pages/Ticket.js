@@ -1,10 +1,10 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
-import dzLogo from "../images/dzcard.png";
+// import dzLogo from "../images/dzcard.png";
 import { API_BASE_URL } from "../constrants/apiConstrants";
 import AuthService from "../services/auth.service";
 import { Link } from "react-router-dom";
-import { useParams } from "react-router-dom";
+// import { useParams } from "react-router-dom";
 export function Ticket(props) {
   const [post, setPost] = useState(null);
 
@@ -201,11 +201,7 @@ export function Ticket(props) {
             </div>
             <div className="flex space-x-2 pt-4">
               <Link
-                to={
-                  "/" + props.match.params.org + accessToken
-                    ? "upload"
-                    : "login"
-                }
+                to={accessToken ? "upload" : "login"}
                 className="flex justify-center py-2 px-2 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
               >
                 <svg
