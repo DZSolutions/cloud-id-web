@@ -54,8 +54,6 @@ export function Home(props) {
       })
       .then((response) => {
         setPost(response.data);
-        console.log("response.data");
-        console.log(response.data.results[0].ref_id);
         if(response.data.results[0].ref_id === null){
 
           if(data ==="login")

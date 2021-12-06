@@ -17,8 +17,10 @@ export function Login(props) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const [username, setUsername] = useState("12812"); /** Thitikorn.s */
-  const [password, setPassword] = useState("abc123!@#"); /** .5yw8smrwxcp */
+  // const [username, setUsername] = useState("12812"); /** Thitikorn.s */
+  // const [password, setPassword] = useState("abc123!@#"); /** .5yw8smrwxcp */
+  const [username, setUsername] = useState(null); /** Thitikorn.s */
+  const [password, setPassword] = useState(null); /** .5yw8smrwxcp */
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 

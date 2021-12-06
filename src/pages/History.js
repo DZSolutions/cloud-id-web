@@ -58,8 +58,6 @@ export function History(props) {
       .then((response) => {
         setPost(response.data);
         setHistoryList2(response.data.results);
-        console.log("data.setHistoryList2");
-        console.log(response.data.results);
       });
 
       await axios
@@ -70,8 +68,6 @@ export function History(props) {
       })
       .then((response) => {
         setHistoryList(response.data.results);
-        console.log("response.data.results");
-        console.log(response.data.results);
       });
 
   }, []);
@@ -82,11 +78,7 @@ export function History(props) {
   var daatajson ="";
   const historyChosen = (e) => {
     setShowpreviewCard(true);
-    console.log("e");
-    console.log(e);
     const data = e.target.getAttribute('data-item');
-    console.log("datahis");
-    console.log(data);
     setTextlayoutname(data);
     const user = historyList.find(u => u.id == e.target.dataset.id)
     if (historyList != null){
@@ -105,7 +97,7 @@ export function History(props) {
 
   return (
     <>
-      <div className="relative mt-12 sm:mt-4 lg:mt-12">
+      <div className="relative sm:mt-4 lg:mt-12">
         <p className="block text-gray-700 text-3xl font-medium">
             History
         </p>

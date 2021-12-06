@@ -28,7 +28,8 @@ export function NavBar(props) {
   }
 
   const navigation = ["Home","History"];
-  const navigationRoute = ["/Home","/History"];
+  // const navigationRoute = ["/Home","/History"];
+  const navigationRoute = ["/History","/History"];
   const profile = ["Your Profile", "Settings", "Sign out"];
 
   return (

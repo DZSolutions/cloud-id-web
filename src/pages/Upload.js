@@ -8,7 +8,7 @@ import mergeImages from "merge-images";
 import { API_BASE_URL } from "../constrants/apiConstrants";
 import Select, { components } from "react-select";
 import { Dialog, Transition } from "@headlessui/react";
-import { CheckIcon,CreditCardIcon,IdentificationIcon } from "@heroicons/react/outline";
+import { CheckIcon,CreditCardIcon,IdentificationIcon,QrcodeIcon } from "@heroicons/react/outline";
 import usestateref from 'react-usestateref';
 import {Collapse} from 'react-collapse';
 import { useHistory } from "react-router-dom";
@@ -557,7 +557,6 @@ export function Upload(props) {
     var date = new Date();
     var dateandtime = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
     let imgfs={};
-    console.log("requestCardimging");
     axios
       .post("http://13.212.202.194:8033/gen_card_img/", {
         // layout_name: postmapping.results[0].layout_name,
@@ -608,26 +607,13 @@ export function Upload(props) {
 
     if(isEditData === true)
     {
-
       setallowBuild(true);
       setallowPrint(false);
-
-      console.log("setallowBuild edit === true");
-      console.log(allowBuild);
-
-      console.log("setallowPrint edit === true");
-      console.log(allowPrint);
     }
     else if (isEditData === false)
     {
-
       setallowBuild(false);
       setallowPrint(true);
-      console.log("setallowBuild edit === false");
-      console.log(allowBuild);
-
-      console.log("setallowPrint edit === false");
-      console.log(allowPrint);
     }
 
   }
@@ -977,7 +963,6 @@ export function Upload(props) {
         // }]
       })
       .then((response) => {
-        console.log("return fontcard");
         var imgf = JSON.parse(JSON.stringify(response.data.output[0]));
 
         var images = new Image();
@@ -1075,7 +1060,6 @@ export function Upload(props) {
   };
 
   if (post.results[0].photo === null && start === 0) {
-    console.log("mixImagedummy test");
     //mixImagedummy();
     setStart(1);
   }
@@ -1096,7 +1080,6 @@ export function Upload(props) {
           input:[resultforgencard]
         })
         .then((response) => {
-          console.log("return fontcard");
           var imgf = JSON.parse(JSON.stringify(response.data.output[0]));
           photoF = imgf['front'];
           photoB = imgf['back'];
@@ -1117,11 +1100,6 @@ export function Upload(props) {
 
       photoF = await getBase64FromUrl(image);
       photoB = await getBase64FromUrl(imageB);
-      console.log("photoF");
-      console.log(photoF);
-      console.log("photoB");
-      console.log(photoB);
-
      let printerOption ;
 
      if(configPrinter.results[0].printer_type === 0)
@@ -1254,60 +1232,6 @@ export function Upload(props) {
                 <>
                   <div className="px-4 py-5 bg-white sm:p-6">
                     <div className="grid gap-6 grid-cols-6">
-                      {/* <div className="col-span-6">
-                        <p className="block text-gray-700 text-sm font-medium pb-2">
-                          Organization Unit
-                        </p>
-                        <Select
-                          menuPortalTarget={document.querySelector("body")}
-                          defaultValue={selectedOrgUnit}
-                          onChange={setSelectOrgUnit}
-                          options={orgUnits}
-                          components={{ Input }}
-                        />
-                      </div>
-                      <div className="col-span-6">
-                        <p className="block text-gray-700 text-sm font-medium pb-2">
-                          Locations
-                        </p>
-                        <Select
-                          menuPortalTarget={document.querySelector("body")}
-                          defaultValue={selectedLocation}
-                          onChange={setSelectLocation}
-                          options={
-                            selectedOrgUnit ? selectedOrgUnit.locations : []
-                          }
-                          components={{ Input }}
-                        />
-                      </div>
-                      <div className="col-span-6">
-                        <p className="block text-gray-700 text-sm font-medium pb-2">
-                          Consoles
-                        </p>
-                        <Select
-                          menuPortalTarget={document.querySelector("body")}
-                          defaultValue={selectedConsole}
-                          onChange={setSelectConsole}
-                          options={
-                            selectedLocation ? selectedLocation.consoles : []
-                          }
-                          components={{ Input }}
-                        />
-                      </div>
-                      <div className="col-span-6">
-                        <p className="block text-gray-700 text-sm font-medium pb-2">
-                          Printers
-                        </p>
-                        <Select
-                          menuPortalTarget={document.querySelector("body")}
-                          defaultValue={selectedPrinter}
-                          onChange={setSelectPrinter}
-                          options={
-                            selectedConsole ? selectedConsole.printers : []
-                          }
-                          components={{ Input }}
-                        />
-                      </div> */}
                       <div className="col-span-6">
                         <p className="block text-gray-700 text-sm font-medium pb-2">
                           Consoles
@@ -2039,7 +1963,7 @@ export function Upload(props) {
               <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full sm:p-6">
                 <div>
                   <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
-                    <IdentificationIcon
+                    <QrcodeIcon
                       className="h-6 w-6 text-green-600"
                       aria-hidden="true"
                     />
