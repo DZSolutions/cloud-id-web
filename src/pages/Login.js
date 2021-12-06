@@ -11,13 +11,14 @@ export function Login(props) {
   const accessToken = localStorage.getItem("accessToken");
   useEffect(() => {
     if (accessToken) {
-      props.history.push("upload");
+      // props.history.push("upload");
+      props.history.push("layout");
       window.location.reload();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const [username, setUsername] = useState("1001000"); /** Thitikorn.s */
-  const [password, setPassword] = useState("1001000"); /** .5yw8smrwxcp */
+  const [username, setUsername] = useState("12812"); /** Thitikorn.s */
+  const [password, setPassword] = useState("abc123!@#"); /** .5yw8smrwxcp */
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -44,7 +45,8 @@ export function Login(props) {
     setLoading(true);
     AuthService.login(username, password).then(
       () => {
-        history.push("upload");
+        // history.push("upload");
+        history.push({pathname:"home",state:{id:"login"}});
         window.location.reload();
       },
       (error) => {

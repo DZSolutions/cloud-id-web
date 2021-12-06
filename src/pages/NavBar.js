@@ -12,7 +12,10 @@ import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { BellIcon, MenuIcon, XIcon } from "@heroicons/react/outline";
 import { ImageCropper } from "./ImageCropper";
 import { ImageEditor } from "./ImageEditor";
+import { Home } from "./Home";
 import { Upload } from "./Upload";
+import { History } from "./History";
+import { Layout } from "./Layout";
 import { Ticket } from "./Ticket";
 import DZ from "../images/DZ.png";
 import DZLOGO from "../images/dzcard.png";
@@ -24,8 +27,8 @@ export function NavBar(props) {
     return classes.filter(Boolean).join(" ");
   }
 
-  const navigation = ["Upload", "Crop Image", "Image Editor", "Ticket"];
-  const navigationRoute = ["/Upload", "/CropImage", "/ImageEditor", "/Ticket"];
+  const navigation = ["Home","History"];
+  const navigationRoute = ["/Home","/History"];
   const profile = ["Your Profile", "Settings", "Sign out"];
 
   return (
@@ -227,10 +230,13 @@ export function NavBar(props) {
       <main>
         <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
           <Switch>
+          <Route path="/:org/Home" component={Home} />
+            <Route path="/:org/Layout" component={Layout} />
             <Route path="/:org/Upload" component={Upload} />
             <Route path="/:org/CropImage" component={ImageCropper} />
             <Route path="/:org/ImageEditor" component={ImageEditor} />
             <Route path="/:org/Ticket" component={Ticket} />
+            <Route path="/:org/History" component={History} />
             <Route>404 NOT FOUND</Route>
           </Switch>
         </div>

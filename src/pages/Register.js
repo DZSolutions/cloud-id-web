@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import dzLogo from "../images/dzcard.png";
 import { API_BASE_URL } from "../constrants/apiConstrants";
 import { Link } from "react-router-dom";
+import swal from 'sweetalert';
 export function Register(props) {
   const [organizationList, setOrganizationList] = useState([]);
 
@@ -53,10 +54,18 @@ export function Register(props) {
 
   const handleSubmitClick = (e) => {
     e.preventDefault();
+
     if (state.password === state.confirmPassword) {
       sendDetailsToServer();
     } else {
-      props.showError("Passwords do not match");
+      swal({
+        title: "Oops!",
+        text: "Passwords do not match",
+        icon: "warning",
+        dangerMode: true,
+      });
+     // props.showError("Passwords do not match");
+
     }
   };
 
@@ -109,10 +118,18 @@ export function Register(props) {
           });
           window.location.reload();
         } else {
+          swal("Oops!", "Something went wrong!", "error");
           props.showError("Some error ocurred");
         }
       })
       .catch(function (error) {
+        // swal("Oops!", "This account is allready!", "error");
+        swal({
+          title: "Oops!",
+          text: "This account is allready!" + error,
+          icon: "warning",
+          dangerMode: true,
+        });
         console.log(error);
       });
   };
@@ -129,7 +146,7 @@ export function Register(props) {
 
       <div className="mt-4 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <form className="space-y-3">
+          <form className="space-y-3" onSubmit={handleSubmitClick}>
             <div>
               <div className="mt-1">
                 <label
@@ -212,8 +229,8 @@ export function Register(props) {
                   name="password"
                   type="password"
                   autoComplete="current-password"
-                  required
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
+                  required
                 />
               </div>
             </div>
@@ -374,11 +391,8 @@ export function Register(props) {
               </Link>
               <button
                 type="submit"
-                onClick={handleSubmitClick}
                 className="w-full flex items-center justify-center rounded-full bg-red-600 text-white h-10 hover:bg-red-700"
-              >
-                Register
-              </button>
+              >Register</button>
             </div>
           </form>
         </div>

@@ -8,25 +8,99 @@ import mergeImages from "merge-images";
 import { API_BASE_URL } from "../constrants/apiConstrants";
 import Select, { components } from "react-select";
 import { Dialog, Transition } from "@headlessui/react";
-import { CheckIcon } from "@heroicons/react/outline";
+import { CheckIcon,CreditCardIcon,IdentificationIcon } from "@heroicons/react/outline";
+import usestateref from 'react-usestateref';
+import {Collapse} from 'react-collapse';
+import { useHistory } from "react-router-dom";
+import QRCode from "react-qr-code";
 
 export function Upload(props) {
-  const [post, setPost] = useState(null);
+  const [post, setPost,refpost] = usestateref(null);
+  const [postmapping, setPostMapping,refpostmapping] = usestateref(null);
+  const [jsonGencard, setJsonData] = useState(null);
   const [image, setImage] = useState(templateDZ);
+  const [imageB, setImageBack] = useState(templateDZ_Back);
+  const [imageforprint, setImageforprint] = useState(templateDZ);
+  const [imageBforprint, setImageBackforprint] = useState(templateDZ_Back);
   const [start, setStart] = useState(0);
   const [isFront, setIsFront] = useState(true);
   const [print, setPrint] = useState(false);
 
   const [consoleList, setConsoleList] = useState(null);
   const [printerList, setPrinterList] = useState(null);
+  const [printerOptionList, setPrinterOptionList] = useState([{type:"auto"},{type:"manual"}]);
+
+  const [mappingList, setMappingList,refmappingList] = usestateref(null);
+  const [qrcodeData, setQrcodeData] = useState(null);
 
   const [selectedOrgUnit, setSelectOrgUnit] = useState(null);
   const [selectedLocation, setSelectLocation] = useState(null);
   const [selectedConsole, setSelectConsole] = useState(null);
   const [selectedPrinter, setSelectPrinter] = useState(null);
+  const [selectedPrinterOption, setSelectPrinterOption] = useState(null);
+  // const [selectedMapping, setSelectMapping,refselectmapping] = usestateref(null);
+
+
+  const [resultforgencard, setresultForgencard,refresultForgencard] = usestateref({});
+  const [selectedLayout, setSelectLayout,refresultLayout] = usestateref(null);
+  const [checked, setChecked] = useState(false);
+
+
+  const ennabelEdit=false;
+  const [whitecard, setWhitecard,refWhitecard] = usestateref(false);
+
+  const [openemployId, setOpenEmployId] = useState(ennabelEdit);
+  const [opentitleTh, setOpentitleTh] = useState(ennabelEdit);
+  const [openNameTh, setOpenNameTh] = useState(ennabelEdit);
+  const [openLastNameTh, setOpenLastNameTh] = useState(ennabelEdit);
+  const [opentitleEn, setOpentitleEn] = useState(ennabelEdit);
+  const [openNameEn, setOpenNameEn] = useState(ennabelEdit);
+  const [openLastNameEn, setOpenLastNameEn] = useState(ennabelEdit);
+  const [openMobile, setOpenMobile] = useState(ennabelEdit);
+  const [openEmail, setOpenEmail] = useState(ennabelEdit);
+  const [openDepartment, setOpenDepartment] = useState(ennabelEdit);
+  const [openFaculty, setOpenFaculty] = useState(ennabelEdit);
+  const [openMajor, setOpenMajor] = useState(ennabelEdit);
+
+  const [employId, setEmployId,refEmployId] = usestateref(null);
+  const [titleTh, settitleTh,reftitleTh] = usestateref(null);
+  const [NameTh, setNameTh,refNameTh] = usestateref(null);
+  const [LastNameTh, setLastNameTh,refLastNameTh] = usestateref(null);
+  const [titleEn, settitleEn,reftitleEn] = usestateref(null);
+
+  const [NameEn, setNameEn] = useState(null);
+  const [LastNameEn, setLastNameEn,refLastNameEn] = usestateref(null);
+
+  const [Mobile, setMobile,refMobile] = usestateref(null);
+  const [Email, setEmail,refEmail] = usestateref(null);
+  const [Department, setDepartment,refDepartment] = usestateref(null);
+  const [Faculty, setFaculty,refFaculty] = usestateref(null);
+  const [Major, setMajor,refMajor] = usestateref(null);
+  const [PhotoImage, setPhotoImage,refPhotoImage] = usestateref(null);
+
+  const [ReadOnly, setReadOnly,refReadOnly] = usestateref(false);
+
 
   const [confirm, setConfirm] = useState(false);
+  const [confirmLayout, setConfirmLayout] = useState(false);
+  const [dialoginfomation, setDialoginfomation] = useState(true);
+  const [dialogsuccess, setDialogsuccess] = useState(false);
+  // const [waitting, setwaitting,refwaitting] = usestateref(false);
+  const [waitting, setwaitting] = useState(false);
+  const [loadingimge, setloadingimge] = useState(false);
+  const [sendingtoprint, setsendingtoprint] = useState(false);
+  const [allowPrint, setallowPrint,refallowPrint] = usestateref(false);
+  const [allowBuild, setallowBuild,refallowBuild] = usestateref(false);
+  const [showcardImgage, setShowcardImgage,refShowcardImgage] = usestateref(false);
+  const [adminApprove, setadminApprove] = useState(false);
+  const [configPrinter, setConfigPrinter,refConfigPrinter] = usestateref([]);
 
+  const [isEditData, setIsEditData,refIsEditData] = usestateref(false);
+  var photoF;
+  var photoB;
+
+
+  const layoutName = props.history.location.state?.id
   const orgUnits = [
     {
       value: "ku",
@@ -245,7 +319,6 @@ export function Upload(props) {
       ],
     },
   ];
-
   const Input = (props) => (
     <components.Input
       {...props}
@@ -253,16 +326,488 @@ export function Upload(props) {
     />
   );
 
+  const handleClose = (e, redirect) => {
+
+    if (redirect === 'backdropClick') {
+        return false
+    }
+    else if(redirect ==='closedialog'){
+      return true
+    }
+
+};
+
+
+  async function buildCard() {
+    setwaitting(true);
+    const resultmap = await setComfirmData();
+    let resultImg =await getBase64FromUrl(post.results[0].photo)
+    const resultCombine =await combineDataAndImg(resultmap,resultImg);
+    setresultForgencard(resultCombine);
+    await requestCardimg(resultCombine);
+    setShowcardImgage(true);
+
+    setallowBuild(false);
+    setallowPrint(true);
+
+  }
+
+  async function AutobuildCard() {
+    setloadingimge(true);
+    let resultmap = await genResultmapping();
+    if(post!=null){
+      let resultImg =await getBase64FromUrl(post.results[0].photo)
+      const resultCombine =await combineDataAndImg(resultmap,resultImg);
+      setresultForgencard(resultCombine);
+      await requestCardimg(resultCombine);
+    }
+  }
+
   function togglePrint() {
     setPrint((wasOpened) => !wasOpened);
+  }
+
+   function genResultmapping() {
+    return new Promise(resolve => {
+      var dataarry={};
+      if (postmapping.results != null){
+        for (var layout in postmapping.results)
+        {
+          //if(postmapping.results[layout].layout_name === refselectmapping.current.layout_name)
+          // if(postmapping.results[layout].layout_name === selectedLayout)
+          if(postmapping.results[layout].layout_name === layoutName)
+          {
+            var keyjson= Object.keys(postmapping.results[layout].api_field_name);
+            var valuejson= Object.values(postmapping.results[layout].api_field_name);
+            setQrcodeData(postmapping.results[layout].QRCODE);
+            setEmail(post.results[0].user.email);
+            setDepartment(post.results[0].department);
+            setFaculty(post.results[0].faculty);
+            setMajor(post.results[0].major);
+            setadminApprove(postmapping.results[layout].admin_approve)
+
+            setImage(post.results[0].img_card_front);
+            setImageBack(post.results[0].img_card_back);
+            for(var key in keyjson)
+            {
+              const myObj = JSON.parse(JSON.stringify(post.results[0]));
+              dataarry[valuejson[key]]=myObj[keyjson[key]];
+
+              let columnName =keyjson[key];
+              if(columnName ==="profile_id")
+              {
+                setOpenEmployId(true);
+                setEmployId(myObj[keyjson[key]]);
+              }
+              else if(columnName ==="title_name_th")
+              {
+                setOpentitleTh(true);
+                settitleTh(myObj[keyjson[key]]);
+              }
+              else if(columnName ==="first_name_th")
+              {
+                setOpenNameTh(true);
+                setNameTh(myObj[keyjson[key]]);
+              }
+              else if(columnName ==="last_name_th")
+              {
+                setOpenLastNameTh(true);
+                setLastNameTh(myObj[keyjson[key]]);
+              }
+              else if(columnName ==="title_name_en")
+              {
+                setOpentitleEn(true);
+                settitleEn(myObj[keyjson[key]]);
+              }
+              else if(columnName ==="first_name_en")
+              {
+                setOpenNameEn(true);
+                setNameEn(myObj[keyjson[key]]);
+              }
+              else if(columnName ==="last_name_en")
+              {
+                setOpenLastNameEn(true);
+                setLastNameEn(myObj[keyjson[key]]);
+              }
+              else if(columnName ==="phone")
+              {
+                setOpenMobile(true);
+                setMobile(myObj[keyjson[key]]);
+              }
+              else if(columnName ==="title_name_th")
+              {
+                setOpenEmail(true);
+                setEmail(post.results[0].user.email);
+              }
+              else if(columnName ==="department")
+              {
+                setOpenDepartment(true);
+              }
+              else if(columnName ==="faculty")
+              {
+                setOpenFaculty(true);
+              }
+              else if(columnName ==="major")
+              {
+                setOpenMajor(true);
+              }
+              else if(columnName ==="photo")
+              {
+                setPhotoImage(post.results[0].user.photo);
+              }
+            }
+            break;
+          }
+        }
+      }
+      resolve(dataarry);
+    });
+  }
+
+  function setComfirmData() {
+    return new Promise(resolve => {
+      var dataarry={};
+      if (postmapping !=null)
+      {
+
+      if (postmapping.results != null){
+        for (var layout in postmapping.results)
+        {
+          //if(postmapping.results[layout].layout_name === refselectmapping.current.layout_name)
+          if(postmapping.results[layout].layout_name === selectedLayout)
+          {
+            var keyjson= Object.keys(postmapping.results[layout].api_field_name);
+            var valuejson= Object.values(postmapping.results[layout].api_field_name);
+
+            setEmail(post.results[0].user.email);
+            setDepartment(post.results[0].department);
+            setFaculty(post.results[0].faculty);
+            setMajor(post.results[0].major);
+
+            for(var key in keyjson)
+            {
+              let columnName =keyjson[key];
+              if(columnName ==="profile_id")
+              {
+                dataarry[valuejson[key]]=employId;
+              }
+              else if(columnName ==="title_name_th")
+              {
+                dataarry[valuejson[key]]=titleTh;
+              }
+              else if(columnName ==="first_name_th")
+              {
+                dataarry[valuejson[key]]=NameTh;
+              }
+              else if(columnName ==="last_name_th")
+              {
+                dataarry[valuejson[key]]=LastNameTh;
+              }
+              else if(columnName ==="title_name_en")
+              {
+                dataarry[valuejson[key]]=titleEn;
+              }
+              else if(columnName ==="first_name_en")
+              {
+                dataarry[valuejson[key]]=NameEn;
+              }
+              else if(columnName ==="last_name_en")
+              {
+                dataarry[valuejson[key]]=LastNameEn;
+              }
+              else if(columnName ==="phone")
+              {
+                dataarry[valuejson[key]]=Mobile;
+              }
+              else if(columnName ==="title_name_th")
+              {
+                dataarry[valuejson[key]]=Email;
+              }
+              else if(columnName ==="department")
+              {
+
+              }
+              else if(columnName ==="faculty")
+              {
+                dataarry[valuejson[key]]=Faculty;
+              }
+              else if(columnName ==="major")
+              {
+                dataarry[valuejson[key]]=Major;
+              }
+            }
+            break;
+          }
+        }
+      }
+    }
+      resolve(dataarry);
+    });
+  }
+
+  function combineDataAndImg(DataAr,imgsBase64) {
+    return new Promise(resolve => {
+      DataAr["PHOTO64_1"]=imgsBase64;
+      resolve(DataAr);
+    });
+  }
+
+  function requestCardimg(dataInput) {
+    return new Promise(resolve => {
+    var date = new Date();
+    var dateandtime = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+    let imgfs={};
+    console.log("requestCardimging");
+    axios
+      .post("http://13.212.202.194:8033/gen_card_img/", {
+        // layout_name: postmapping.results[0].layout_name,
+        with_background:true,
+        layout_name: selectedLayout,
+        tag: dateandtime,
+        input:[dataInput]
+      })
+      .then((response) => {
+        var imgf = JSON.parse(JSON.stringify(response.data.output[0]));
+
+        var images = new Image();
+        var backcard =new Image();
+
+        images.src = imgf['front'];
+        backcard.src =imgf['back'];
+
+        setImage(imgf['front']);
+        setImageBack(imgf['back']);
+
+        setImageforprint(imgf['front']);
+        setImageBackforprint(imgf['back']);
+
+        setwaitting(false);
+        setloadingimge(false);
+
+      });
+      resolve(imgfs);
+    });
+  }
+  const listOfImages = []
+
+
+  const getBase64FromUrl = async (url) => {
+    const data = await fetch(url);
+    const blob = await data.blob();
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
+      reader.onloadend = () => {
+        const base64data = reader.result;
+
+        resolve(base64data);
+      }
+    });
+  }
+  function checkedEditData(){
+
+    if(isEditData === true)
+    {
+
+      setallowBuild(true);
+      setallowPrint(false);
+
+      console.log("setallowBuild edit === true");
+      console.log(allowBuild);
+
+      console.log("setallowPrint edit === true");
+      console.log(allowPrint);
+    }
+    else if (isEditData === false)
+    {
+
+      setallowBuild(false);
+      setallowPrint(true);
+      console.log("setallowBuild edit === false");
+      console.log(allowBuild);
+
+      console.log("setallowPrint edit === false");
+      console.log(allowPrint);
+    }
+
+  }
+  const imageChosen = (e) => {
+    setSelectLayout(e);
+    if (postmapping.results != null){
+      for (var layout in postmapping.results)
+      {
+        if(postmapping.results[layout].layout_name === e)
+        {
+          setImage(postmapping.results[layout].image_Font);
+          setImageBack(postmapping.results[layout].image_Back);
+          break;
+        }
+      }
+    }
+  };
+
+  const handleemployIdChange  = (e) => {
+    setEmployId(e.target.value);
+    setIsEditData(true);
+  }
+  const handletitleThChange  = (e) => {
+    settitleTh(e.target.value);
+    setIsEditData(true);
+  }
+  const handNameThChange  = (e) => {
+    setNameTh(e.target.value);
+    setIsEditData(true);
+  }
+  const handLastNameThChange  = (e) => {
+    setLastNameTh(e.target.value);
+    setIsEditData(true);
+  }
+  const handtitleEnChange  = (e) => {
+    settitleEn(e.target.value);
+    setIsEditData(true);
+  }
+  const handNameEnChange  = (e) => {
+    setNameEn(e.target.value);
+    setIsEditData(true);
+  }
+  const handleLastNameEnChange  = (e) => {
+    setLastNameEn(e.target.value);
+    setIsEditData(true);
+  }
+  const handleMobileChange  = (e) => {
+    setMobile(e.target.value);
+    setIsEditData(true);
+  }
+  const handleEmailChange  = (e) => {
+    setEmail(e.target.value);
+    setIsEditData(true);
+  }
+  const handleDepartmentChange  = (e) => {
+    setDepartment(e.target.value);
+    setIsEditData(true);
+  }
+  const handleFacultyChange  = (e) => {
+    setFaculty(e.target.value);
+    setIsEditData(true);
+  }
+  const handleMajorChange  = (e) => {
+    setMajor(e.target.value);
+    setIsEditData(true);
+  }
+
+  const changeLayout = event => {
+    formdataJson();
+  }
+
+  const changelayoutCard =() =>{
+    setConfirmLayout(true);
+  }
+  const history = useHistory();
+
+  async function RefreshLayout (layoutname){
+    let objdata = await requestRefreshCardimg();
+  }
+  function requestRefreshCardimg() {
+    return new Promise(resolve => {
+    let imgfs={};
+    axios
+    .get(API_BASE_URL + "/v1/mappinglist", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .then((response) => {
+      setPostMapping(response.data);
+      imgfs =response.data;
+      setMappingList(response.data.results);
+      // setSelectMapping(response.data.results[0]);
+
+      if (response.data.results != null){
+        for (var layout in response.data.results)
+        {
+
+          if(response.data.results[layout].layout_name === layoutName)
+          {
+            setImage(response.data.results[layout].image_Font);
+            setImageBack(response.data.results[layout].image_Back);
+            break;
+          }
+        }
+      }
+    });
+      resolve(imgfs);
+    });
+  }
+
+
+  const confirmSelectLayout =()=>{
+    let objlayout = genResulttempLayout();
+    formdataJson();
+    history.push({pathname:"/"+ props.match.params.org+"/CropImage",state:{id:selectedLayout}});
+  }
+
+  const dialogConfirminfomation =async()=>{
+    await formdataJson();
+
+
+    if (postmapping.results != null){
+      for (var layout in postmapping.results)
+      {
+        if(postmapping.results[layout].layout_name === layoutName)
+        {
+          if(postmapping.results[layout].user_can_edit_info === true)
+          {
+            setReadOnly(false);
+          }
+          else if(postmapping.results[layout].user_can_edit_info === false)
+          {
+            setReadOnly(true);
+          }
+
+          setWhitecard(postmapping.results[layout].card_is_preprint);
+          break;
+        }
+      }
+    }
   }
 
   const currentUser = AuthService.getCurrentUser();
   AuthService.getAccessToken();
   const accessToken = localStorage.getItem("accessToken");
 
-  useEffect(() => {
-    axios
+  useEffect(async() => {
+    if(layoutName != undefined)
+    {
+      setSelectLayout(layoutName);
+    }
+    await axios
+      .get(API_BASE_URL + "/v1/mappinglist", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((response) => {
+        setPostMapping(response.data);
+        setMappingList(response.data.results);
+
+        // setSelectMapping(response.data.results[0]);
+
+       // genResultmapping();
+      });
+
+    //  axios
+    //   .get(API_BASE_URL + "/v1/configprinter", {
+    //     headers: {
+    //       Authorization: `Bearer ${accessToken}`,
+    //     },
+    //   })
+    //   .then((response) => {
+    //     setConfigPrinter(response.data);
+    //   });
+
+
+
+    await axios
       .get(API_BASE_URL + "/v1/userlist", {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -272,7 +817,7 @@ export function Upload(props) {
         setPost(response.data);
       });
 
-    axios
+      await axios
       .get("http://122.248.202.159/api/consoles/", {
         // crossdomain: true,
         // withCredentials: false,
@@ -285,7 +830,17 @@ export function Upload(props) {
         setConsoleList(response.data);
       });
 
-    axios
+      await axios
+      .get(API_BASE_URL + "/v1/configprinter", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((response) => {
+        setConfigPrinter(response.data);
+      });
+
+      await axios
       .get("http://122.248.202.159/api/printers/", {
         // crossdomain: true,
         // withCredentials: false,
@@ -297,11 +852,36 @@ export function Upload(props) {
       .then((response) => {
         setPrinterList(response.data);
       });
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (!post) return "Loading";
+  // if(data != undefined)
+  // {
+  //   setConfirmLayout(false);
+  // }
+
+
+  if (!post) return ("Loading..."
+  // <ReactLoading
+  //   type={"bars"}
+  //   color={"#03fc4e"}
+  //   height={100}
+  //   width={100}
+  // />
+  );
+
+  // console.log("postmapping.results");
+  // console.log(postmapping.results);
+  // if(postmapping.results === "")
+  // {
+  //   setConfirmLayout(true);
+  // }
+
+  // if(waitting) return (<ReactLoading
+  //   type={"bars"}
+  //   color={"#FA4B62"}
+  //   height={100}
+  //   width={100}
+  // />);
 
   const mixImage = async () => {
     const cardPlusMan = await mergeImages(
@@ -344,41 +924,282 @@ export function Upload(props) {
     setImage(cardPlusMan);
   };
 
+  function genResulttempLayout() {
+    return new Promise(resolve => {
+      var dataarry={};
+
+      if (postmapping.results != null){
+        for (var layout in postmapping.results)
+        {
+          if(postmapping.results[layout].layout_name === selectedLayout)
+          {
+            dataarry =postmapping.results[layout];
+            setImage(postmapping.results[layout].image_Font);
+            setImageBack(postmapping.results[layout].image_Back);
+            break;
+          }
+        }
+      }
+      resolve(dataarry);
+    });
+  }
+
+
+  const defaultImg = ()=>{
+
+    let im ="data:image/png;base64,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";
+    setImage(im);
+    setImageBack(im);
+  }
+
+  var daatajson ="";
+
+  async function formdataJson()
+  {
+    const resultmap = await genResultmapping();
+    //setresultSelectmap(resultmap);
+    // let resultImg =await getBase64FromUrl(post.results[0].photo)
+    // const resultCombine =await combineDataAndImg(resultmap,resultImg);
+    // await requestCardimg(resultCombine);
+  };
+  const mixImages = () => {
+    var date = new Date();
+    var dateandtime = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+    axios
+      .post("http://13.212.202.194:8033/gen_card_img/", {
+        layout_name: postmapping.results[0].layout_name,
+        tag: dateandtime,
+        input:[daatajson]
+        // input:[{
+        //   FIRSTNAME:"testname",
+        //   LASTNAME:"testlastname",
+        //   ID:"1123",
+        // }]
+      })
+      .then((response) => {
+        console.log("return fontcard");
+        var imgf = JSON.parse(JSON.stringify(response.data.output[0]));
+
+        var images = new Image();
+        var backcard =new Image();
+
+        images.src = imgf['front'];
+        backcard.src =imgf['back'];
+
+        setImage(imgf['front']);
+        setImageBack(imgf['back']);
+      });
+  };
+  const mixImagedummy = () => {
+
+    axios
+      .post("http://13.212.202.194/gen_card_img/", {
+        layout_name: "TEST LAYOUT NAME XXX",
+        tag: "TEST TAG TAG001",
+        input:[{
+        fristname:"testFieldfristName",
+        lastname:"testFiledLastName",
+        photo:"",
+      }]
+      })
+      .then((response) => {
+        setImage(response.data);
+      });
+  };
+
   if (post.results[0].photo != null && start === 0) {
-    mixImage();
+    // mixImage();
+    //formdataJson();
+    //mixImages();
+    setStart(1);
+  }
+  const onUploadToServer2 = async () => {
+    let serverHeader = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    };
+
+    const filef = await dataURLtoFile(photoF);
+    const fileb = await dataURLtoFile(photoB);
+    const data = new FormData();
+
+    data.append("ref_id", props.match.params.org+currentUser);
+    data.append("layout_name", layoutName);
+    data.append("img_card_front", filef,  props.match.params.org+currentUser+data + "_F.jpg");
+    data.append("img_card_back", fileb,  props.match.params.org+currentUser+data + "_B.jpg");
+    // put file into form data
+    axios.patch(
+      API_BASE_URL + "/v1/userlist/" + post.results[0].id + "/",
+      data,
+      serverHeader
+    );
+
+  };
+  const onUploadToServer = async () => {
+    let serverHeader = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    };
+    //let dataToUpload = `data:image/jpeg;base64,${uploaded.image}`;
+    const filef = await dataURLtoFile(imageforprint);
+    const fileb = await dataURLtoFile(imageBforprint);
+    const data = new FormData();
+
+    data.append("organizations", props.match.params.org);
+    data.append("profile_id", currentUser);
+    data.append("ref_id", props.match.params.org+currentUser);
+    data.append("layout_name", selectedLayout);
+    data.append("img_card_front", filef,  props.match.params.org+currentUser+selectedLayout + "_F.jpg");
+    data.append("img_card_back", fileb,  props.match.params.org+currentUser+selectedLayout + "_B.jpg");
+    // put file into form data
+    await axios.post(
+      API_BASE_URL + "/v1/userlistprintHistory/",
+      data,
+      serverHeader
+    );
+  };
+
+  const dataURLtoFile = (dataurl, filename) => {
+    const arr = dataurl.split(",");
+    const mime = arr[0].match(/:(.*?);/)[1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n) {
+      u8arr[n - 1] = bstr.charCodeAt(n - 1);
+      n -= 1; // to make eslint happy
+    }
+    return new File([u8arr], filename, { type: mime });
+  };
+
+  if (post.results[0].photo === null && start === 0) {
+    console.log("mixImagedummy test");
+    //mixImagedummy();
     setStart(1);
   }
 
-  const sendPrint = () => {
-    axios
-      .post("http://122.248.202.159/api/jobs/", {
-        console: selectedConsole.id,
-        printer: selectedPrinter.id,
-        front_card: image,
-        back_card:
-          "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAdwB3AAD/4QDARXhpZgAATU0AKgAAAAgABgEaAAUAAAABAAAAVgEbAAUAAAABAAAAXgEoAAMAAAABAAIAAAExAAIAAAARAAAAZgEyAAIAAAAUAAAAeIdpAAQAAAABAAAAjAAAAAAAAAB3AAAAAQAAAHcAAAABcGFpbnQubmV0IDQuMi4xNgAAMjAyMTowMToyNSAxMTo0NTo0OQAAA6ABAAMAAAAB//8AAKACAAQAAAABAAAC5qADAAQAAAABAAACLAAAAAAAAP/hCahodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+DQo8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJBZG9iZSBYTVAgQ29yZSA1LjMtYzAxMSA2Ni4xNDU2NjEsIDIwMTIvMDIvMDYtMTQ6NTY6MjcgICAgICAgICI+DQogIDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+DQogICAgPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdEV2dD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlRXZlbnQjIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1sbnM6cGhvdG9zaG9wPSJodHRwOi8vbnMuYWRvYmUuY29tL3Bob3Rvc2hvcC8xLjAvIiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCBDUzYgKFdpbmRvd3MpIiB4bXA6Q3JlYXRlRGF0ZT0iMjAyMS0wMS0yNVQxMTo0MzowMiswNzowMCIgeG1wOk1ldGFkYXRhRGF0ZT0iMjAyMS0wMS0yNVQxMTo0NTo0OSswNzowMCIgeG1wOk1vZGlmeURhdGU9IjIwMjEtMDEtMjVUMTE6NDU6NDkrMDc6MDAiIGRjOmZvcm1hdD0iaW1hZ2UvanBlZyIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDpBNkZDRTRFM0M2NUVFQjExQjQ4REQ4NURBOThBNzM1RiIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDpBM0ZDRTRFM0M2NUVFQjExQjQ4REQ4NURBOThBNzM1RiIgeG1wTU06T3JpZ2luYWxEb2N1bWVudElEPSJ4bXAuZGlkOkEzRkNFNEUzQzY1RUVCMTFCNDhERDg1REE5OEE3MzVGIiBwaG90b3Nob3A6Q29sb3JNb2RlPSIzIj4NCiAgICAgIDx4bXBNTTpIaXN0b3J5Pg0KICAgICAgICA8cmRmOlNlcT4NCiAgICAgICAgICA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0iY3JlYXRlZCIgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDpBM0ZDRTRFM0M2NUVFQjExQjQ4REQ4NURBOThBNzM1RiIgc3RFdnQ6d2hlbj0iMjAyMS0wMS0yNVQxMTo0MzowMiswNzowMCIgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIC8+DQogICAgICAgICAgPHJkZjpsaSBzdEV2dDphY3Rpb249InNhdmVkIiBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOkE0RkNFNEUzQzY1RUVCMTFCNDhERDg1REE5OEE3MzVGIiBzdEV2dDp3aGVuPSIyMDIxLTAxLTI1VDExOjQ1OjM0KzA3OjAwIiBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBQaG90b3Nob3AgQ1M2IChXaW5kb3dzKSIgc3RFdnQ6Y2hhbmdlZD0iLyIgLz4NCiAgICAgICAgICA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6QTVGQ0U0RTNDNjVFRUIxMUI0OEREODVEQTk4QTczNUYiIHN0RXZ0OndoZW49IjIwMjEtMDEtMjVUMTE6NDU6NDkrMDc6MDAiIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIFBob3Rvc2hvcCBDUzYgKFdpbmRvd3MpIiBzdEV2dDpjaGFuZ2VkPSIvIiAvPg0KICAgICAgICAgIDxyZGY6bGkgc3RFdnQ6YWN0aW9uPSJjb252ZXJ0ZWQiIHN0RXZ0OnBhcmFtZXRlcnM9ImZyb20gYXBwbGljYXRpb24vdm5kLmFkb2JlLnBob3Rvc2hvcCB0byBpbWFnZS9qcGVnIiAvPg0KICAgICAgICAgIDxyZGY6bGkgc3RFdnQ6YWN0aW9uPSJkZXJpdmVkIiBzdEV2dDpwYXJhbWV0ZXJzPSJjb252ZXJ0ZWQgZnJvbSBhcHBsaWNhdGlvbi92bmQuYWRvYmUucGhvdG9zaG9wIHRvIGltYWdlL2pwZWciIC8+DQogICAgICAgICAgPHJkZjpsaSBzdEV2dDphY3Rpb249InNhdmVkIiBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOkE2RkNFNEUzQzY1RUVCMTFCNDhERDg1REE5OEE3MzVGIiBzdEV2dDp3aGVuPSIyMDIxLTAxLTI1VDExOjQ1OjQ5KzA3OjAwIiBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBQaG90b3Nob3AgQ1M2IChXaW5kb3dzKSIgc3RFdnQ6Y2hhbmdlZD0iLyIgLz4NCiAgICAgICAgPC9yZGY6U2VxPg0KICAgICAgPC94bXBNTTpIaXN0b3J5Pg0KICAgICAgPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6QTVGQ0U0RTNDNjVFRUIxMUI0OEREODVEQTk4QTczNUYiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6QTNGQ0U0RTNDNjVFRUIxMUI0OEREODVEQTk4QTczNUYiIHN0UmVmOm9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDpBM0ZDRTRFM0M2NUVFQjExQjQ4REQ4NURBOThBNzM1RiIgLz4NCiAgICA8L3JkZjpEZXNjcmlwdGlvbj4NCiAgPC9yZGY6UkRGPg0KPC94OnhtcG1ldGE+DQo8P3hwYWNrZXQgZW5kPSJyIj8+/9sAQwACAQEBAQECAQEBAgICAgIEAwICAgIFBAQDBAYFBgYGBQYGBgcJCAYHCQcGBggLCAkKCgoKCgYICwwLCgwJCgoK/9sAQwECAgICAgIFAwMFCgcGBwoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoK/8AAEQgCFgFUAwEhAAIRAQMRAf/EAB8AAAEFAQEBAQEBAAAAAAAAAAABAgMEBQYHCAkKC//EALUQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5+v/EAB8BAAMBAQEBAQEBAQEAAAAAAAABAgMEBQYHCAkKC//EALURAAIBAgQEAwQHBQQEAAECdwABAgMRBAUhMQYSQVEHYXETIjKBCBRCkaGxwQkjM1LwFWJy0QoWJDThJfEXGBkaJicoKSo1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoKDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uLj5OXm5+jp6vLz9PX29/j5+v/aAAwDAQACEQMRAD8A/fZSBw33qyfEHijT9CXZK3mTMuY4UHt1z254/l3oirkx1OR1PxnrupP8t0YEzlVg+XH49f6e1ZTu8jtJIxZmOWZjyT61ppHRFCUcYxii14spd7f1cPxb9KPxb9Kn5h8g/Fv0o/Fv0o+YfIPxb9KPxb9KPmHyD8W/Sj8W/Sj5h8g/Fv0o/Fv0o+YfIPxb9KPxb9KPmHyD8W/Sj8W/Sj5h8g/Fv0o/Fv0o+YfIPxb9KPxb9KPmHyD8W/Sj8W/Sj5h8g/Fv0o/Fv0o+YfIPxb9KPxb9KPmHyD8W/Sj8W/Sj5h8g/Fv0o/Fv0o+YfIPxb9KPxb9KPmHyD8W/Sj8W/Sj5h8gx/L0q1Zavq2m4Syv5o9pJCBjtz7g8fpUcsn8Wo4yjHSW50Hh/4jOWW21yBVGB+/jz1x/EB+PT8sV10M0dxEs8UisrLlWVsgg9MGlHWVhSVtSxRVEmD4m8SR+H7XIQvPL/AKlW6fU/Tr754rz+eea5ma4uJGeR2yzMeSa0UeVByyitRtFABS54rSHLZ37fqils9bf8OhKKz90nXuFFHuh8woo90PmFFHuh8woo90PmFFHuh8woo90PmFFHuh8woo90PmFFHuh8woo90PmFFHuh8woo90PmFFHuh8woo90PmFFHuhr3Cil7wWUd9QODnIHT0re8G+KX0u6TTbuUfZZWO1m48lvXvxn1+vrmJR10Khs7nf29xb3cK3FrOkkbfdkjYMp/EUUEnmnizV21jWpZVl3RRt5cO0jG0d+PXrWbWr3KlpKwUUiQooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooA7zwLqFsfDkMO+XdE7q20HGdxb+RFFccpWk9TVRk1ojg6K7DJtvVhRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAWrDXNV06NrexvGjTfnauOTgc0VHJGWrNPaSjovyKtFWZhRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAIrqxYA/dOG/KigBaKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooARVVSxA+8ct+VFAC0UAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQBHD/rJv+un/ALKKKSGySimIKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigCOH/WTf9dP/ZRRSQ2SUUxBRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUARw/wCsm/66f+yiikhskopiCigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAjh/1k3/XT/wBlFFJDZJRTEFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQBHD/rJv8Arp/7KKKSGySimIKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigCOH/AFk3/XT/ANlFFJDZJRTEFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQBHD/rJv+un/soopIbJKKYgooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKAI4f9ZN/wBdP/ZRRSQ2SUUxBRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFADpLfyUjkz/rl3/Tkr/SikipbjaKZIUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFAE1z/qbf8A64n/ANDaikipb/d+RDRTJCigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAmuf9Tb/9cT/6G1FJFS3+4hopkhRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUATXP+pt/+uJ/9DaikipbkNFMkKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigCa5/1Nv/1xP/obUUkVLchopkhRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUATXP+pt/+uJ/9DaikipbkNFMkKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigCa5/1Nv8A9cT/AOhtRSRUtyGimSFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQBNc/6m3/AOuJ/wDQ2opIqW5DRTJCigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAmuf9Tb/wDXE/8AobUUkVLchopkhRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUATXP8Aqbf/AK4n/wBDaikipbkNFMkKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigCa5/wBTb/8AXE/+htRSRUtyGimSFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQBNc/6m3/64n/0NqKSKluQ0UyQooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKAJrn/U2//XE/+htRSRUtyGimSFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQBNc/6m3/64n/0NqKSKluQ0UyQooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKAJrn/U2/wD1xP8A6G1FJFS3IaKZIUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFAE1z/qbf8A64n/ANDaikipbkNFMkKKACigAooAKKACigAooAKKAML4m/EzwF8Gfh9rHxW+KPii10Tw74f0+S91nVr1iIrS3QZeRsAnAHoCa8y/Zw/4KN/sL/td+KLjwP8As2/tR+EfF2t2tqbmXRtN1IC7MIIDSLDIFd0UkbmUELuGcZGQD2qigDgh+0h8Nj+1A37Igmvf+EwXwEPGBj+y/wCj/wBmm9NlnzM/6zzgflx05z2rvaAPDfj7/wAFLf2DP2XPiCPhT8e/2pPCvhzxItulxcaNdXjST2kLgFJLhYlb7MjBlIaXYCGBHBFezeHfEfh/xfoFj4r8Ja7Z6ppepWkd1pupaddJPb3cEihkljkQlXRlIYMpIIIIOKALlFAHCfAz9ov4b/tDt4yX4cT3kn/CC+O9Q8I699stfK26lZiMzKnJ3oPNTDcZ544ru6ACigAooAKKACigAooAKKACigCa5/1Nv/1xP/obUUkVLchopkhRQAUUAFFABRQAUUAFFABRQB8y/wDBZz/lFP8AH3/smepf+iq+Vb/xd+0jo37X/wCxj8c/21fgL4b8G+DdJuJvCfgXXPAXiptaurvXta0j7LaQai01vavbWskaSsFiSUecE3sF6gGb+3Z+3B8S/wBnq58efHv4Nft4fGLxxrng34kLZN4e0H4Lo3w50i1GqRQS6Df6gNPdTdRQymF7n7cJDOU+SIkRr9EeMdb/AGjf2yv2/vir+zR4B/aq8U/CPwj8F/Cvh13bwPYabJqGuaxq0VzdLPPJf2twBawxQIghRV8xmky/G1QD5Y/4KE/tcfGT9gj/AIKmeEdTm13TNe8Za9+yPpXg+++JOtaO9l4f0bVLrxVHC3iHU4oPN+x2Kyh28sFlEk0MO8KxcfqX8EPAviz4afCbQfA3jv4sap461rT7BU1XxfrNvBDcarcElnmMcCrHEpZiFRR8iBVLMQWIB8mf8EHNH0Hxd+w5qfxr8V2Vre+PviN8SPFV98VL6eNZLi41FNZvLZbeYnJ2R20cKpGflVG4ADGpP25fE+ieB/ijpPwK+Gv7YHxa8BSab4Gt5/D3wj/Zz+EMOsXln/pFxEmqXxTT7vyrAkRQpAfsse6CQ+Y+790AeMWn7a/7dH7TH7D/AOxr4n+F/wC0Da+C/HPxq8eXvh3xf4sXwrbzxywQ2WrRyXQs3GxZv9EFwkYKIJggI2ApXqmtaV+1N4y/bC0X/gmz4b/bo8d6HpPgX4Q/8Jr4l+I1rpulP4k8S3d5rNzbWVrI81m9ukFvHAd7RQKZTtVsZOEBe/4IaeHPHXhD4c/tC+Gvid42j8SeIbP9q/xims+IIrBbVdRuMWRe4EKfLDvJ3eWuVTO0EgA19vUwCigAooAKKACigAooAKKACigCa5/1Nv8A9cT/AOhtRSRUtyGimSFFABRQAUUAFFABRQAUUAFFAHC/tNfs/wDg39qv9n7xh+zf8Q9R1Kz0PxpoNxpOqXWjzRx3UMMq7WaJpEdA46gsjD1Brxf4b/8ABK74deGvHPgrxx8X/wBpb4ufFj/hW99Hf+BdF+IniCyfTdHvYoTDFdpb2FlarLPGjMEebzNm4lcHmgDl/H3/AARS+B/j3wz42+Fg/aP+LujfDzx14ouvEupfDnQ9dsINMh1a4uVupbhXNk1zInnIsgt5ZpIVYZ2HCBPRPjz/AME6/B/xe+O8/wC0t8O/2gfiV8KfGWqeHodC8Uat8N9Ws4Br2nxOzwpcxXdrcR+bFvcR3CKkqKxXcQFAALFz/wAE2/2ctc8c/wDCZePo9a8WQSfA+D4V6ho3ivUBfQahosdz9o864kkQ3Et2z43TGXkgNgON1ehfsy/ATT/2YPghoPwH0T4ieJ/FGm+G7drXSdS8YX0VzfR2gcmG3aWOKPzEhjKxIWUvsRdzMRmgDxHxT/wSg+H/APwtzxV8V/gT+1N8ZvhEvjzVH1Pxx4b+G/iy3t9N1XUJDmW9EV1azm1uJf8AlpLbtGWxng81Z1v/AIJW/DOL4gaT8TPhN+0V8WvAOsWvgWz8H69qHhvxPBPdeIdJtpHkiS6udQtrmdZw7t/pMEkUuGIDAhCoBp/DT/gmH8BPhT8Ofgn8LvDHirxY2mfAfxbe+IPB7XeoQSTXU9yl8jRXbmD97Gov5cbNj/ImWb5t2x+0l+wX4Q/aA+MGi/tD+GPjZ4++GXj7R/D83h9vFfw81K0huNQ0eWZZ2sLhLy2uIpI1lBkRgivHI24N2oA1/wBjL9ij4T/sL+BPEXw8+D+t+JL+x8TeMrzxNqE3inWDf3X265igSY+eyiSQMYA5aQu5d3Jc5AHr9ABRQAUUAFFABRQAUUAFFABRQBNc/wCpt/8Arif/AENqKSKluQ0UyQooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKAJrn/AFNv/wBcT/6G1FJFS3IaKZIUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFAE1z/qbf/rif/Q2opIqW5DRTJCigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAmuf9Tb/9cT/6G1FJFS3IaKZIUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFAE1z/qbf/rif/Q2opIqW5DRTJCigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAmuf9Tb/APXE/wDobUUkVLchopkhRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUATXP+pt/wDrif8A0NqKSKluQ0UyQooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKAJrn/U2/8A1xP/AKG1FJFS3IaKZIUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFAE1z/AKm3/wCuJ/8AQ2opIqW5DRTJCigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAmuf8AU2//AFxP/obUUkVLchopkhRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUATXP+pt/+uJ/9DaikipbkNFMkKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigCa6/1Fv/1xP/obUUkVLf7iNJQEw9sud2MnPPX3/pS+YP8An2j/AO+j/jWDo1paqpJXe1o//Im0p04WXIn/AOBf5i+Yn/PvH/30f8aaZFIx9nQfif8AGhU5f8/ZfdH/AORJ9pS/kX/k3+Y2iugxCigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKADe7fK3ReF+nX+ZNFBUgHeioju/66ky6f12CirAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAHeioju/66h2/rsFFWAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAIqqpYgfeOW/KigBR3oqI7v+uodv67BRVgFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFAEcP+sm/wCun/soopIbJB3oqY7v+uou39dgoqwCigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigCOH/WTf9dP/ZRRSQ2SDvRUx3f9dRdv67BRVgFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFAEcP+sm/66f+yiikhskHeipju/66i7f12CirAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKAI4f9ZN/10/8AZRRSQ2SDvRUx3f8AXUXb+uwUVYBRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQBHD/rJv+un/ALKKKSGyQd6KmO7/AK6i7f12CirAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKAI4f8AWTf9dP8A2UUUkNkg70VMd3/XUXb+uwUVYBRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQBHD/AKyb/rp/7KKKSGyQd6KmO7/rqLt/XYKKsAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAjh/1k3/AF0/9lFFJDZIO9FTHd/11F2/rsFFWAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUARw/6yb/AK6f+yiikhskHeipju/66i7f12CirAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKAI4f9ZN/10/9lFFJDZIO9FTHd/11F2/rsFFWAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUARw/6yb/rp/7KKKSGyQd6KmO7/rqLt/XYKKsAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAjh/1k3/XT/wBlFFJDZIO9FTHd/wBdRdv67BRVgFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFAEcP+sm/66f8AsooqYfCipfESDvRSju/66k9v67BRVgFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFAEcP+sm/66f+yiipp/CipfESbeyj/PNFEevzCXQKKokKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKAI4s75M/wDPT+goqY/CipfEWLqGO0v5bIybvLkZSduMjkfrj/Co6Uf0CW/zCirJCigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigDU8P+F4tatJL1dSWL98Rt8vdngHPUev6UVhzuOiOn2an7zTL3xG0iWz1ddWTcY7hfmP8AdYDGOnHGMdzhq52rp9jCXwL8QorQkKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKKACigAooAKUKXdYo1Znk4VVXLN2+v5d6mUre6VT3uem+H9IGmaPb2LDc0afM27+I8nHtkmiuR0+Z3K5rD9T0+DV7OSyuwdki4bbwfUH6g4x7155rmgX2h3PlXEZ8tn/dyD7rj/2VvryPpyd46NW6Dp2s0+pSUbu9JWxkFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAFFABRQAUUAKocvsjXczHC+vt/nnn8a7HwV4SfT9ur6ou2bGIof7gPc+5/QdfbGcrs0j7sLnW7l9aKozFIzwarX9laXcP2e+hWWNsfI6gjjvQCdtTmNU+GcJDSaTqBjLElY5l3LnPr2AHqCeOtcxq+l3GkXn2O5eNmCg/ISVx+OKzjLmduptrKN3siuSp7UmB71v7xnzBge9GB70e8HMGB70YHvR7wcwYHvRge9HvBzBge9GB70e8HMGB70YHvR7wcwYHvRge9HvBzBge9GB70e8HMGB70YHvR7wcwYHvRge9HvBzBge9GB70e8HMGB70YHvR7wcwYHvRge9HvBzBge9GB70e8HMGB70YHvR7wcwYHvRge9HvBzBge9GB70e8HMGf8AP41vaJ4F1HVrWK+e+hjjkjyGVSWGPbj+dRUlb4tSor3Wzo9B8LaTohW6gRpJGwfNmxkZOOMdMnPPXHHNbo+VOKmO1yZdh1FUSf/Z",
-        name: "test",
-        status_message: "",
-        status: 0,
-        status_name: "",
-        submitted_by: currentUser,
-        card_layout: "",
-      })
-      .then((response) => {
-        setConfirm(true);
-      });
+   const sendPrint = async() => {
+
+    if (whitecard === true)
+    {
+      setsendingtoprint(true);
+      var date = new Date();
+      var dateandtime = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+      await axios
+        .post("http://13.212.202.194:8033/gen_card_img/", {
+          // layout_name: postmapping.results[0].layout_name,
+          with_background: false,
+          layout_name: selectedLayout,
+          tag: dateandtime,
+          input:[resultforgencard]
+        })
+        .then((response) => {
+          console.log("return fontcard");
+          var imgf = JSON.parse(JSON.stringify(response.data.output[0]));
+          photoF = imgf['front'];
+          photoB = imgf['back'];
+          setImageforprint(imgf['front']);
+          setImageBackforprint(imgf['back']);
+          setsendingtoprint(false);
+          //setwaitting(false);
+        });
+    }
+
+    if (adminApprove === true)
+    {
+      //onUploadToServer();
+      onUploadToServer2();
+    }
+    else if(adminApprove === false)
+    {
+
+      photoF = await getBase64FromUrl(image);
+      photoB = await getBase64FromUrl(imageB);
+      console.log("photoF");
+      console.log(photoF);
+      console.log("photoB");
+      console.log(photoB);
+
+     let printerOption ;
+
+     if(configPrinter.results[0].printer_type === 0)
+     {
+      printerOption = "auto";
+     }
+     else if(configPrinter.results[0].printer_type === 1)
+     {
+      printerOption = "manual";
+     }
+
+      await axios
+         .post("http://122.248.202.159/api/jobs/", {
+           console: configPrinter.results[0].consoleID,
+           printer: configPrinter.results[0].printer_ID,
+           print_option:printerOption,
+           front_card: photoF,
+           back_card:photoF,
+           name: "send to ptint "+selectedLayout+configPrinter.results[0].printer_ID,
+           submitted_by: currentUser,
+           card_layout: selectedLayout,
+         })
+         .then((response) => {
+           setConfirm(true);
+         });
+    }
+    if(qrcodeData == null)
+    {
+      goHistory();
+    }
+    else if(qrcodeData != null)
+    {
+      setDialogsuccess(true);
+    }
   };
+  const goHistory =()=>{
+    history.push({pathname:"/"+ props.match.params.org+"/History",state:{id:selectedLayout}});
+  }
 
   return (
     <>
       <div className="relative mt-12 sm:mt-4 lg:mt-12">
         <div className="lg:grid lg:grid-flow-row-dense lg:grid-cols-2 lg:gap-8 lg:items-center">
+          {/* {showcardImgage && */}
+
           <div className="mt-10 -mx-4 relative lg:mt-0 lg:col-start-1">
-            {isFront ? (
-              <img className="mx-auto" src={image} alt="" />
-            ) : (
-              <img className="mx-auto" src={templateDZ_Back} alt="" />
-            )}
+
+          {loadingimge && (
+            <div className="justify-items-center">
+            <p className="relative" >
+            <svg className="animate-spin h-5 w-5 mr-3 " viewBox="0 0 24 24">
+            </svg>
+            Loading...
+          </p>
+            </div>
+          )}
+              {
+                isFront ? (
+                  <img className="mx-auto" src={image} alt="" />
+                ) : (
+                  <img className="mx-auto" src={imageB} alt="" />
+              )}
+
+            {/* <div className="px-4 py-5 bg-white sm:p-6">
+                <p className="block text-gray-700 text-sm font-medium">
+                  Layout
+                </p>
+                <Select
+                  menuPortalTarget={document.querySelector("body")}
+                  defaultValue={selectedMapping}
+                  // onChange= {setSelectMapping}
+                  onChange= {changeLayout}
+                  options={mappingList ? mappingList : []}
+                  components={{ Input }}
+                  getOptionValue={(option) => option.layout_name}
+                  getOptionLabel={(option) => option.layout_name}
+                  />
+            </div> */}
             <div className="flex justify-center mt-2 space-x-5">
               <span className="relative z-0 inline-flex shadow-sm rounded-md">
                 <button
@@ -399,15 +1220,34 @@ export function Upload(props) {
                   Back Card
                 </button>
               </span>
-              <button
+
+              {/* <button
+                type="button"
+                onClick={() => changelayoutCard()}
+                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                {"Change Type Card"}
+              </button> */}
+              {/* <button
+                type="button"
+                onClick={() => buildCard()}
+                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                {"Build Card"}
+              </button> */}
+
+              {/* <button
                 type="button"
                 onClick={() => togglePrint(true)}
                 className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 {print ? "Information" : "Print Card"}
-              </button>
+              </button> */}
+
             </div>
+
           </div>
+          {/* } */}
           <div className="lg:col-start-2 md:mt-4 lg:mt-0">
             <div className="shadow overflow-hidden sm:rounded-md">
               {print ? (
@@ -484,6 +1324,20 @@ export function Upload(props) {
                       </div>
                       <div className="col-span-6">
                         <p className="block text-gray-700 text-sm font-medium pb-2">
+                          Printer Option
+                        </p>
+                        <Select
+                          menuPortalTarget={document.querySelector("body")}
+                          defaultValue={selectedPrinterOption}
+                          onChange={setSelectPrinterOption}
+                          options={printerOptionList ? printerOptionList : []}
+                          components={{ Input }}
+                          getOptionValue={(option) => option.type}
+                          getOptionLabel={(option) => option.type}
+                        />
+                      </div>
+                      <div className="col-span-6">
+                        <p className="block text-gray-700 text-sm font-medium pb-2">
                           Printers
                         </p>
                         <Select
@@ -507,81 +1361,179 @@ export function Upload(props) {
                       Print Card
                     </button>
                   </div>
+
                 </>
               ) : (
                 <>
                   <div className="px-4 py-5 bg-white sm:p-6">
-                    <div className="grid gap-6 grid-cols-6">
+                    <div className="grid grid-cols-3 gap-4 ">
+
+                      {openemployId && (
                       <div className="col-span-6 sm:col-span-4">
                         <p className="block text-gray-700 text-sm font-medium">
                           Employee/Student ID
                         </p>
                         <input
-                          readOnly
+                          readOnly= {ReadOnly}
                           type="text"
-                          value={currentUser}
+                          value={currentUser} onChange={handleemployIdChange}
+                          className="block mt-1 w-full border-gray-300 focus:border-blue-500 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
+                        />
+                      </div>)}
+
+
+                      {opentitleTh && (
+                        <div className="col-span-5 sm:col-span-3 lg:col-span-2">
+                          <p className="block text-gray-700 text-sm font-medium">
+                            Title.
+                          </p>
+                          <input
+                            readOnly= {ReadOnly}
+                            type="text"
+                            value={titleTh} onChange={handletitleThChange}
+                            className="block mt-1 w-full border-gray-300 focus:border-blue-500 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
+                          />
+                        </div>
+                        )}
+
+                        {openNameTh && (
+                          <div className="col-span-6 sm:col-span-2">
+                          <p className="block text-gray-700 text-sm font-medium">
+                          First name TH
+                          </p>
+                          <input
+                            readOnly= {ReadOnly}
+                            type="text"
+                            value={NameTh} onChange={handNameThChange}
+                            className="block mt-1 w-full border-gray-300 focus:border-blue-500 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
+                          />
+                        </div>
+                        )}
+
+                      {openLastNameTh && (
+                        <div className="col-span-6 sm:col-span-2">
+                        <p className="block text-gray-700 text-sm font-medium">
+                          Last name TH
+                        </p>
+                        <input
+                          readOnly= {ReadOnly}
+                          type="text"
+                          value={LastNameTh} onChange={handLastNameThChange}
+                          className="block mt-1 w-full border-gray-300 focus:border-blue-500 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
+                        />
+                        </div>
+                      )}
+
+                      {opentitleEn && (
+                        <div className="col-span-6 sm:col-span-6 lg:col-span-2">
+                        <p className="block text-gray-700 text-sm font-medium">
+                          Title
+                        </p>
+                        <input
+                          readOnly= {ReadOnly}
+                          type="text"
+                          value={titleEn} onChange={handtitleEnChange}
                           className="block mt-1 w-full border-gray-300 focus:border-blue-500 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
                         />
                       </div>
-                      <div className="col-span-6 sm:col-span-3">
+                      )}
+
+                      {openNameEn && (
+                        <div className="col-span-6 sm:col-span-2">
                         <p className="block text-gray-700 text-sm font-medium">
                           First name
                         </p>
                         <input
-                          readOnly
+                          readOnly= {ReadOnly}
                           type="text"
-                          value={post.results[0].first_name_en}
+                          value={NameEn} onChange={handNameEnChange}
                           className="block mt-1 w-full border-gray-300 focus:border-blue-500 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
                         />
                       </div>
+                      )}
 
-                      <div className="col-span-6 sm:col-span-3">
+                      {openLastNameEn && (
+                        <div className="col-span-6 sm:col-span-2">
                         <p className="block text-gray-700 text-sm font-medium">
                           Last name
                         </p>
                         <input
-                          readOnly
+                          readOnly= {ReadOnly}
                           type="text"
-                          value={post.results[0].last_name_en}
+                          value={LastNameEn} onChange={handleLastNameEnChange}
                           className="block mt-1 w-full border-gray-300 focus:border-blue-500 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
                         />
                       </div>
+                      )}
 
-                      <div className="col-span-6 sm:col-span-6 lg:col-span-2">
+                      {openMobile && (
+                        <div className="col-span-6 sm:col-span-6 lg:col-span-2">
                         <p className="block text-gray-700 text-sm font-medium">
                           Mobile No.
                         </p>
                         <input
-                          readOnly
+                          readOnly= {ReadOnly}
                           type="text"
-                          value={post.results[0].phone}
+                          value={Mobile} onChange={handleMobileChange}
                           className="block mt-1 w-full border-gray-300 focus:border-blue-500 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
                         />
                       </div>
+                      )}
 
+                      {openEmail && (
                       <div className="col-span-6 sm:col-span-4">
                         <p className="block text-gray-700 text-sm font-medium">
                           Email address
                         </p>
                         <input
-                          value={post.results[0].user.email}
-                          readOnly
+                          value={Email} onChange={handleEmailChange}
+                          readOnly = {ReadOnly}
                           type="text"
                           className="block mt-1 w-full border-gray-300 focus:border-blue-500 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
                         />
                       </div>
+                      )}
 
-                      <div className="col-span-6">
+                      {openDepartment && (
+                        <div className="col-span-6">
                         <p className="block text-gray-700 text-sm font-medium">
-                          Department / Faculty
+                          Department
                         </p>
                         <input
-                          readOnly
+                          readOnly= {ReadOnly}
                           type="text"
-                          value={post.results[0].faculty}
+                          value={Department} onChange={handleDepartmentChange}
                           className="block mt-1 w-full border-gray-300 focus:border-blue-500 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
                         />
                       </div>
+                      )}
+                      {openFaculty && (
+                        <div className="col-span-6">
+                        <p className="block text-gray-700 text-sm font-medium">
+                          Faculty
+                        </p>
+                        <input
+                          readOnly= {ReadOnly}
+                          type="text"
+                          value={Faculty} onChange={handleFacultyChange}
+                          className="block mt-1 w-full border-gray-300 focus:border-blue-500 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
+                        />
+                      </div>
+                      )}
+
+                      {openMajor && (
+                        <div className="col-span-6">
+                        <p className="block text-gray-700 text-sm font-medium">
+                          Major
+                        </p>
+                        <input
+                          readOnly= {ReadOnly}
+                          type="text"
+                          value={Major} onChange={handleMajorChange}
+                          className="block mt-1 w-full border-gray-300 focus:border-blue-500 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
+                        />
+                      </div>
+                      )}
 
                       <div className="col-span-6 sm:col-span-6 lg:col-span-2">
                         <p className="block text-gray-700 text-sm font-medium">
@@ -609,11 +1561,15 @@ export function Upload(props) {
                     </div>
                   </div>
                   <div className="px-4 py-3 text-center bg-gray-100 sm:px-6">
+                    <Collapse isOpened={!allowPrint} high={"auto"}>
                     <div className="flex items-center justify-center col-span-2">
                       <input
                         id="accept_tos"
                         name="accept_tos"
                         type="checkbox"
+                        defaultChecked={checked}
+                        // onChange={() => setChecked(!checked)}
+                        onChange={checkedEditData}
                         className="h-8 w-8 text-indigo-600 focus:ring-indigo-500 border-gray-700 rounded"
                       ></input>
                       <label className="ml-2 block text-sm font-medium text-gray-700">
@@ -621,12 +1577,41 @@ export function Upload(props) {
                         policy
                       </label>
                     </div>
-                    <Link
+                    {/* <Link
                       to={"/" + props.match.params.org + "/CropImage"}
                       className="inline-flex justify-center px-4 py-2 text-white text-3xl font-medium bg-rose-600 hover:bg-rose-500 border border-transparent rounded-full focus:outline-none shadow-sm focus:ring-rose-500 focus:ring-offset-2 focus:ring-2"
                     >
                       Upload Photo
-                    </Link>
+                    </Link> */}
+
+                   <Collapse isOpened={allowBuild} high={"auto"}>
+                    <button class ="disabled:opacity-50"
+                    type="button"
+                    disabled={!allowBuild}
+                    onClick={() => buildCard()}
+                    className="inline-flex justify-center px-4 py-2 text-white text-3xl font-medium bg-rose-600 hover:bg-rose-500 border border-transparent rounded-full focus:outline-none shadow-sm focus:ring-rose-500 focus:ring-offset-2 focus:ring-2">
+                      {"Comfirm & Build Card"}
+                    </button>
+                   </Collapse>
+                    </Collapse>
+
+                   <Collapse isOpened={allowPrint} high={"auto"}>
+                   {/* <button
+                    type="button"
+                    onClick={() => togglePrint(true)}
+                    className="inline-flex justify-center px-4 py-2 text-white text-3xl font-medium bg-rose-600 hover:bg-rose-500 border border-transparent rounded-full focus:outline-none shadow-sm focus:ring-rose-500 focus:ring-offset-2 focus:ring-2"
+                    >
+                    {print ? "Information" : "Print Card"}
+                    </button> */}
+                    <button
+                    type="button"
+                    onClick={() => sendPrint()}
+                    className="inline-flex justify-center px-4 py-2 text-white text-3xl font-medium bg-rose-600 hover:bg-rose-500 border border-transparent rounded-full focus:outline-none shadow-sm focus:ring-rose-500 focus:ring-offset-2 focus:ring-2"
+                    >
+                     Print
+                    </button>
+                   </Collapse>
+
                   </div>
                 </>
               )}
@@ -678,17 +1663,173 @@ export function Upload(props) {
                     />
                   </div>
                   <div className="mt-3 text-center sm:mt-5">
-                    <Dialog.Title
+                      <Dialog.Title
                       as="h3"
                       className="text-lg leading-6 font-medium text-gray-900"
                     >
                       Print Successful
                     </Dialog.Title>
+
+                      <div className="mt-2">
+                        <p className="text-sm text-gray-500">
+                            Your photo will be printed.
+                        </p>
+                      </div>
+                  </div>
+                </div>
+                  <div className="mt-5 sm:mt-6">
+                  <button
+                    type="button"
+                    className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
+                    onClick={() => {
+                      setallowPrint(false);
+                      togglePrint(false);
+                      setConfirm(false);
+                    }}
+                  >
+                    Confirm
+                  </button>
+                </div>
+
+              </div>
+            </Transition.Child>
+          </div>
+        </Dialog>
+      </Transition.Root>
+      <Transition.Root show={sendingtoprint} as={Fragment}>
+        <Dialog
+          as="div"
+          className="fixed z-10 inset-0 overflow-y-auto"
+          onClose={(event, reason) => {
+            handleClose(event, reason);
+        }}
+        >
+          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <Dialog.Overlay className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+            </Transition.Child>
+
+            {/* This element is to trick the browser into centering the modal contents. */}
+            <span
+              className="hidden sm:inline-block sm:align-middle sm:h-screen"
+              aria-hidden="true"
+            >
+              &#8203;
+            </span>
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              enterTo="opacity-100 translate-y-0 sm:scale-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+              leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+            >
+              <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6">
+                <div>
+                  <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+                    <CheckIcon
+                      className="h-6 w-6 text-green-600"
+                      aria-hidden="true"
+                    />
+                  </div>
+                  <div className="mt-3 text-center sm:mt-5">
+
+                    <Dialog.Title
+                      as="h3"
+                      className="text-lg leading-6 font-medium text-gray-900"
+                    >
+                      Sending to printer.
+                    </Dialog.Title>
+                      <div className="mt-2">
+                        <p className="text-sm text-gray-500">
+                            Your card sending to printer wait a moment...
+                        </p>
+                      </div>
+
+                  </div>
+                </div>
+
+              </div>
+            </Transition.Child>
+          </div>
+        </Dialog>
+      </Transition.Root>
+
+      {/* <Transition.Root show={confirmLayout} as={Fragment}>
+        <Dialog
+          as="div"
+          className="fixed z-10 inset-0 overflow-y-auto"
+          onClose={(event, reason) => {
+              handleClose(event, reason);
+          }}
+        >
+          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <Dialog.Overlay className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+            </Transition.Child>
+
+
+            <span
+              className="hidden sm:inline-block sm:align-middle sm:h-screen"
+              aria-hidden="true"
+            >
+              &#8203;
+            </span>
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              enterTo="opacity-100 translate-y-0 sm:scale-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+              leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+            >
+              <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full sm:p-6">
+                <div>
+                  <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+                    <CreditCardIcon
+                      className="h-6 w-6 text-green-600"
+                      aria-hidden="true"
+                    />
+                  </div>
+                  <div className="mt-3 text-center sm:mt-5">
+                    <Dialog.Title
+                      as="h3"
+                      className="text-lg leading-6 font-medium text-gray-900"
+                    >
+                      Select type card
+                    </Dialog.Title>
+
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
-                        Your photo will be printed.
+                        Your life % Your money.
                       </p>
                     </div>
+                    <div >
+                        {mappingList.map((images, index) => (
+                        <img onClick={(e) => imageChosen(e.target.alt)} src={images.image_Font} key={index} alt={images.layout_name}
+                        className="m-0.5 inline-flex justify-center rounded-md border border-transparent shadow-sm px-1 py-1 bg-green-100 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm w-5/12 float-left"
+                        ></img>
+                        ))}
+                  </div>
+
                   </div>
                 </div>
                 <div className="mt-5 sm:mt-6">
@@ -696,10 +1837,244 @@ export function Upload(props) {
                     type="button"
                     className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
                     onClick={() => {
-                      setConfirm(false);
+                      // setConfirmLayout(false);
+                      confirmSelectLayout();
                     }}
                   >
                     Confirm
+                  </button>
+                </div>
+              </div>
+            </Transition.Child>
+          </div>
+        </Dialog>
+      </Transition.Root> */}
+
+      <Transition.Root show={waitting} as={Fragment}>
+        <Dialog
+          as="div"
+          className="fixed z-10 inset-0 overflow-y-auto"
+          onClose={(event, reason) => {
+              handleClose(event, reason);
+          }}
+        >
+          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <Dialog.Overlay className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+            </Transition.Child>
+
+            {/* This element is to trick the browser into centering the modal contents. */}
+            <span
+              className="hidden sm:inline-block sm:align-middle sm:h-screen"
+              aria-hidden="true"
+            >
+              &#8203;
+            </span>
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              enterTo="opacity-100 translate-y-0 sm:scale-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+              leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+            >
+              <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6">
+                <div>
+                  <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+                    <CreditCardIcon
+                      className="h-6 w-6 text-green-600"
+                      aria-hidden="true"
+                    />
+                  </div>
+                  <div className="mt-3 text-center sm:mt-5">
+                    {/* <Dialog.Title
+                      as="h3"
+                      className="text-lg leading-6 font-medium text-gray-900"
+                    >
+                      Select type card
+                    </Dialog.Title> */}
+
+                    <div className="mt-2">
+                      <p className="text-sm text-gray-500">
+                        Image Building...
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Transition.Child>
+          </div>
+        </Dialog>
+      </Transition.Root>
+      <Transition.Root show={dialoginfomation} as={Fragment}>
+        <Dialog
+          as="div"
+          className="fixed z-10 inset-0 overflow-y-auto"
+          onClose={(event, reason) => {
+              handleClose(event, reason);
+          }}
+        >
+          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <Dialog.Overlay className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+            </Transition.Child>
+
+
+            <span
+              className="hidden sm:inline-block sm:align-middle sm:h-screen"
+              aria-hidden="true"
+            >
+              &#8203;
+            </span>
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              enterTo="opacity-100 translate-y-0 sm:scale-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+              leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+            >
+              <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full sm:p-6">
+                <div>
+                  <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+                    <IdentificationIcon
+                      className="h-6 w-6 text-green-600"
+                      aria-hidden="true"
+                    />
+                  </div>
+                  <div className="mt-3 text-center sm:mt-5">
+                    <Dialog.Title
+                      as="h3"
+                      className="text-lg leading-6 font-medium text-gray-900"
+                    >
+                      STEP 3: Your infomation.
+                    </Dialog.Title>
+
+                    <div className="mt-2">
+                      <p className="text-sm text-gray-500">
+                        Please check and confirm data about you.
+                      </p>
+                    </div>
+                    {/* <div >
+                        {mappingList.map((images, index) => (
+                        <img onClick={(e) => imageChosen(e.target.alt)} src={images.image_Font} key={index} alt={images.layout_name}
+                        className="m-0.5 inline-flex justify-center rounded-md border border-transparent shadow-sm px-1 py-1 bg-green-100 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm w-5/12 float-left"
+                        ></img>
+                        ))}
+                    </div> */}
+
+                  </div>
+                </div>
+                <div className="mt-5 sm:mt-6">
+                  <button
+                    type="button"
+                    className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
+                    onClick={() => {
+                      setDialoginfomation(false);
+                      dialogConfirminfomation();
+
+                    }}
+                  >
+                    Confirm
+                  </button>
+                </div>
+              </div>
+            </Transition.Child>
+          </div>
+        </Dialog>
+      </Transition.Root>
+      <Transition.Root show={dialogsuccess} as={Fragment}>
+        <Dialog
+          as="div"
+          className="fixed z-10 inset-0 overflow-y-auto"
+          onClose={(event, reason) => {
+              handleClose(event, reason);
+          }}
+        >
+          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <Dialog.Overlay className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+            </Transition.Child>
+            <span
+              className="hidden sm:inline-block sm:align-middle sm:h-screen"
+              aria-hidden="true"
+            >
+              &#8203;
+            </span>
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              enterTo="opacity-100 translate-y-0 sm:scale-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+              leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+            >
+              <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full sm:p-6">
+                <div>
+                  <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+                    <IdentificationIcon
+                      className="h-6 w-6 text-green-600"
+                      aria-hidden="true"
+                    />
+                  </div>
+                  <div className="mt-3 text-center sm:mt-5">
+                    <Dialog.Title
+                      as="h3"
+                      className="text-lg leading-6 font-medium text-gray-900"
+                    >
+                      QR Code.
+                    </Dialog.Title>
+
+                    {/* <div className="mt-2">
+                      <p className="text-sm text-gray-500">
+                        Please check and confirm data about you.
+                      </p>
+                    </div> */}
+                    <div >
+                    <QRCode value={qrcodeData}
+                    className="inline-flex justify-center"
+                        />
+                    </div>
+
+                  </div>
+                </div>
+                <div className="mt-5 sm:mt-6">
+                  <button
+                    type="button"
+                    className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
+                    onClick={() => {
+                      setDialogsuccess(false);
+                      goHistory();
+                    }}
+                  >
+                    Close
                   </button>
                 </div>
               </div>
