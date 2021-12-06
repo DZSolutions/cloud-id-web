@@ -30,7 +30,8 @@ export function NavBar(props) {
   const navigation = ["Home","History"];
   // const navigationRoute = ["/Home","/History"];
   const navigationRoute = ["/History","/History"];
-  const profile = ["Your Profile", "Settings", "Sign out"];
+  // const profile = ["Your Profile", "Settings", "Sign out"];
+  const profile = ["Sign out"];
 
   return (
     <div>
@@ -192,13 +193,14 @@ export function NavBar(props) {
                 </div>
                 <div className="mt-3 px-2 space-y-1">
                   {profile.map((item) => (
+
                     <a
-                      key={item}
-                      href={"DD"}
-                      className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700"
-                    >
-                      {item}
-                    </a>
+                    href={"logout"}
+                    onClick={AuthService.logout}
+                    className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700"
+                  >
+                    {item}
+                  </a>
                   ))}
                 </div>
               </div>
