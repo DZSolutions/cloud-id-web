@@ -2058,7 +2058,7 @@ export function Upload(props) {
                       </p>
                     </div> */}
                     <div >
-                    <QRCode value={qrcodeData}
+                    <QRCode value={qrcodeData+currentUser}
                     className="inline-flex justify-center"
                         />
                     </div>
