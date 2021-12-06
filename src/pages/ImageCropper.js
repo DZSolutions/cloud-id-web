@@ -125,18 +125,18 @@ export function ImageCropper(props) {
             if(postmapping.results[key].layout_name === layoutName)
             {
               setAllowRemoveBG(postmapping.results[key].removeBG);
-              if(postmapping.results[key].cropImgcard === true)
-              {
-                setCropwidth(1016);
-                setCropheight(642);
-
-              }
-              else if (postmapping.results[key].cropHuman === true)
-              {
-                setCropwidth(395);
-                setCropheight(395);
-
-              }
+              setCropwidth(postmapping.results[key].crop_width);
+              setCropheight(postmapping.results[key].crop_height);
+              // if(postmapping.results[key].cropImgcard === true)
+              // {
+              //   setCropwidth(1016);crop_width
+              //   setCropheight(642);
+              // }
+              // else if (postmapping.results[key].cropHuman === true)
+              // {
+              //   setCropwidth(395);
+              //   setCropheight(395);
+              // }
             }
           }
     }
@@ -407,7 +407,7 @@ export function ImageCropper(props) {
 
   return (
     <>
-      <div className="bg-gray-700 md:w-auto h-auto rounded-md">
+      <div className="bg-gray-700  md:w-auto h-auto rounded-md">
         <div className="bg-black md:w-auto h-auto px-4 py-64 rounded-md relative">
           {istakephoto &&(
             <>

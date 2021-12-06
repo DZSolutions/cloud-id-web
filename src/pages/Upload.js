@@ -846,28 +846,7 @@ export function Upload(props) {
   // }
 
 
-  if (!post) return ("Loading..."
-  // <ReactLoading
-  //   type={"bars"}
-  //   color={"#03fc4e"}
-  //   height={100}
-  //   width={100}
-  // />
-  );
-
-  // console.log("postmapping.results");
-  // console.log(postmapping.results);
-  // if(postmapping.results === "")
-  // {
-  //   setConfirmLayout(true);
-  // }
-
-  // if(waitting) return (<ReactLoading
-  //   type={"bars"}
-  //   color={"#FA4B62"}
-  //   height={100}
-  //   width={100}
-  // />);
+  if (!post) return ("Loading...");
 
   const mixImage = async () => {
     const cardPlusMan = await mergeImages(
