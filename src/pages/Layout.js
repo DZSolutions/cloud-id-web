@@ -10,6 +10,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { CheckIcon,CreditCardIcon } from "@heroicons/react/outline";
 import usestateref from 'react-usestateref';
 import { useHistory } from "react-router-dom";
+import Loading from "react-loading";
 
 export function Layout(props) {
   const [post, setPost] = useState(null);
@@ -51,6 +52,7 @@ export function Layout(props) {
   const [confirm, setConfirm] = useState(false);
   const [layoutloaded, setlayoutloaded] = useState(false);
   const [confirmLayout, setConfirmLayout] = useState(true);
+  const [genlayout, setGenlayout] = useState(false);
 
   const data = props.history.location.state?.id
 
@@ -112,10 +114,97 @@ export function Layout(props) {
     }
   };
   const history = useHistory();
-  const confirmSelectLayout =()=>{
-    history.push({pathname:"/"+ props.match.params.org+"/CropImage",state:{id:selectedLayout}});
-  }
+   const confirmSelectLayout =async()=>{
 
+    if (postmapping.results != null){
+      for (var layout in postmapping.results)
+      {
+
+        if(postmapping.results[layout].layout_name === selectedLayout)
+        {
+          if (postmapping.results[layout].upload_photo === true) {
+            history.push({pathname:"/"+ props.match.params.org+"/CropImage",state:{id:selectedLayout}});
+          }
+          else if(postmapping.results[layout].upload_photo === false) {
+            setGenlayout(true);
+            await AutobuildCard();
+            await gotoUpload();
+          }
+          setGenlayout(false);
+          break;
+        }
+      }
+    }
+
+  }
+  async function gotoUpload(){
+    history.push({pathname:"upload",state:{id:selectedLayout}});
+  }
+  var tempimg;
+  async function AutobuildCard() {
+    let resultmap = await genResultmapping();
+    if(post!=null){
+      const resultCombine =await combineDataAndImg(resultmap);
+      await requestCardimg(resultCombine);
+      await onUploadToServer2();
+    }
+  }
+  function combineDataAndImg(DataAr) {
+    return new Promise(resolve => {
+      DataAr["PHOTO64_1"]=null;
+      resolve(DataAr);
+    });
+  }
+  const onUploadToServer2 = async () => {
+    let serverHeader = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    };
+    const filef = await dataURLtoFile(tempimg['front']);
+    const fileb = await dataURLtoFile(tempimg['back']);
+    const data = new FormData();
+
+    data.append("ref_id", props.match.params.org+currentUser);
+    data.append("layout_name", selectedLayout);
+    data.append("img_card_front", filef,  props.match.params.org+currentUser+data + "_F.jpg");
+    data.append("img_card_back", fileb,  props.match.params.org+currentUser+data + "_B.jpg");
+    // put file into form data
+    axios.patch(
+      API_BASE_URL + "/v1/userlist/" + post.results[0].id + "/",
+      data,
+      serverHeader
+    );
+
+  };
+  async function requestCardimg(dataInput) {
+    // return new Promise(resolve => {
+    var date = new Date();
+    var dateandtime = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+    let imgfs={};
+    await axios
+      .post("http://13.212.202.194:8033/gen_card_img/", {
+        with_background:true,
+        layout_name: selectedLayout,
+        tag: dateandtime,
+        input:[dataInput]
+      })
+      .then((response) => {
+         tempimg = JSON.parse(JSON.stringify(response.data.output[0]));
+      });
+  }
+  const dataURLtoFile = (dataurl, filename) => {
+    const arr = dataurl.split(",");
+    const mime = arr[0].match(/:(.*?);/)[1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n) {
+      u8arr[n - 1] = bstr.charCodeAt(n - 1);
+      n -= 1; // to make eslint happy
+    }
+    return new File([u8arr], filename, { type: mime });
+  };
   const currentUser = AuthService.getCurrentUser();
   AuthService.getAccessToken();
   const accessToken = localStorage.getItem("accessToken");
@@ -137,7 +226,6 @@ export function Layout(props) {
         setPostMapping(response.data);
         //setLayoutlist()
         //setMappingList(response.data.results);
-
       });
 
       await axios
@@ -147,6 +235,7 @@ export function Layout(props) {
       .then((response) => {
         setMappingList(response.data.output);
       });
+
       await axios
       .get(API_BASE_URL + "/v1/userlist", {
         headers: {
@@ -484,12 +573,12 @@ export function Layout(props) {
                       as="h3"
                       className="text-lg leading-6 font-medium text-gray-900"
                     >
-                      STEP 1: Select type card
+                      STEP 1: Select template.
                     </Dialog.Title>
 
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
-                        Your life % Your money.
+                      {props.match.params.org} Membership : {props.match.params.org} Card
                       </p>
                     </div>
 
@@ -500,7 +589,8 @@ export function Layout(props) {
                           className={selectedLayout === images.layout_name ?
                           "mt-5 m-0.5 inline-flex justify-center rounded-md border border-transparent shadow-sm px-1 py-1 bg-green-700 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm w-5/12 float-left"
                           :"mt-5 m-0.5 inline-flex justify-center rounded-md border border-transparent shadow-sm px-1 py-1 bg-green-100 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm w-5/12 float-left"}
-                        ></img>
+                        >
+                        </img>
                         ))}
                       </div>
                     )}
@@ -511,13 +601,41 @@ export function Layout(props) {
                 <div className="mt-5 sm:mt-6">
                   <button
                     type="button"
+                    disabled ={genlayout}
                     className="mt-5 inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
                     onClick={() => {
                       // setConfirmLayout(false);
                       confirmSelectLayout();
                     }}
                   >
-                    Confirm
+
+                    {genlayout ? (
+              <svg
+              className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              />
+            </svg>
+
+            ) : (
+             null
+            )}
+            {genlayout ? (
+              "Loading template..."
+            ):("Confirm")}
                   </button>
                 </div>
               </div>

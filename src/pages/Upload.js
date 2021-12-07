@@ -38,6 +38,9 @@ export function Upload(props) {
   const [selectedConsole, setSelectConsole] = useState(null);
   const [selectedPrinter, setSelectPrinter] = useState(null);
   const [selectedPrinterOption, setSelectPrinterOption] = useState(null);
+  const [preview_mode, setPreview_mode] = useState(false);
+  const [status_view, setStatus_view] = useState(false);
+  const [status_text, setStatus_text] = useState(null);
   // const [selectedMapping, setSelectMapping,refselectmapping] = usestateref(null);
 
 
@@ -765,6 +768,7 @@ export function Upload(props) {
     if(layoutName != undefined)
     {
       setSelectLayout(layoutName);
+
     }
     await axios
       .get(API_BASE_URL + "/v1/mappinglist", {
@@ -838,6 +842,7 @@ export function Upload(props) {
       .then((response) => {
         setPrinterList(response.data);
       });
+      setPreview_mode(true);
   }, []);
 
   // if(data != undefined)
@@ -983,13 +988,20 @@ export function Upload(props) {
         Authorization: `Bearer ${accessToken}`,
       },
     };
-
+    console.log("photoF");
+    console.log(photoF);
+    if(photoF === undefined)
+    {
+      photoF = await getBase64FromUrl(image);
+      photoB = await getBase64FromUrl(imageB);
+    }
     const filef = await dataURLtoFile(photoF);
     const fileb = await dataURLtoFile(photoB);
     const data = new FormData();
 
     data.append("ref_id", props.match.params.org+currentUser);
     data.append("layout_name", layoutName);
+    data.append("status",1);
     data.append("img_card_front", filef,  props.match.params.org+currentUser+data + "_F.jpg");
     data.append("img_card_back", fileb,  props.match.params.org+currentUser+data + "_B.jpg");
     // put file into form data
@@ -1107,12 +1119,40 @@ export function Upload(props) {
     }
     if(qrcodeData == null)
     {
-      goHistory();
+      //goHistory();
     }
     else if(qrcodeData != null)
     {
       setDialogsuccess(true);
     }
+    await axios
+      .get(API_BASE_URL + "/v1/userlist", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((response) => {
+        setPost(response.data);
+
+        if (response.data.results[0].status ===0) {
+          setStatus_text("No action");
+        }
+        else if (response.data.results[0].status ===1) {
+          setStatus_text("Pending");
+        }
+        else if (response.data.results[0].status ===2) {
+          setStatus_text("Approve1");
+        }
+        else if (response.data.results[0].status ===3) {
+          setStatus_text("Approve2");
+        }
+        else if (response.data.results[0].status ===4) {
+          setStatus_text("Reject");
+        }
+      });
+    setStatus_view(true);
+    setPreview_mode(false);
+    setReadOnly(true);
   };
   const goHistory =()=>{
     history.push({pathname:"/"+ props.match.params.org+"/History",state:{id:selectedLayout}});
@@ -1167,14 +1207,14 @@ export function Upload(props) {
                     "relative inline-flex items-center px-4 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
                   }
                 >
-                  Front Card
+                  Front
                 </button>
                 <button
                   type="button"
                   onClick={() => setIsFront(false)}
                   className="-ml-px relative inline-flex items-center px-4 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
                 >
-                  Back Card
+                  Back
                 </button>
               </span>
 
@@ -1268,8 +1308,15 @@ export function Upload(props) {
                 </>
               ) : (
                 <>
+                 {status_view && (
+                      <div className="col-span-6 sm:col-span-4 px-4 py-5">
+                        <p className="block text-gray-700 text-sm font-medium">
+                          Ststus: {status_text}
+                        </p>
+                      </div>)}
                   <div className="px-4 py-5 bg-white sm:p-6">
                     <div className="grid grid-cols-3 gap-4 ">
+
 
                       {openemployId && (
                       <div className="col-span-6 sm:col-span-4">
@@ -1463,6 +1510,8 @@ export function Upload(props) {
                       </div>
                     </div>
                   </div>
+                  {preview_mode &&(
+
                   <div className="px-4 py-3 text-center bg-gray-100 sm:px-6">
                     <Collapse isOpened={!allowPrint} high={"auto"}>
                     <div className="flex items-center justify-center col-span-2">
@@ -1516,6 +1565,8 @@ export function Upload(props) {
                    </Collapse>
 
                   </div>
+                  )
+                  }
                 </>
               )}
             </div>
@@ -1868,12 +1919,12 @@ export function Upload(props) {
                       as="h3"
                       className="text-lg leading-6 font-medium text-gray-900"
                     >
-                      STEP 3: Your infomation.
+                      STEP 3: Your infomation
                     </Dialog.Title>
 
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
-                        Please check and confirm data about you.
+                      Please check and confirm your data.
                       </p>
                     </div>
                     {/* <div >
@@ -1896,7 +1947,7 @@ export function Upload(props) {
 
                     }}
                   >
-                    Confirm
+                    Check {"&"} Confirm
                   </button>
                 </div>
               </div>
@@ -1974,7 +2025,7 @@ export function Upload(props) {
                     className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
                     onClick={() => {
                       setDialogsuccess(false);
-                      goHistory();
+                      //goHistory();
                     }}
                   >
                     Close

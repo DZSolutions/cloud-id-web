@@ -29,7 +29,6 @@ export function Register(props) {
   //   const organization = e.target.value;
   //   setOrganization({ organizationId, organization });
   // };
-
   const [state, setState] = useState({
     organization: props.match.params.org,
     username: "",
@@ -39,8 +38,8 @@ export function Register(props) {
     confirmPassword: "",
     firstName: "",
     lastName: "",
-    faculty: "",
-    major: "",
+    faculty: "-",
+    major: "-",
     phone: "",
   });
 
@@ -95,7 +94,10 @@ export function Register(props) {
     //   .catch(function (error) {
     //     console.log(error);
     //   });
-
+    console.log("state");
+    console.log(state);
+    state.faculty = "-";
+    state.major = "-";
     axios
       // .post(API_URL + "signin", {
       .post(API_BASE_URL + "/v1/register", {
@@ -106,8 +108,10 @@ export function Register(props) {
         password: state.password,
         firstName: state.firstName,
         lastName: state.lastName,
-        faculty: state.faculty,
-        major: state.major,
+        // faculty: state.faculty,
+        // major: state.major,
+        faculty: "-",
+        major: "-",
         phone: state.phone,
       })
       .then((response) => {
@@ -309,7 +313,7 @@ export function Register(props) {
                 />
               </div>
             </div>
-            <div className="grid grid-cols-6 gap-6">
+            {/* <div className="grid grid-cols-6 gap-6">
               <div className="col-span-6 sm:col-span-3">
                 <label
                   htmlFor="faculty"
@@ -348,7 +352,7 @@ export function Register(props) {
                   />
                 </div>
               </div>
-            </div>
+            </div> */}
             <div>
               <label
                 htmlFor="tel"

@@ -55,14 +55,12 @@ export function Home(props) {
       .then((response) => {
         setPost(response.data);
         if(response.data.results[0].ref_id === null){
-
           if(data ==="login")
           {
             goBuildCard();
           }
         }
         else if(response.data.results[0].ref_id != null){
-
           if(data ==="login")
           {
             goHistory();

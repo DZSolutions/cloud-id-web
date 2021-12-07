@@ -781,12 +781,12 @@ export function ImageCropper(props) {
                       as="h3"
                       className="text-lg leading-6 font-medium text-gray-900"
                     >
-                      STEP 2: Your Photo
+                      STEP 2: Upload Your Photo
                     </Dialog.Title>
 
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
-                      Please click take photo or choose your photo.
+                      Either Take a Photo or Choose a Photo​.
                       </p>
                     </div>
                     <div className="container-buttons flex justify-center space-x-4 pt-5">
@@ -800,7 +800,7 @@ export function ImageCropper(props) {
 
 
                     }}>
-                       <p className="justify-items-stretch">
+                       <p className="flex justify-center">
                        Take photo
                       </p>
                   </button>

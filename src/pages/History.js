@@ -35,9 +35,9 @@ export function History(props) {
 };
 
   const history = useHistory();
-  const Home =()=>{
-    history.push({pathname:"/"+ props.match.params.org+"/Home",state:{id:selectedLayout}});
-  }
+  // const Home =()=>{
+  //   history.push({pathname:"/"+ props.match.params.org+"/Home",state:{id:selectedLayout}});
+  // }
 
   const currentUser = AuthService.getCurrentUser();
   AuthService.getAccessToken();
