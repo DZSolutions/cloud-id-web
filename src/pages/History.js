@@ -46,6 +46,9 @@ export function History(props) {
   const goNewCard =()=>{
     history.push({pathname:"/"+ props.match.params.org+"/Layout",state:{id:""}});
   }
+  const goupload =()=>{
+    history.push({pathname:"/"+ props.match.params.org+"/upload",state:{id:"preview"}});
+  }
 
   useEffect(async() => {
     var arrlistlayout = [];
@@ -156,10 +159,16 @@ export function History(props) {
                         ))}
               </tbody>
         </table>
-
         <button
                 type="button"
-                className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className=" inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                onClick={goupload}
+              >
+                Back
+              </button>
+        <button
+                type="button"
+                className="m-8 inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 onClick={goNewCard}
               >
                 New Card

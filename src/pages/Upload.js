@@ -101,9 +101,10 @@ export function Upload(props) {
   const [isEditData, setIsEditData,refIsEditData] = usestateref(false);
   var photoF;
   var photoB;
+  const [layoutName, setlayoutName,reflayoutName] = usestateref(props.history.location.state?.id);
+  const [status_text2, setstatus_text2,refstatus_text2] = usestateref(null);
 
-
-  const layoutName = props.history.location.state?.id
+  // var layoutName = props.history.location.state?.id
   const orgUnits = [
     {
       value: "ku",
@@ -765,11 +766,25 @@ export function Upload(props) {
   const accessToken = localStorage.getItem("accessToken");
 
   useEffect(async() => {
+    setPreview_mode(true);
     if(layoutName != undefined)
     {
       setSelectLayout(layoutName);
 
     }
+    await axios
+      .get(API_BASE_URL + "/v1/organizationlist", {
+      })
+      .then((response) => {
+        for (var organize in response.data)
+        {
+          if(response.data[organize].name === props.match.params.org)
+          {
+            setImage(response.data[organize].logo);
+          }
+        }
+
+      });
     await axios
       .get(API_BASE_URL + "/v1/mappinglist", {
         headers: {
@@ -805,20 +820,50 @@ export function Upload(props) {
       })
       .then((response) => {
         setPost(response.data);
+        if(layoutName ==="preview")
+        {
+          setPreview_mode(false);
+          setStatus_view(true);
+
+          setSelectLayout(response.data.results[0].layout_name);
+          // layoutName = response.data.results[0].layout_name;
+          setlayoutName(response.data.results[0].layout_name);
+
+        }
+        if (response.data.results[0].status ===0) {
+          setStatus_text("No action");
+          setstatus_text2("No action");
+        }
+        else if (response.data.results[0].status ===1) {
+          setStatus_text("Pending");
+          setstatus_text2("Pending");
+        }
+        else if (response.data.results[0].status ===2) {
+          setStatus_text("Approve1");
+          setstatus_text2("Approve1");
+        }
+        else if (response.data.results[0].status ===3) {
+          setStatus_text("Approve2");
+          setstatus_text2("Approve2");
+        }
+        else if (response.data.results[0].status ===4) {
+          setStatus_text("Reject");
+          setstatus_text2("Reject");
+        }
       });
 
-      await axios
-      .get("http://122.248.202.159/api/consoles/", {
-        // crossdomain: true,
-        // withCredentials: false,
-        // headers: {
-        //   "Access-Control-Allow-Origin": "*",
-        //   "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
-        // },
-      })
-      .then((response) => {
-        setConsoleList(response.data);
-      });
+      // await axios
+      // .get("http://122.248.202.159/api/consoles/", {
+      //   // crossdomain: true,
+      //   // withCredentials: false,
+      //   // headers: {
+      //   //   "Access-Control-Allow-Origin": "*",
+      //   //   "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
+      //   // },
+      // })
+      // .then((response) => {
+      //   setConsoleList(response.data);
+      // });
 
       await axios
       .get(API_BASE_URL + "/v1/configprinter", {
@@ -830,19 +875,19 @@ export function Upload(props) {
         setConfigPrinter(response.data);
       });
 
-      await axios
-      .get("http://122.248.202.159/api/printers/", {
-        // crossdomain: true,
-        // withCredentials: false,
-        // headers: {
-        //   "Access-Control-Allow-Origin": "*",
-        //   "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
-        // },
-      })
-      .then((response) => {
-        setPrinterList(response.data);
-      });
-      setPreview_mode(true);
+      // await axios
+      // .get("http://122.248.202.159/api/printers/", {
+      //   // crossdomain: true,
+      //   // withCredentials: false,
+      //   // headers: {
+      //   //   "Access-Control-Allow-Origin": "*",
+      //   //   "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
+      //   // },
+      // })
+      // .then((response) => {
+      //   setPrinterList(response.data);
+      // });
+
   }, []);
 
   // if(data != undefined)
@@ -988,8 +1033,6 @@ export function Upload(props) {
         Authorization: `Bearer ${accessToken}`,
       },
     };
-    console.log("photoF");
-    console.log(photoF);
     if(photoF === undefined)
     {
       photoF = await getBase64FromUrl(image);
@@ -1310,8 +1353,8 @@ export function Upload(props) {
                 <>
                  {status_view && (
                       <div className="col-span-6 sm:col-span-4 px-4 py-5">
-                        <p className="block text-gray-700 text-sm font-medium">
-                          Ststus: {status_text}
+                        <p className="block text-gray-700 text-4xl font-medium">
+                          Status: {status_text}
                         </p>
                       </div>)}
                   <div className="px-4 py-5 bg-white sm:p-6">
@@ -1919,12 +1962,18 @@ export function Upload(props) {
                       as="h3"
                       className="text-lg leading-6 font-medium text-gray-900"
                     >
-                      STEP 3: Your infomation
+                      {preview_mode ? (
+              "STEP 3: Your infomation"
+            ):("This your card")}
+
                     </Dialog.Title>
 
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
-                      Please check and confirm your data.
+
+                      {preview_mode ? (
+                        "Please check and confirm your data."
+            ):("Status: "+status_text2)}
                       </p>
                     </div>
                     {/* <div >
@@ -1947,7 +1996,10 @@ export function Upload(props) {
 
                     }}
                   >
-                    Check {"&"} Confirm
+
+                    {preview_mode ? (
+                    "Check & Confirm"
+                    ):("Close")}
                   </button>
                 </div>
               </div>

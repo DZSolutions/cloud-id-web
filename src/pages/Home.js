@@ -14,7 +14,7 @@ import { useHistory } from "react-router-dom";
 export function Home(props) {
   const [post, setPost] = useState(null);
   const [start, setStart] = useState(0);
-  const [showdialog, setShowdialog] = useState(true);
+  const [showdialog, setShowdialog] = useState(false);
   const data = props.history.location.state?.id
 
   const Input = (props) => (
@@ -35,10 +35,17 @@ export function Home(props) {
 
     const history = useHistory();
   const goBuildCard =()=>{
+    console.log({pathname:"/"+ props.match.params.org+"/upload",state:{id:"preview"}});
     history.push({pathname:"/"+ props.match.params.org+"/Layout",state:{id:""}});
+
   }
   const goHistory =()=>{
     history.push({pathname:"/"+ props.match.params.org+"/History",state:{id:""}});
+  }
+  const goupload =()=>{
+
+    history.push({pathname:"/"+ props.match.params.org+"/upload",state:{id:"preview"}});
+
   }
 
   const currentUser = AuthService.getCurrentUser();
@@ -63,10 +70,10 @@ export function Home(props) {
         else if(response.data.results[0].ref_id != null){
           if(data ==="login")
           {
-            goHistory();
+            //goHistory();
+            goupload();
           }
         }
-
       });
   }, []);
 

@@ -212,6 +212,19 @@ export function Layout(props) {
   useEffect(async() => {
     var arrlistlayout = [];
     await axios
+      .get(API_BASE_URL + "/v1/organizationlist", {
+      })
+      .then((response) => {
+        for (var organize in response.data)
+        {
+          if(response.data[organize].name === props.match.params.org)
+          {
+            setImage(response.data[organize].logo);
+          }
+        }
+
+      });
+    await axios
       .get(API_BASE_URL + "/v1/mappinglist", {
         headers: {
           Authorization: `Bearer ${accessToken}`,

@@ -9,7 +9,7 @@ import {
   NavLink,
 } from "react-router-dom";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
-import { BellIcon, MenuIcon, XIcon } from "@heroicons/react/outline";
+import { BellIcon, MenuIcon, XIcon ,UserIcon} from "@heroicons/react/outline";
 import { ImageCropper } from "./ImageCropper";
 import { ImageEditor } from "./ImageEditor";
 import { Home } from "./Home";
@@ -20,16 +20,34 @@ import { Ticket } from "./Ticket";
 import DZ from "../images/DZ.png";
 import DZLOGO from "../images/dzcard.png";
 import AuthService from "../services/auth.service";
+import { useState, useEffect } from "react";
+import { API_BASE_URL } from "../constrants/apiConstrants";
+import axios from "axios";
 
 export function NavBar(props) {
   const { orgName } = useParams();
   function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
   }
+  const [logo, setLogo] = useState(null);
+  useEffect(async() => {
+    await axios
+      .get(API_BASE_URL + "/v1/organizationlist", {
+      })
+      .then((response) => {
+        for (var organize in response.data)
+        {
+          if(response.data[organize].name === orgName)
+          {
+            setLogo(response.data[organize].logo);
+          }
+        }
 
-  const navigation = ["Home","History"];
+      });
+  }, []);
+  const navigation = ["History"];
   // const navigationRoute = ["/Home","/History"];
-  const navigationRoute = ["/History","/History"];
+  const navigationRoute = ["/History"];
   // const profile = ["Your Profile", "Settings", "Sign out"];
   const profile = ["Sign out"];
 
@@ -42,7 +60,8 @@ export function NavBar(props) {
               <div className="flex items-center justify-between h-16">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
-                    <img className="h-8 w-8" src={DZLOGO} alt="Workflow" />
+                    {/* <img className="h-8 w-8" src={DZLOGO} alt="Workflow" /> */}
+                    <img className="h-8 w-8" src={logo} alt="Workflow" />
                   </div>
                   <div className="hidden md:block">
                     <div className="ml-10 flex items-baseline space-x-4">
@@ -89,11 +108,12 @@ export function NavBar(props) {
                           <div>
                             <Menu.Button className="max-w-xs bg-gray-800 rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
                               <span className="sr-only">Open user menu</span>
-                              <img
+                              {/* <img
                                 className="h-8 w-8 rounded-full"
                                 src={DZ}
                                 alt=""
-                              />
+                              /> */}
+                               <UserIcon className="h-6 w-6 bg-gray-800 text-gray-400 rounded-full ring-2 ring-gray-400"/>
                             </Menu.Button>
                           </div>
                           <Transition

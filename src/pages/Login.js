@@ -4,12 +4,27 @@ import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/solid";
 // import jwt_decode from "jwt-decode";
 import DZLOGO from "../images/dzcard.png";
 import { Link, useHistory } from "react-router-dom";
-// import { API_BASE_URL } from "../constrants/apiConstrants";
+import { API_BASE_URL } from "../constrants/apiConstrants";
+import axios from "axios";
 export function Login(props) {
   let history = useHistory();
   const { state } = props.location;
   const accessToken = localStorage.getItem("accessToken");
-  useEffect(() => {
+  const [logo, setLogo] = useState(null);
+  useEffect(async() => {
+    await axios
+      .get(API_BASE_URL + "/v1/organizationlist", {
+      })
+      .then((response) => {
+        for (var organize in response.data)
+        {
+          if(response.data[organize].name === props.match.params.org)
+          {
+            setLogo(response.data[organize].logo);
+          }
+        }
+
+      });
     if (accessToken) {
       // props.history.push("upload");
       props.history.push("layout");
@@ -69,7 +84,8 @@ export function Login(props) {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <img className="mx-auto h-20 w-auto" src={DZLOGO} alt="org_image" />
+        {/* <img className="mx-auto h-20 w-auto" src={DZLOGO} alt="org_image" /> */}
+        <img className="mx-auto h-20 w-auto" src={logo} alt="org_image" />
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
           Sign in to your account
         </h2>
