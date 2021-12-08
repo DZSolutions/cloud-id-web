@@ -596,14 +596,21 @@ export function Layout(props) {
                     </div>
 
                     {layoutloaded &&(
-                      <div >
+
+                      <div>
                         {mappingList.map((images, index) => (
-                        <img onClick={(e) => imageChosen(e.target.alt)} src={images.front} key={index} alt={images.layout_name}
-                          className={selectedLayout === images.layout_name ?
-                          "mt-5 m-0.5 inline-flex justify-center rounded-md border border-transparent shadow-sm px-1 py-1 bg-green-700 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm w-5/12 float-left"
-                          :"mt-5 m-0.5 inline-flex justify-center rounded-md border border-transparent shadow-sm px-1 py-1 bg-green-100 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm w-5/12 float-left"}
-                        >
-                        </img>
+                          <div className={selectedLayout === images.layout_name ?
+                            "mt-5 m-0.5 inline-flex justify-center rounded-md border border-transparent shadow-sm px-1 py-1 bg-green-700 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm w-5/12 float-left"
+                            :"mt-5 m-0.5 inline-flex justify-center rounded-md border border-transparent shadow-sm px-1 py-1 bg-green-100 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm w-5/12 float-left"}
+                          >
+                            <div>
+                              <div>
+                                <img onClick={(e) => imageChosen(e.target.alt)} src={images.front} key={index} alt={images.layout_name}></img>
+                              </div>
+
+                                <div>{images.layout_name} </div>
+                              </div>
+                          </div>
                         ))}
                       </div>
                     )}
