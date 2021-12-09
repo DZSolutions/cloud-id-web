@@ -1047,6 +1047,9 @@ export function Upload(props) {
     data.append("status",1);
     data.append("img_card_front", filef,  props.match.params.org+currentUser+data + "_F.jpg");
     data.append("img_card_back", fileb,  props.match.params.org+currentUser+data + "_B.jpg");
+    // data.append("img_card_front", image);
+    // data.append("img_card_back", imageB);
+
     // put file into form data
     axios.patch(
       API_BASE_URL + "/v1/userlist/" + post.results[0].id + "/",
@@ -1099,7 +1102,6 @@ export function Upload(props) {
   }
 
    const sendPrint = async() => {
-
     if (whitecard === true)
     {
       setsendingtoprint(true);
@@ -1131,7 +1133,6 @@ export function Upload(props) {
     }
     else if(adminApprove === false)
     {
-
       photoF = await getBase64FromUrl(image);
       photoB = await getBase64FromUrl(imageB);
      let printerOption ;
@@ -1528,7 +1529,7 @@ export function Upload(props) {
                       </div>
                       )}
 
-                      <div className="col-span-6 sm:col-span-6 lg:col-span-2">
+                      {/* <div className="col-span-6 sm:col-span-6 lg:col-span-2">
                         <p className="block text-gray-700 text-sm font-medium">
                           Issue Date
                         </p>
@@ -1550,7 +1551,7 @@ export function Upload(props) {
                           value={post.results[0].expire_date}
                           className="block mt-1 w-full border-gray-300 focus:border-blue-500 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
                         />
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                   {preview_mode &&(
@@ -2055,16 +2056,16 @@ export function Upload(props) {
                       as="h3"
                       className="text-lg leading-6 font-medium text-gray-900"
                     >
-                      QR Code.
+                      QR Code
                     </Dialog.Title>
 
-                    {/* <div className="mt-2">
+                    <div className="mt-2">
                       <p className="text-sm text-gray-500">
-                        Please check and confirm data about you.
+                      Plese present this QRCode to {props.match.params.org} staff.
                       </p>
-                    </div> */}
+                    </div>
                     <div >
-                    <QRCode value={qrcodeData+currentUser}
+                    <QRCode value={qrcodeData+post.results[0].id}
                     className="inline-flex justify-center"
                         />
                     </div>

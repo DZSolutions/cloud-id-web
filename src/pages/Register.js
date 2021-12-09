@@ -6,13 +6,27 @@ import { Link } from "react-router-dom";
 import swal from 'sweetalert';
 export function Register(props) {
   const [organizationList, setOrganizationList] = useState([]);
+  const [logo, setLogo] = useState(null);
 
   // const onChangeOrganization = (e) => {
   //   const organization = e.target.value;
   //   setOrganization(organization);
   // };
 
-  useEffect(() => {
+  useEffect(async() => {
+    await axios
+      .get(API_BASE_URL + "/v1/organizationlist", {
+      })
+      .then((response) => {
+        for (var organize in response.data)
+        {
+          if(response.data[organize].name === props.match.params.org)
+          {
+            setLogo(response.data[organize].logo);
+          }
+        }
+
+      });
     fetch(API_BASE_URL + "/v1/organizationlist", {
       method: "GET",
       headers: {
@@ -21,6 +35,7 @@ export function Register(props) {
     })
       .then((resp) => resp.json())
       .then((resp) => setOrganizationList(resp));
+
   }, []);
 
   // const onChangeOrganization = (e) => {
@@ -94,8 +109,6 @@ export function Register(props) {
     //   .catch(function (error) {
     //     console.log(error);
     //   });
-    console.log("state");
-    console.log(state);
     state.faculty = "-";
     state.major = "-";
     axios
@@ -141,8 +154,13 @@ export function Register(props) {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-4 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <img
+        {/* <img
           src={dzLogo}
+          className="mx-auto w-auto rounded-md border border-gray-100"
+          alt="dz-logo"
+        /> */}
+        <img
+          src={logo}
           className="mx-auto w-auto rounded-md border border-gray-100"
           alt="dz-logo"
         />
