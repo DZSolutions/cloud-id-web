@@ -237,6 +237,8 @@ export function Layout(props) {
           arrlistlayout[arrlistlayout.length] = response.data.results[layout].layout_name;
         }
         setPostMapping(response.data);
+        console.log("setPostMapping(response.data)");
+        console.log(response.data);
         //setLayoutlist()
         //setMappingList(response.data.results);
       });
@@ -247,6 +249,9 @@ export function Layout(props) {
       })
       .then((response) => {
         setMappingList(response.data.output);
+
+        console.log("card_design_img");
+        console.log(response.data.output);
       });
 
       await axios

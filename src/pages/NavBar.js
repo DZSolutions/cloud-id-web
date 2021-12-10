@@ -30,6 +30,7 @@ export function NavBar(props) {
     return classes.filter(Boolean).join(" ");
   }
   const [logo, setLogo] = useState(null);
+  const [post, setPost] = useState(null);
   useEffect(async() => {
     await axios
       .get(API_BASE_URL + "/v1/organizationlist", {
@@ -43,6 +44,15 @@ export function NavBar(props) {
           }
         }
 
+      });
+      await axios
+      .get(API_BASE_URL + "/v1/userlist", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((response) => {
+        setPost(response.data);
       });
   }, []);
   const navigation = ["History"];
@@ -196,15 +206,16 @@ export function NavBar(props) {
               <div className="pt-4 pb-3 border-t border-gray-700">
                 <div className="flex items-center px-5">
                   <div className="flex-shrink-0">
-                    <img className="h-10 w-10 rounded-full" src={DZ} alt="" />
+                    {/* <img className="h-10 w-10 rounded-full" src={DZ} alt="" /> */}
+                    <UserIcon className="h-6 w-6 bg-gray-800 text-gray-400 rounded-full ring-2 ring-gray-400"/>
                   </div>
                   <div className="ml-3">
                     <div className="text-base font-medium leading-none text-white">
-                      DZCard Developer
+                      {post.results[0].first_name_en} {post.results[0].last_name_en}
                     </div>
-                    <div className="text-sm font-medium leading-none text-gray-400">
+                    {/* <div className="text-sm font-medium leading-none text-gray-400">
                       Developer@dzcard.com
-                    </div>
+                    </div> */}
                   </div>
                   <button className="ml-auto bg-gray-800 flex-shrink-0 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
                     <span className="sr-only">View notifications</span>

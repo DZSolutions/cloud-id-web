@@ -875,18 +875,18 @@ export function Upload(props) {
         setConfigPrinter(response.data);
       });
 
-      // await axios
-      // .get("http://122.248.202.159/api/printers/", {
-      //   // crossdomain: true,
-      //   // withCredentials: false,
-      //   // headers: {
-      //   //   "Access-Control-Allow-Origin": "*",
-      //   //   "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
-      //   // },
-      // })
-      // .then((response) => {
-      //   setPrinterList(response.data);
-      // });
+      await axios
+      .get("http://122.248.202.159/api/printers/", {
+        // crossdomain: true,
+        // withCredentials: false,
+        // headers: {
+        //   "Access-Control-Allow-Origin": "*",
+        //   "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
+        // },
+      })
+      .then((response) => {
+        setPrinterList(response.data);
+      });
 
   }, []);
 
