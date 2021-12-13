@@ -639,50 +639,74 @@ export function Upload(props) {
   const handleemployIdChange  = (e) => {
     setEmployId(e.target.value);
     setIsEditData(true);
+    setallowBuild(true);
+    setPreview_mode(true);
   }
   const handletitleThChange  = (e) => {
     settitleTh(e.target.value);
     setIsEditData(true);
+    setallowBuild(true);
+    setPreview_mode(true);
   }
   const handNameThChange  = (e) => {
     setNameTh(e.target.value);
     setIsEditData(true);
+    setallowBuild(true);
+    setPreview_mode(true);
   }
   const handLastNameThChange  = (e) => {
     setLastNameTh(e.target.value);
     setIsEditData(true);
+    setallowBuild(true);
+    setPreview_mode(true);
   }
   const handtitleEnChange  = (e) => {
     settitleEn(e.target.value);
     setIsEditData(true);
+    setallowBuild(true);
+    setPreview_mode(true);
   }
   const handNameEnChange  = (e) => {
     setNameEn(e.target.value);
     setIsEditData(true);
+    setallowBuild(true);
+    setPreview_mode(true);
   }
   const handleLastNameEnChange  = (e) => {
     setLastNameEn(e.target.value);
     setIsEditData(true);
+    setallowBuild(true);
+    setPreview_mode(true);
   }
   const handleMobileChange  = (e) => {
     setMobile(e.target.value);
     setIsEditData(true);
+    setallowBuild(true);
+    setPreview_mode(true);
   }
   const handleEmailChange  = (e) => {
     setEmail(e.target.value);
     setIsEditData(true);
+    setallowBuild(true);
+    setPreview_mode(true);
   }
   const handleDepartmentChange  = (e) => {
     setDepartment(e.target.value);
     setIsEditData(true);
+    setallowBuild(true);
+    setPreview_mode(true);
   }
   const handleFacultyChange  = (e) => {
     setFaculty(e.target.value);
     setIsEditData(true);
+    setallowBuild(true);
+    setPreview_mode(true);
   }
   const handleMajorChange  = (e) => {
     setMajor(e.target.value);
     setIsEditData(true);
+    setallowBuild(true);
+    setPreview_mode(true);
   }
 
   const changeLayout = event => {
@@ -1586,7 +1610,7 @@ export function Upload(props) {
                     disabled={!allowBuild}
                     onClick={() => buildCard()}
                     className="inline-flex justify-center px-4 py-2 text-white text-3xl font-medium bg-rose-600 hover:bg-rose-500 border border-transparent rounded-full focus:outline-none shadow-sm focus:ring-rose-500 focus:ring-offset-2 focus:ring-2">
-                      {"Comfirm & Build Card"}
+                      {"Update data"}
                     </button>
                    </Collapse>
                     </Collapse>
@@ -2061,7 +2085,7 @@ export function Upload(props) {
 
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
-                      Plese present this QRCode to {props.match.params.org} staff.
+                      Please present this QRCode to {props.match.params.org} staff.
                       </p>
                     </div>
                     <div >
