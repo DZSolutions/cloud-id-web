@@ -31,6 +31,9 @@ export function NavBar(props) {
   }
   const [logo, setLogo] = useState(null);
   const [post, setPost] = useState(null);
+  const currentUser = AuthService.getCurrentUser();
+  AuthService.getAccessToken();
+  const accessToken = localStorage.getItem("accessToken");
   useEffect(async() => {
     await axios
       .get(API_BASE_URL + "/v1/organizationlist", {
@@ -211,7 +214,11 @@ export function NavBar(props) {
                   </div>
                   <div className="ml-3">
                     <div className="text-base font-medium leading-none text-white">
-                      {post.results[0].first_name_en} {post.results[0].last_name_en}
+                      {post &&(
+                        <div>
+                          {post.results[0].first_name_en} {post.results[0].last_name_en}
+                        </div>
+                      )}
                     </div>
                     {/* <div className="text-sm font-medium leading-none text-gray-400">
                       Developer@dzcard.com
