@@ -312,10 +312,10 @@ export function ImageCropper(props) {
     const fileb = await dataURLtoFile(tempimg['back']);
     const data = new FormData();
 
-    data.append("ref_id", props.match.params.org+currentUser);
+    data.append("ref_id", props.match.params.org+post.results[0].id+currentUser);
     data.append("layout_name", layoutName);
-    data.append("img_card_front", filef,  props.match.params.org+currentUser+data + "_F.jpg");
-    data.append("img_card_back", fileb,  props.match.params.org+currentUser+data + "_B.jpg");
+    data.append("img_card_front", filef,  props.match.params.org+post.results[0].id+currentUser+data + "_F.jpg");
+    data.append("img_card_back", fileb,  props.match.params.org+post.results[0].id+currentUser+data + "_B.jpg");
     // put file into form data
     axios.patch(
       API_BASE_URL + "/v1/userlist/" + post.results[0].id + "/",
