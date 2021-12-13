@@ -165,10 +165,10 @@ export function Layout(props) {
     const fileb = await dataURLtoFile(tempimg['back']);
     const data = new FormData();
 
-    data.append("ref_id", props.match.params.org+currentUser);
+    data.append("ref_id", props.match.params.org+post.results[0].id+currentUser);
     data.append("layout_name", selectedLayout);
-    data.append("img_card_front", filef,  props.match.params.org+currentUser+data + "_F.jpg");
-    data.append("img_card_back", fileb,  props.match.params.org+currentUser+data + "_B.jpg");
+    data.append("img_card_front", filef,  props.match.params.org+post.results[0].id+currentUser+data + "_F.jpg");
+    data.append("img_card_back", fileb,  props.match.params.org+post.results[0].id+currentUser+data + "_B.jpg");
     // put file into form data
     axios.patch(
       API_BASE_URL + "/v1/userlist/" + post.results[0].id + "/",
@@ -237,8 +237,6 @@ export function Layout(props) {
           arrlistlayout[arrlistlayout.length] = response.data.results[layout].layout_name;
         }
         setPostMapping(response.data);
-        console.log("setPostMapping(response.data)");
-        console.log(response.data);
         //setLayoutlist()
         //setMappingList(response.data.results);
       });
@@ -249,9 +247,6 @@ export function Layout(props) {
       })
       .then((response) => {
         setMappingList(response.data.output);
-
-        console.log("card_design_img");
-        console.log(response.data.output);
       });
 
       await axios
