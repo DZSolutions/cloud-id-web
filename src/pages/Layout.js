@@ -7,7 +7,7 @@ import axios from "axios";
 import { API_BASE_URL } from "../constrants/apiConstrants";
 import Select, { components } from "react-select";
 import { Dialog, Transition } from "@headlessui/react";
-import { CheckIcon,CreditCardIcon } from "@heroicons/react/outline";
+import { CheckIcon,CreditCardIcon ,XIcon} from "@heroicons/react/outline";
 import usestateref from 'react-usestateref';
 import { useHistory } from "react-router-dom";
 import Loading from "react-loading";
@@ -15,6 +15,8 @@ import Loading from "react-loading";
 export function Layout(props) {
   const [post, setPost] = useState(null);
   const [postmapping, setPostMapping,refpostmapping] = usestateref(null);
+  const [normalTemplate, setNormalTemplate,refnormalTemplate] = usestateref(null);
+  const [customTemplate, setCustomTemplate,refcustomTemplate] = usestateref(null);
   const [jsonGencard, setJsonData] = useState(null);
   const [image, setImage] = useState(templateDZ);
   const [imageB, setImageBack] = useState(templateDZ_Back);
@@ -53,6 +55,8 @@ export function Layout(props) {
   const [layoutloaded, setlayoutloaded] = useState(false);
   const [confirmLayout, setConfirmLayout] = useState(true);
   const [genlayout, setGenlayout] = useState(false);
+  const [shownormal, setShownormal] = useState(false);
+  const [showcustom, setShowCustom] = useState(false);
 
   const data = props.history.location.state?.id
 
@@ -224,6 +228,8 @@ export function Layout(props) {
         }
 
       });
+      let normaltemplate =[];
+      let customtemplate =[];
     await axios
       .get(API_BASE_URL + "/v1/mappinglist", {
         headers: {
@@ -235,18 +241,42 @@ export function Layout(props) {
         for( var layout in response.data.results)
         {
           arrlistlayout[arrlistlayout.length] = response.data.results[layout].layout_name;
+
+          if(response.data.results[layout].custom_template == false)
+          {
+            normaltemplate[normaltemplate.length] =response.data.results[layout].layout_name;
+            setShownormal(true);
+          }
+          else if(response.data.results[layout].custom_template == true)
+          {
+            customtemplate[customtemplate.length] =response.data.results[layout].layout_name;
+            setShowCustom(true);
+          }
+
         }
         setPostMapping(response.data);
+
         //setLayoutlist()
         //setMappingList(response.data.results);
       });
 
-      await axios
+
+      await axios //get normal template
       .post("http://13.212.202.194:8033/card_design_img/", {
-        layout_name: arrlistlayout
+        // layout_name: arrlistlayout
+        layout_name: normaltemplate
       })
       .then((response) => {
-        setMappingList(response.data.output);
+        // setMappingList(response.data.output);
+        setNormalTemplate(response.data.output);
+      });
+
+      await axios // get custom template
+      .post("http://13.212.202.194:8033/card_design_img/", {
+        layout_name: customtemplate
+      })
+      .then((response) => {
+        setCustomTemplate(response.data.output);
       });
 
       await axios
@@ -575,6 +605,14 @@ export function Layout(props) {
             >
               <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full sm:p-6">
                 <div>
+                <button className="ml-auto bg-gray-100 flex-shrink-0 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-200 focus:ring-white float-right"
+                 onClick={() => {
+                  setConfirmLayout(false);
+                }}>
+                    <span className="sr-only">View notifications</span>
+                    <XIcon className="h-6 w-6" aria-hidden="true" />
+                  </button>
+
                   <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
                     <CreditCardIcon
                       className="h-6 w-6 text-green-600"
@@ -595,7 +633,7 @@ export function Layout(props) {
                       </p>
                     </div>
 
-                    {layoutloaded &&(
+                    {/* {layoutloaded &&(
 
                       <div>
                         {mappingList.map((images, index) => (
@@ -613,9 +651,64 @@ export function Layout(props) {
                           </div>
                         ))}
                       </div>
+                    )} */}
+                    {layoutloaded &&(
+
+                      <div>
+                        {shownormal && (
+                          <div>
+                          <div className="left-0">
+                          <p className="mt-2 m-0.5 text-sm text-gray-500">
+                          Normal template
+                          </p>
+                          <hr></hr>
+                          </div>
+                          {normalTemplate.map((images, index) => (
+                            <div className={selectedLayout === images.layout_name ?
+                              "mt-1 m-0.5 inline-flex justify-center rounded-md border border-transparent shadow-sm px-1 py-1 bg-green-700 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm w-5/12 float-left"
+                              :"mt-1 m-0.5 inline-flex justify-center rounded-md border border-transparent shadow-sm px-1 py-1 bg-green-100 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm w-5/12 float-left"}
+                            >
+                              <div>
+                                <div>
+                                  <img onClick={(e) => imageChosen(e.target.alt)} src={images.front} key={index} alt={images.layout_name}></img>
+                                </div>
+
+                                  <div>{images.layout_name} </div>
+                                </div>
+                            </div>
+                          ))}
+                          </div>
+                        )}
+                      </div>
                     )}
 
 
+                    {layoutloaded &&(
+                      <div>
+                      {showcustom && (
+                      <div>
+                        <p className="mt-5 m-0.5 text-sm text-gray-500">
+                        Custom template
+                        </p>
+                        <hr></hr>
+                        {customTemplate.map((images, index) => (
+                          <div className={selectedLayout === images.layout_name ?
+                            "mt-1 m-0.5 inline-flex justify-center rounded-md border border-transparent shadow-sm px-1 py-1 bg-green-700 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm w-5/12 float-left"
+                            :"mt-1 m-0.5 inline-flex justify-center rounded-md border border-transparent shadow-sm px-1 py-1 bg-green-100 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm w-5/12 float-left"}
+                          >
+                            <div>
+                              <div>
+                                <img onClick={(e) => imageChosen(e.target.alt)} src={images.front} key={index} alt={images.layout_name}></img>
+                              </div>
+
+                                <div>{images.layout_name} </div>
+                              </div>
+                          </div>
+                        ))}
+                      </div>
+                      )}
+                    </div>
+                    )}
                   </div>
                 </div>
                 <div className="mt-5 sm:mt-6">
