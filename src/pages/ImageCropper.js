@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import Cropper from "react-easy-crop";
 import getCroppedImg, { generateDownload } from "../utils/cropImage";
 import { Dialog, Transition } from "@headlessui/react";
-import { CheckIcon,PhotographIcon } from "@heroicons/react/outline";
+import { CheckIcon,PhotographIcon,XIcon } from "@heroicons/react/outline";
 import { API_BASE_URL } from "../constrants/apiConstrants";
 import axios from "axios";
 import AuthService from "../services/auth.service";
@@ -407,14 +407,17 @@ export function ImageCropper(props) {
 
   return (
     <>
-      <div className="bg-gray-700  md:w-auto h-auto rounded-md">
-        <div className="bg-black md:w-auto h-auto px-4 py-64 rounded-md relative">
+      <div className="bg-gray-700 rounded-md">
+        <div className="bg-black rounded-md relative">
           {istakephoto &&(
             <>
+            <div className="flex justify-center mt-14">
               <video id="video"></video>
                 <Collapse isOpened={showPreviewTake} high={"auto"}>
                   <canvas id="img"></canvas>
                 </Collapse>
+
+            </div>
 
             </>
           )}
@@ -773,6 +776,13 @@ export function ImageCropper(props) {
             >
               <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6">
                 <div>
+                <button className="ml-auto bg-gray-100 flex-shrink-0 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-200 focus:ring-white float-right"
+                 onClick={() => {
+                  setChosenPhoto(false);
+                }}>
+                    <span className="sr-only">View notifications</span>
+                    <XIcon className="h-6 w-6" aria-hidden="true" />
+                  </button>
                   <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
                     <PhotographIcon
                       className="h-6 w-6 text-green-600"
