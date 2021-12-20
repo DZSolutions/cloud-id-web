@@ -128,6 +128,7 @@ export function Layout(props) {
         {
           if (postmapping.results[layout].upload_photo === true) {
             history.push({pathname:"/"+ props.match.params.org+"/CropImage",state:{id:selectedLayout}});
+            window.location.reload();
           }
           else if(postmapping.results[layout].upload_photo === false) {
             setGenlayout(true);
@@ -652,16 +653,17 @@ export function Layout(props) {
                         ))}
                       </div>
                     )} */}
+                    <div>
                     {layoutloaded &&(
 
                       <div>
                         {shownormal && (
+                          <div >
                           <div>
-                          <div className="left-0">
-                          <p className="mt-2 m-0.5 text-sm text-gray-500">
+                          <p className="flex mt-2 m-0.5 text-sm text-gray-500">
                           Normal template
                           </p>
-                          <hr></hr>
+                          <hr className="mb-0.5"></hr>
                           </div>
                           {normalTemplate.map((images, index) => (
                             <div className={selectedLayout === images.layout_name ?
@@ -681,8 +683,11 @@ export function Layout(props) {
                         )}
                       </div>
                     )}
+                    </div>
 
-
+                  </div>
+                </div>
+                    <div className="mt-5 sm:mt-6">
                     {layoutloaded &&(
                       <div>
                       {showcustom && (
@@ -690,7 +695,7 @@ export function Layout(props) {
                         <p className="mt-5 m-0.5 text-sm text-gray-500">
                         Custom template
                         </p>
-                        <hr></hr>
+                        <hr className="mb-0.5"></hr>
                         {customTemplate.map((images, index) => (
                           <div className={selectedLayout === images.layout_name ?
                             "mt-1 m-0.5 inline-flex justify-center rounded-md border border-transparent shadow-sm px-1 py-1 bg-green-700 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm w-5/12 float-left"
@@ -709,8 +714,7 @@ export function Layout(props) {
                       )}
                     </div>
                     )}
-                  </div>
-                </div>
+                    </div>
                 <div className="mt-5 sm:mt-6">
                   <button
                     type="button"

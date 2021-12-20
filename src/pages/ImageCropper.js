@@ -726,7 +726,7 @@ export function ImageCropper(props) {
                     onClick={() => {
                       props.history.push({pathname:"upload",state:{id:layoutName}});
                       //props.history.goBack();
-                      //window.location.reload();
+                      window.location.reload();
                     }}
                   >
                     Confirm
