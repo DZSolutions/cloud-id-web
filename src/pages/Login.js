@@ -60,7 +60,7 @@ export function Login(props) {
 
     setMessage("");
     setLoading(true);
-    AuthService.login(username, password).then(
+    AuthService.login(props.match.params.org,username, password).then(
       () => {
         // history.push("upload");
         history.push({pathname:"home",state:{id:"login"}});
@@ -68,7 +68,15 @@ export function Login(props) {
       },
       (error) => {
         setLoading(false);
-        setMessage(error.response.data.detail);
+        if(error.response === undefined)
+        {
+          setMessage(error);
+        }
+        else
+        {
+          setMessage(error.response.data.detail);
+        }
+
         // const resMessage =
         //   (error.response &&
         //     error.response.data &&

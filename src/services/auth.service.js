@@ -3,7 +3,7 @@ import { API_BASE_URL } from "../constrants/apiConstrants";
 
 const API_TOKEN_JWT = API_BASE_URL + "/token-jwt/";
 
-const login = (username, password) => {
+const login = (org,username, password) => {
   return (
     axios
       // .post(API_URL + "signin", {
@@ -16,16 +16,22 @@ const login = (username, password) => {
         const jwt = parseJwt(data.access);
         const user_id = jwt.user_id;
         const role = jwt.role;
-        localStorage.setItem("accessToken", data.access);
-        localStorage.setItem("refreshToken", data.refresh);
-        localStorage.setItem("role", jwt.role);
-        localStorage.setItem("username", username);
-        // if (response.data.access) {
-        //   localStorage.setItem("user", JSON.stringify(response.data));
-        // }
 
-        // return response.data;
-        return { user_id, role };
+        if(org ===jwt.organize){
+          localStorage.setItem("accessToken", data.access);
+          localStorage.setItem("refreshToken", data.refresh);
+          localStorage.setItem("role", jwt.role);
+          localStorage.setItem("username", username);
+          // if (response.data.access) {
+          //   localStorage.setItem("user", JSON.stringify(response.data));
+          // }
+
+          // return response.data;
+           return { user_id, role };
+        }
+        else{
+          return Promise.reject("organization not match");
+        }
       })
   );
 };
