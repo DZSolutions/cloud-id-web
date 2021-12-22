@@ -44,6 +44,8 @@ export function ImageCropper(props) {
   const [postmapping, setPostMapping,refpostmapping] = usestateref(null);
   const [mappingList, setMappingList,refmappingList] = usestateref(null);
 
+  const [autozoom, setAutozoom] = useState(1);
+
 
   const onCropComplete = (croppedAreaPercentage, croppedAreaPixels) => {
     setCroppedArea(croppedAreaPixels);
@@ -127,6 +129,27 @@ export function ImageCropper(props) {
               setAllowRemoveBG(postmapping.results[key].removeBG);
               setCropwidth(postmapping.results[key].crop_width);
               setCropheight(postmapping.results[key].crop_height);
+
+              let box = document.getElementById('box');
+              let width = box.offsetWidth;
+              console.log(width);
+              if(width <= postmapping.results[key].crop_width)
+              {
+                  let zoom =((width-10)/postmapping.results[key].crop_width);
+                  setAutozoom(zoom);
+
+                  console.log(zoom);
+                  console.log("width <= postmapping");
+                  console.log(autozoom);
+              }
+              // else if(width > postmapping.results[key].crop_width)
+              // {
+              //   let zoom = postmapping.results[key].crop_width;
+              //   setAutozoom(zoom);
+              //   console.log(zoom);
+              //   console.log("width > postmapping");
+              //   console.log(autozoom);
+              // }
               // if(postmapping.results[key].cropImgcard === true)
               // {
               //   setCropwidth(1016);crop_width
@@ -407,12 +430,12 @@ export function ImageCropper(props) {
 
   return (
     <>
-      <div className="bg-gray-700 rounded-md">
-        <div className="bg-black rounded-md relative">
+      <div className="bg-gray-700 md:w-auto h-auto rounded-md relative">
+        <div id="box" className="bg-black md:w-auto h-auto rounded-md relative" style={{minHeight : (cropheight + 20)+'px' , zoom : autozoom}}>
           {istakephoto &&(
             <>
-            <div className="flex justify-center mt-14">
-              <video id="video"></video>
+            <div className="justify-center" style={{textAlign : 'center'}}>
+              <video id="video" style={{display: 'inline-block'}}></video>
                 <Collapse isOpened={showPreviewTake} high={"auto"}>
                   <canvas id="img"></canvas>
                 </Collapse>
@@ -421,7 +444,7 @@ export function ImageCropper(props) {
 
             </>
           )}
-           <canvas ref={canvasRef} />
+           <canvas ref={canvasRef} style={{height : '0px'}} />
           {image ? (
             <>
               <Cropper
@@ -745,7 +768,7 @@ export function ImageCropper(props) {
             handleClose(event, reason);
         }}
         >
-          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+          <div className="flex items-start justify-center min-h-screen pt-4 px-4 pb-20 text-center">
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
@@ -774,9 +797,9 @@ export function ImageCropper(props) {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6">
+              <div className="self-center	inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6">
                 <div>
-                <button className="ml-auto bg-gray-100 flex-shrink-0 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-200 focus:ring-white float-right"
+                <button className="absolute right-5 ml-auto bg-gray-100 flex-shrink-0 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-200 focus:ring-white float-right"
                  onClick={() => {
                   setChosenPhoto(false);
                 }}>
@@ -809,6 +832,7 @@ export function ImageCropper(props) {
                     onClick={() => {
                       setIstakephoto(true);
                       setChosenPhoto(false);
+                      getWidthHeightCropper();
                       onGetUserMediaButtonClick();
 
 

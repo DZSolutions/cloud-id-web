@@ -606,7 +606,7 @@ export function Layout(props) {
             >
               <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full sm:p-6">
                 <div>
-                <button className="ml-auto bg-gray-100 flex-shrink-0 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-200 focus:ring-white float-right"
+                <button className="absolute right-5 ml-auto bg-gray-100 flex-shrink-0 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-200 focus:ring-white float-right"
                  onClick={() => {
                   setConfirmLayout(false);
                 }}>
@@ -666,9 +666,11 @@ export function Layout(props) {
                           <hr className="mb-0.5"></hr>
                           </div>
                           {normalTemplate.map((images, index) => (
+                            <div className="sm:text-lg md:w-6/12 float-left">
+
                             <div className={selectedLayout === images.layout_name ?
-                              "mt-1 m-0.5 inline-flex justify-center rounded-md border border-transparent shadow-sm px-1 py-1 bg-green-700 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm w-5/12 float-left"
-                              :"mt-1 m-0.5 inline-flex justify-center rounded-md border border-transparent shadow-sm px-1 py-1 bg-green-100 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm w-5/12 float-left"}
+                              "mt-1 m-0.5 inline-flex justify-center rounded-md border border-transparent shadow-sm px-1 py-1 bg-green-700 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 "
+                              :"mt-1 m-0.5 inline-flex justify-center rounded-md border border-transparent shadow-sm px-1 py-1 bg-green-100 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 "}
                             >
                               <div>
                                 <div>
@@ -677,6 +679,7 @@ export function Layout(props) {
 
                                   <div>{images.layout_name} </div>
                                 </div>
+                            </div>
                             </div>
                           ))}
                           </div>
@@ -697,9 +700,10 @@ export function Layout(props) {
                         </p>
                         <hr className="mb-0.5"></hr>
                         {customTemplate.map((images, index) => (
+                          <div className="sm:text-sm w-6/12 float-left">
                           <div className={selectedLayout === images.layout_name ?
-                            "mt-1 m-0.5 inline-flex justify-center rounded-md border border-transparent shadow-sm px-1 py-1 bg-green-700 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm w-5/12 float-left"
-                            :"mt-1 m-0.5 inline-flex justify-center rounded-md border border-transparent shadow-sm px-1 py-1 bg-green-100 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm w-5/12 float-left"}
+                            "mt-1 m-0.5 inline-flex justify-center rounded-md border border-transparent shadow-sm px-1 py-1 bg-green-700 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 "
+                            :"mt-1 m-0.5 inline-flex justify-center rounded-md border border-transparent shadow-sm px-1 py-1 bg-green-100 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"}
                           >
                             <div>
                               <div>
@@ -708,6 +712,7 @@ export function Layout(props) {
 
                                 <div>{images.layout_name} </div>
                               </div>
+                          </div>
                           </div>
                         ))}
                       </div>

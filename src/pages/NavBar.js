@@ -94,7 +94,7 @@ export function NavBar(props) {
                           //   </Fragment>
                           // ) : (
                           <NavLink
-                            key={item}
+                            key={"XXHH-"+itemIdx}
                             to={"/" + orgName + navigationRoute[itemIdx]}
                             activeClassName="active"
                             className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
@@ -187,6 +187,7 @@ export function NavBar(props) {
                     <Fragment key={item}>
                       <NavLink
                         exact
+                        key={"FFD-"+itemIdx}
                         to={"/" + orgName}
                         activeClassName="active"
                         className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
@@ -230,9 +231,10 @@ export function NavBar(props) {
                   </button>
                 </div>
                 <div className="mt-3 px-2 space-y-1">
-                  {profile.map((item) => (
+                  {profile.map((item,index) => (
 
                     <a
+                    key={"CC "+index}
                     href={"logout"}
                     onClick={AuthService.logout}
                     className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700"
