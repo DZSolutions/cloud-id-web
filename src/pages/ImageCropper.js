@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import Cropper from "react-easy-crop";
 import getCroppedImg, { generateDownload } from "../utils/cropImage";
 import { Dialog, Transition } from "@headlessui/react";
-import { CheckIcon,PhotographIcon,XIcon } from "@heroicons/react/outline";
+import { CheckIcon,PhotographIcon,XIcon,CameraIcon,RewindIcon } from "@heroicons/react/outline";
 import { API_BASE_URL } from "../constrants/apiConstrants";
 import axios from "axios";
 import AuthService from "../services/auth.service";
@@ -35,6 +35,10 @@ export function ImageCropper(props) {
   const [isUploading, setIsUpLoading] = useState(false);
   const [istakephoto, setIstakephoto] = useState(false);
   const [ischoosephoto, setIschoosephoto] = useState(false);
+  const [isretake, setIsRetake] = useState(false);
+  const [isretakephoto, setIsRetakePhoto] = useState(false);
+  const [istriggeruploadFile, setIstriggeruploadFile] = useState(false);
+
 
   const [showPreviewTake, setShowPreviewTake] = useState(false);
 
@@ -132,15 +136,10 @@ export function ImageCropper(props) {
 
               let box = document.getElementById('box');
               let width = box.offsetWidth;
-              console.log(width);
               if(width <= postmapping.results[key].crop_width)
               {
                   let zoom =((width-10)/postmapping.results[key].crop_width);
                   setAutozoom(zoom);
-
-                  console.log(zoom);
-                  console.log("width <= postmapping");
-                  console.log(autozoom);
               }
               // else if(width > postmapping.results[key].crop_width)
               // {
@@ -405,27 +404,77 @@ export function ImageCropper(props) {
 
   const stopCam = () => {
     var videoEl = document.getElementById('video');
-    const stream = videoEl.srcObject;
-    const tracks = stream.getTracks();
-    tracks.forEach(function(track) {
-    track.stop();
-    });
-    videoEl.srcObject = null;
+    if (videoEl != null) {
+      const stream = videoEl.srcObject;
+      if (stream != null) {
+        const tracks = stream.getTracks();
+        tracks.forEach(function(track) {
+        track.stop();
+        });
+        videoEl.srcObject = null;
+      }
+    }
+
   }
 
   async function takepicture() {
-    const canvas = document.getElementById('img');
-    const ctx = canvas.getContext('2d');
-    const video = document.getElementById('video');
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    //console.log(canvas.toDataURL()); // base64 data
-    const base64Canvas = await canvas.toDataURL("image/jpeg").split(";base64,")[1];
-    let objImg={};
+    if(istriggeruploadFile === true && isretake === true)
+    {
+      const canvas = document.getElementById('img');
+      const ctx = canvas.getContext('2d');
+      const video = document.getElementById('video');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const base64Canvas = await canvas.toDataURL("image/jpeg").split(";base64,")[1];
+      let objImg={};
 
-    objImg["image"]=base64Canvas;
-    setUploaded([]);
-    setUploaded(objImg);
-    setOpen(true);
+      objImg["image"]=base64Canvas;
+      // setUploaded([]);
+      // setUploaded(objImg);
+      // setOpen(true);
+      setImage(await canvas.toDataURL("image/jpeg"));
+      stopCam();
+      setIstriggeruploadFile(false);
+      setIsRetakePhoto(true);
+    }
+    else if (istriggeruploadFile === true && isretake ===false)
+    {
+      await getMedia();
+      setImage(null);
+      setIsRetake(true);
+      setIsRetakePhoto(false);
+    }
+    else if (istriggeruploadFile === false && isretake ===true && isretakephoto === true)
+    {
+      await getMedia();
+      setImage(null);
+      setIsRetake(true);
+      setIsRetakePhoto(false);
+    }
+    else if(istriggeruploadFile === false && isretake ===false && isretakephoto === true)
+    {
+      await getMedia();
+      setImage(null);
+      setIsRetake(true);
+      setIsRetakePhoto(false);
+    }
+    else
+     {
+     const canvas = document.getElementById('img');
+     const ctx = canvas.getContext('2d');
+     const video = document.getElementById('video');
+     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+     const base64Canvas = await canvas.toDataURL("image/jpeg").split(";base64,")[1];
+     let objImg={};
+
+     objImg["image"]=base64Canvas;
+     setImage(await canvas.toDataURL("image/jpeg"));
+     stopCam();
+     setIsRetakePhoto(true);
+
+    //  setUploaded([]);
+    //  setUploaded(objImg);
+    //  setOpen(true);
+     }
   }
 
   return (
@@ -487,7 +536,18 @@ export function ImageCropper(props) {
               className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               onClick={takepicture}
             >
-              Take photo
+              {isretakephoto ? (
+                      <div>
+                        <span>
+                        <CameraIcon className="h-6 w-6" aria-hidden="true" />
+                        <p>Retake</p>
+                        </span>
+                      </div>
+                    ) : (
+                      <CameraIcon className="h-6 w-6" aria-hidden="true" />
+                    )}
+
+
             </button>
             )
           }
@@ -498,6 +558,9 @@ export function ImageCropper(props) {
               onClick={() => {
                         triggerFileSelectPopup();
                         getWidthHeightCropper();
+                        setIstriggeruploadFile(true);
+                        setIsRetake(false);
+                        stopCam();
                       }}
             >
               Choose
@@ -574,6 +637,18 @@ export function ImageCropper(props) {
 
             </>
           ) : null}
+              <button
+                type="button"
+                className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                onClick={() => {
+                  props.history.push({pathname:"Layout",state:{id:layoutName}});
+                  //props.history.goBack();
+                  window.location.reload();
+                }}
+              >
+                <RewindIcon className="h-6 w-6" aria-hidden="true" />
+                Back
+              </button>
         </div>
       </div>
       <Transition.Root show={open} as={Fragment}>
@@ -826,12 +901,14 @@ export function ImageCropper(props) {
                       </p>
                     </div>
                     <div className="container-buttons flex justify-center space-x-4 pt-5">
+
                   <button
                     type="button"
                     className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
                     onClick={() => {
                       setIstakephoto(true);
                       setChosenPhoto(false);
+                      setIschoosephoto(true);
                       getWidthHeightCropper();
                       onGetUserMediaButtonClick();
 
