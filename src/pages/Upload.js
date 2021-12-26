@@ -8,7 +8,7 @@ import mergeImages from "merge-images";
 import { API_BASE_URL } from "../constrants/apiConstrants";
 import Select, { components } from "react-select";
 import { Dialog, Transition } from "@headlessui/react";
-import { CheckIcon,CreditCardIcon,IdentificationIcon,QrcodeIcon } from "@heroicons/react/outline";
+import { CheckIcon,CreditCardIcon,IdentificationIcon,QrcodeIcon,RewindIcon } from "@heroicons/react/outline";
 import usestateref from 'react-usestateref';
 import {Collapse} from 'react-collapse';
 import { useHistory } from "react-router-dom";
@@ -1597,6 +1597,18 @@ export function Upload(props) {
                         policy
                       </label>
                     </div>
+                    <button
+                type="button"
+                className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                onClick={() => {
+                  props.history.push({pathname:"CropImage",state:{id:layoutName}});
+                  //props.history.goBack();
+                  window.location.reload();
+                }}
+              >
+                <RewindIcon className="h-6 w-6" aria-hidden="true" />
+                Back
+              </button>
                     {/* <Link
                       to={"/" + props.match.params.org + "/CropImage"}
                       className="inline-flex justify-center px-4 py-2 text-white text-3xl font-medium bg-rose-600 hover:bg-rose-500 border border-transparent rounded-full focus:outline-none shadow-sm focus:ring-rose-500 focus:ring-offset-2 focus:ring-2"
@@ -1636,8 +1648,10 @@ export function Upload(props) {
                   )
                   }
                 </>
+
               )}
             </div>
+
           </div>
         </div>
       </div>
