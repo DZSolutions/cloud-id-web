@@ -21,8 +21,8 @@ export function ImageCropper(props) {
   const [croppedArea, setCroppedArea] = useState(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
-  const [cropwidth, setCropwidth] = useState(0);
-  const [cropheight, setCropheight] = useState(0);
+  const [cropwidth, setCropwidth] = useState(300);
+  const [cropheight, setCropheight] = useState(300);
   const [allowRemoveBG, setAllowRemoveBG] = useState(false);
   const [textRemovestatus, setTextRemovestatus] = useState("Please Comfirm Upload");
 
@@ -38,6 +38,7 @@ export function ImageCropper(props) {
   const [isretake, setIsRetake] = useState(false);
   const [isretakephoto, setIsRetakePhoto] = useState(false);
   const [istriggeruploadFile, setIstriggeruploadFile] = useState(false);
+  const [isshowGrid, setIsshowGrid] = useState(false);
 
 
   const [showPreviewTake, setShowPreviewTake] = useState(false);
@@ -538,9 +539,9 @@ export function ImageCropper(props) {
             >
               {isretakephoto ? (
                       <div>
-                        <span>
+                        <span className="relative z-0 inline-flex shadow-sm rounded-md">
                         <CameraIcon className="h-6 w-6" aria-hidden="true" />
-                        <p>Retake</p>
+                        <p className="self-center">Retake</p>
                         </span>
                       </div>
                     ) : (
@@ -914,7 +915,7 @@ export function ImageCropper(props) {
 
 
                     }}>
-                       <p className="flex justify-center">
+                       <p className="self-center">
                        Take photo
                       </p>
                   </button>
@@ -935,7 +936,7 @@ export function ImageCropper(props) {
                         />
                       </div> */}
 
-                      <p className="justify-items-stretch">
+                      <p className="self-center">
                         Choose photo
                       </p>
                   </button>
