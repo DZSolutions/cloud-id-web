@@ -4,7 +4,7 @@ import Cropper from "react-easy-crop";
 import getCroppedImg, { generateDownload } from "../utils/cropImage";
 import { Dialog, Transition } from "@headlessui/react";
 import { CheckIcon,PhotographIcon,XIcon,CameraIcon,RewindIcon } from "@heroicons/react/outline";
-import { API_BASE_URL } from "../constrants/apiConstrants";
+import { API_BASE_URL,API_GENCARD_IMG_URL } from "../constrants/apiConstrants";
 import axios from "axios";
 import AuthService from "../services/auth.service";
 import usestateref from 'react-usestateref';
@@ -310,7 +310,7 @@ export function ImageCropper(props) {
     var dateandtime = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
     let imgfs={};
     await axios
-      .post("http://13.212.202.194:8033/gen_card_img/", {
+      .post(API_GENCARD_IMG_URL, {
         // layout_name: postmapping.results[0].layout_name,
         with_background:true,
         layout_name: layoutName,
@@ -331,11 +331,13 @@ export function ImageCropper(props) {
         Authorization: `Bearer ${accessToken}`,
       },
     };
+    console.log("tempimg");
+    console.log(tempimg);
     const filef = await dataURLtoFile(tempimg['front']);
     const fileb = await dataURLtoFile(tempimg['back']);
     const data = new FormData();
 
-    data.append("ref_id", props.match.params.org+post.results[0].id+currentUser);
+    data.append("ref_id", props.match.params.org+post.results[0].id+currentUser+"_");
     data.append("layout_name", layoutName);
     data.append("img_card_front", filef,  props.match.params.org+post.results[0].id+currentUser+data + "_F.jpg");
     data.append("img_card_back", fileb,  props.match.params.org+post.results[0].id+currentUser+data + "_B.jpg");
@@ -531,6 +533,7 @@ export function ImageCropper(props) {
             ref={inputRef}
             onChange={onSelectFile}
           ></input>
+
           {istakephoto && (
             <button
               type="button"
@@ -564,7 +567,7 @@ export function ImageCropper(props) {
                         stopCam();
                       }}
             >
-              Choose
+              <PhotographIcon className="h-6 w-6" aria-hidden="true" />
             </button>
 
           )}
@@ -597,11 +600,34 @@ export function ImageCropper(props) {
                   ) : null}
                 next step
               </button> */}
-          {image ? (
-            <>
-              <button
+
+        </div>
+        <div className="container-buttons flex justify-center space-x-4 pt-5 pb-2">
+             <button
                 type="button"
                 className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                onClick={() => {
+                  props.history.push({pathname:"Layout",state:{id:layoutName}});
+                  //props.history.goBack();
+                  window.location.reload();
+                }}
+              >
+                <RewindIcon className="h-6 w-6" aria-hidden="true" />
+                Back
+              </button>
+        {image ? (
+            <>
+            <button
+                type="button"
+                className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                onClick={onDownload}
+              >
+                Download
+              </button>
+
+              <button
+                type="button"
+                className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 onClick={onUpload}
                 disabled={isUploading}
               >
@@ -628,28 +654,9 @@ export function ImageCropper(props) {
                 ) : null}
                 Upload
               </button>
-              <button
-                type="button"
-                className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                onClick={onDownload}
-              >
-                Download
-              </button>
-
             </>
           ) : null}
-              <button
-                type="button"
-                className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                onClick={() => {
-                  props.history.push({pathname:"Layout",state:{id:layoutName}});
-                  //props.history.goBack();
-                  window.location.reload();
-                }}
-              >
-                <RewindIcon className="h-6 w-6" aria-hidden="true" />
-                Back
-              </button>
+
         </div>
       </div>
       <Transition.Root show={open} as={Fragment}>
@@ -876,8 +883,10 @@ export function ImageCropper(props) {
               <div className="self-center	inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6">
                 <div>
                 <button className="absolute right-5 ml-auto bg-gray-100 flex-shrink-0 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-200 focus:ring-white float-right"
-                 onClick={() => {
+                onClick={() => {
                   setChosenPhoto(false);
+                  props.history.push({pathname:"layout",state:{id:layoutName}});
+                  window.location.reload();
                 }}>
                     <span className="sr-only">View notifications</span>
                     <XIcon className="h-6 w-6" aria-hidden="true" />
