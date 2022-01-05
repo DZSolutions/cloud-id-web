@@ -5,7 +5,7 @@ import templateDZ_Back from "../images/templateDZ_Back.jpg";
 import AuthService from "../services/auth.service";
 import axios from "axios";
 import mergeImages from "merge-images";
-import { API_BASE_URL,API_GENCARD_IMG_URL } from "../constrants/apiConstrants";
+import { API_BASE_URL,API_GENCARD_IMG_URL,API_REQUEST_PRINTER_URL } from "../constrants/apiConstrants";
 import Select, { components } from "react-select";
 import { Dialog, Transition } from "@headlessui/react";
 import { CheckIcon,CreditCardIcon,IdentificationIcon,QrcodeIcon,RewindIcon } from "@heroicons/react/outline";
@@ -902,7 +902,7 @@ export function Upload(props) {
       });
 
       await axios
-      .get("http://122.248.202.159/api/printers/", {
+      .get(API_REQUEST_PRINTER_URL, {
         // crossdomain: true,
         // withCredentials: false,
         // headers: {
