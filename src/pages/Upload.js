@@ -5,7 +5,7 @@ import templateDZ_Back from "../images/templateDZ_Back.jpg";
 import AuthService from "../services/auth.service";
 import axios from "axios";
 import mergeImages from "merge-images";
-import { API_BASE_URL } from "../constrants/apiConstrants";
+import { API_BASE_URL,API_GENCARD_IMG_URL } from "../constrants/apiConstrants";
 import Select, { components } from "react-select";
 import { Dialog, Transition } from "@headlessui/react";
 import { CheckIcon,CreditCardIcon,IdentificationIcon,QrcodeIcon,RewindIcon } from "@heroicons/react/outline";
@@ -97,6 +97,7 @@ export function Upload(props) {
   const [showcardImgage, setShowcardImgage,refShowcardImgage] = usestateref(false);
   const [adminApprove, setadminApprove] = useState(false);
   const [configPrinter, setConfigPrinter,refConfigPrinter] = usestateref([]);
+  const [backcrop, setbackcrop] = useState(false);
 
   const [isEditData, setIsEditData,refIsEditData] = usestateref(false);
   var photoF;
@@ -381,6 +382,7 @@ export function Upload(props) {
           // if(postmapping.results[layout].layout_name === selectedLayout)
           if(postmapping.results[layout].layout_name === layoutName)
           {
+            setbackcrop(postmapping.results[layout].upload_photo)
             var keyjson= Object.keys(postmapping.results[layout].api_field_name);
             var valuejson= Object.values(postmapping.results[layout].api_field_name);
             setQrcodeData(postmapping.results[layout].QRCODE);
@@ -562,7 +564,7 @@ export function Upload(props) {
     var dateandtime = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
     let imgfs={};
     axios
-      .post("http://13.212.202.194:8033/gen_card_img/", {
+      .post(API_GENCARD_IMG_URL, {
         // layout_name: postmapping.results[0].layout_name,
         with_background:true,
         layout_name: selectedLayout,
@@ -844,7 +846,7 @@ export function Upload(props) {
       })
       .then((response) => {
         setPost(response.data);
-        if(layoutName ==="preview")
+        if(response.data.results[0].ref_id.split('_'[1])!="igree")//layoutName ==="preview"
         {
           setPreview_mode(false);
           setStatus_view(true);
@@ -1005,7 +1007,7 @@ export function Upload(props) {
     var date = new Date();
     var dateandtime = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
     axios
-      .post("http://13.212.202.194:8033/gen_card_img/", {
+      .post(API_GENCARD_IMG_URL, {
         layout_name: postmapping.results[0].layout_name,
         tag: dateandtime,
         input:[daatajson]
@@ -1031,7 +1033,7 @@ export function Upload(props) {
   const mixImagedummy = () => {
 
     axios
-      .post("http://13.212.202.194/gen_card_img/", {
+      .post(API_GENCARD_IMG_URL, {
         layout_name: "TEST LAYOUT NAME XXX",
         tag: "TEST TAG TAG001",
         input:[{
@@ -1066,7 +1068,7 @@ export function Upload(props) {
     const fileb = await dataURLtoFile(photoB);
     const data = new FormData();
 
-    data.append("ref_id", props.match.params.org+currentUser);
+    data.append("ref_id", props.match.params.org+currentUser+"_igree");
     data.append("layout_name", layoutName);
     data.append("status",1);
     data.append("img_card_front", filef,  props.match.params.org+currentUser+data + "_F.jpg");
@@ -1132,7 +1134,7 @@ export function Upload(props) {
       var date = new Date();
       var dateandtime = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
       await axios
-        .post("http://13.212.202.194:8033/gen_card_img/", {
+        .post(API_GENCARD_IMG_URL, {
           // layout_name: postmapping.results[0].layout_name,
           with_background: false,
           layout_name: selectedLayout,
@@ -1224,6 +1226,21 @@ export function Upload(props) {
   };
   const goHistory =()=>{
     history.push({pathname:"/"+ props.match.params.org+"/History",state:{id:selectedLayout}});
+  }
+  async function goBack() {
+
+    if(backcrop === false)
+    {
+      props.history.push({pathname:"layout",state:{id:layoutName}});
+      window.location.reload();
+    }
+    else if ( backcrop ===true)
+    {
+      props.history.push({pathname:"CropImage",state:{id:layoutName}});
+      window.location.reload();
+    }
+
+
   }
 
   return (
@@ -1601,9 +1618,8 @@ export function Upload(props) {
                 type="button"
                 className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 onClick={() => {
-                  props.history.push({pathname:"CropImage",state:{id:layoutName}});
-                  //props.history.goBack();
-                  window.location.reload();
+                  goBack()
+
                 }}
               >
                 <RewindIcon className="h-6 w-6" aria-hidden="true" />

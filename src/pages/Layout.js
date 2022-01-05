@@ -4,7 +4,7 @@ import templateDZ from "../images/templateDZ.jpg";
 import templateDZ_Back from "../images/templateDZ_Back.jpg";
 import AuthService from "../services/auth.service";
 import axios from "axios";
-import { API_BASE_URL } from "../constrants/apiConstrants";
+import { API_BASE_URL,API_GENCARD_IMG_URL,API_REQUEST_CARDTEMPLATE_URL } from "../constrants/apiConstrants";
 import Select, { components } from "react-select";
 import { Dialog, Transition } from "@headlessui/react";
 import { CheckIcon,CreditCardIcon ,XIcon} from "@heroicons/react/outline";
@@ -188,7 +188,7 @@ export function Layout(props) {
     var dateandtime = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
     let imgfs={};
     await axios
-      .post("http://13.212.202.194:8033/gen_card_img/", {
+      .post(API_GENCARD_IMG_URL, {
         with_background:true,
         layout_name: selectedLayout,
         tag: dateandtime,
@@ -263,7 +263,7 @@ export function Layout(props) {
 
 
       await axios //get normal template
-      .post("http://13.212.202.194:8033/card_design_img/", {
+      .post(API_REQUEST_CARDTEMPLATE_URL, {
         // layout_name: arrlistlayout
         layout_name: normaltemplate
       })
@@ -273,7 +273,7 @@ export function Layout(props) {
       });
 
       await axios // get custom template
-      .post("http://13.212.202.194:8033/card_design_img/", {
+      .post(API_REQUEST_CARDTEMPLATE_URL, {
         layout_name: customtemplate
       })
       .then((response) => {
