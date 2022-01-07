@@ -43,10 +43,10 @@ export function History(props) {
   AuthService.getAccessToken();
   const accessToken = localStorage.getItem("accessToken");
 
-  const goNewCard =()=>{
+  function goNewCard (){
     history.push({pathname:"/"+ props.match.params.org+"/Layout",state:{id:""}});
   }
-  const goupload =()=>{
+  function goupload (){
     history.push({pathname:"/"+ props.match.params.org+"/upload",state:{id:"preview"}});
   }
 
@@ -162,14 +162,18 @@ export function History(props) {
         <button
                 type="button"
                 className=" inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                onClick={goupload}
+                onClick={() => {
+                  goupload();
+                }}
               >
                 Back
               </button>
         <button
                 type="button"
                 className="m-8 inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                onClick={goNewCard}
+                onClick={() => {
+                  goNewCard();
+                }}
               >
                 New Card
               </button>
