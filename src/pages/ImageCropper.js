@@ -217,9 +217,7 @@ export function ImageCropper(props) {
       serverHeader
     );
     await AutobuildCard();
-    setIsUpLoading(false);
-    setOpen(false);
-    setConfirm(true);
+
     if(istakephoto == true)
     {
       stopCam();
@@ -344,7 +342,12 @@ export function ImageCropper(props) {
       API_BASE_URL + "/v1/userlist/" + post.results[0].id + "/",
       data,
       serverHeader
-    );
+    ).then(
+      (response) => {
+          setIsUpLoading(false);
+          setOpen(false);
+          setConfirm(true);
+      });
 
   };
 
