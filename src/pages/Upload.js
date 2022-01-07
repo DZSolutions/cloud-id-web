@@ -846,7 +846,7 @@ export function Upload(props) {
       })
       .then((response) => {
         setPost(response.data);
-        if(response.data.results[0].ref_id.split('_'[1])!="igree")//layoutName ==="preview"
+        if(response.data.results[0].ref_id.split('_'[1]) === "igree")//layoutName ==="preview"
         {
           setPreview_mode(false);
           setStatus_view(true);
