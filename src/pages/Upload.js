@@ -40,7 +40,7 @@ export function Upload(props) {
   const [selectedPrinterOption, setSelectPrinterOption] = useState(null);
   const [preview_mode, setPreview_mode] = useState(false);
   const [status_view, setStatus_view] = useState(false);
-  const [status_text, setStatus_text] = useState(null);
+  const [status_text, setStatus_text,refstatus_text] = usestateref(null);
   // const [selectedMapping, setSelectMapping,refselectmapping] = usestateref(null);
 
 
@@ -394,6 +394,7 @@ export function Upload(props) {
 
             setImage(post.results[0].img_card_front);
             setImageBack(post.results[0].img_card_back);
+
             for(var key in keyjson)
             {
               const myObj = JSON.parse(JSON.stringify(post.results[0]));
@@ -846,15 +847,14 @@ export function Upload(props) {
       })
       .then((response) => {
         setPost(response.data);
-        if(response.data.results[0].ref_id.split('_'[1]) === "igree")//layoutName ==="preview"
+        setlayoutName(response.data.results[0].layout_name);
+        if(response.data.results[0].ref_id.split('_')[1] === "igree")//layoutName ==="preview"
         {
           setPreview_mode(false);
           setStatus_view(true);
 
           setSelectLayout(response.data.results[0].layout_name);
           // layoutName = response.data.results[0].layout_name;
-          setlayoutName(response.data.results[0].layout_name);
-
         }
         if (response.data.results[0].status ===0) {
           setStatus_text("No action");
