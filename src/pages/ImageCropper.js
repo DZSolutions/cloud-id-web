@@ -331,8 +331,6 @@ export function ImageCropper(props) {
         Authorization: `Bearer ${accessToken}`,
       },
     };
-    console.log("tempimg");
-    console.log(tempimg);
     const filef = await dataURLtoFile(tempimg['front']);
     const fileb = await dataURLtoFile(tempimg['back']);
     const data = new FormData();
