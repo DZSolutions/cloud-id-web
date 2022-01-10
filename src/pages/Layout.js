@@ -279,7 +279,8 @@ export function Layout(props) {
       .then((response) => {
         setCustomTemplate(response.data.output);
       });
-
+      try
+      {
       await axios
       .get(API_BASE_URL + "/v1/userlist", {
         headers: {
@@ -289,6 +290,11 @@ export function Layout(props) {
       .then((response) => {
         setPost(response.data);
       });
+    }
+      catch(err) {
+      document.getElementById("demo").innerHTML = err.message;
+      console.log(err.message);
+    }
       setlayoutloaded(true);
   }, []);
 
@@ -690,17 +696,18 @@ export function Layout(props) {
 
                   </div>
                 </div>
-                    <div className="mt-5 sm:mt-6">
+                <div>
+                    <div className="mt-5 text-center sm:mt-6">
                     {layoutloaded &&(
                       <div>
                       {showcustom && (
-                      <div>
-                        <p className="mt-5 m-0.5 text-sm text-gray-500">
+                      <div className="relative w-full inline-block">
+                        <p className="mt-5 m-0.5 text-left text-sm text-gray-500">
                         Custom template
                         </p>
                         <hr className="mb-0.5"></hr>
                         {customTemplate.map((images, index) => (
-                          <div className="sm:text-sm w-6/12 float-left">
+                          <div className="sm:text-lg md:w-6/12 float-left">
                           <div className={selectedLayout === images.layout_name ?
                             "mt-1 m-0.5 inline-flex justify-center rounded-md border border-transparent shadow-sm px-1 py-1 bg-green-700 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 "
                             :"mt-1 m-0.5 inline-flex justify-center rounded-md border border-transparent shadow-sm px-1 py-1 bg-green-100 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"}
@@ -720,6 +727,7 @@ export function Layout(props) {
                     </div>
                     )}
                     </div>
+                </div>
                 <div className="mt-5 sm:mt-6">
                   <button
                     type="button"
@@ -728,36 +736,32 @@ export function Layout(props) {
                     onClick={() => {
                       // setConfirmLayout(false);
                       confirmSelectLayout();
-                    }}
-                  >
+                    }}>
 
                     {genlayout ? (
-              <svg
-              className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              />
-            </svg>
+                      <svg
+                        className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                        fill="none"
+                        viewBox="0 0 24 24">
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"/>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                        </svg>
 
-            ) : (
-             null
-            )}
-            {genlayout ? (
-              "Loading template..."
-            ):("Confirm")}
+                                ) : (
+                      null
+                      )}
+                    {genlayout ? (
+                    "Loading template..."
+                    ):("Confirm")}
                   </button>
                 </div>
               </div>
