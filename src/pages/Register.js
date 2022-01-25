@@ -201,7 +201,7 @@ export function Register(props) {
                 htmlFor="username"
                 className="block text-sm font-medium text-gray-700"
               >
-                User ID
+                User Name
               </label>
               <div className="mt-1">
                 <input
