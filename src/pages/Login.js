@@ -60,7 +60,7 @@ export function Login(props) {
 
     setMessage("");
     setLoading(true);
-    AuthService.login(props.match.params.org,username, password).then(
+    AuthService.login(props.match.params.org,props.match.params.org+"_"+username, password).then(
       () => {
         // history.push("upload");
         history.push({pathname:"home",state:{id:"login"}});
