@@ -115,7 +115,7 @@ export function Register(props) {
       // .post(API_URL + "signin", {
       .post(API_BASE_URL + "/v1/register", {
         organization: state.organization,
-        username: state.username,
+        username: state.organization.name+"_"+state.username,
         email: state.email,
         title: state.title,
         password: state.password,
