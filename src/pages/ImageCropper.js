@@ -4,7 +4,7 @@ import Cropper from "react-easy-crop";
 import getCroppedImg, { generateDownload } from "../utils/cropImage";
 import { Dialog, Transition } from "@headlessui/react";
 import { CheckIcon,PhotographIcon,XIcon,CameraIcon,RewindIcon } from "@heroicons/react/outline";
-import { API_BASE_URL,API_GENCARD_IMG_URL } from "../constrants/apiConstrants";
+import { API_BASE_URL,API_GENCARD_IMG_URL,API_GET_IMG_SIZE_URL } from "../constrants/apiConstrants";
 import axios from "axios";
 import AuthService from "../services/auth.service";
 import usestateref from 'react-usestateref';
@@ -127,41 +127,41 @@ export function ImageCropper(props) {
   const getWidthHeightCropper = ()=>{
     if(postmapping.results != null)
     {
-      for(var key in postmapping.results)
-          {
-            if(postmapping.results[key].layout_name === layoutName)
-            {
-              setAllowRemoveBG(postmapping.results[key].removeBG);
-              setCropwidth(postmapping.results[key].crop_width);
-              setCropheight(postmapping.results[key].crop_height);
+      // for(var key in postmapping.results)
+      //     {
+      //       if(postmapping.results[key].layout_name === layoutName)
+      //       {
+      //         setAllowRemoveBG(postmapping.results[key].removeBG);
+      //         setCropwidth(postmapping.results[key].crop_width);
+      //         setCropheight(postmapping.results[key].crop_height);
 
-              let box = document.getElementById('box');
-              let width = box.offsetWidth;
-              if(width <= postmapping.results[key].crop_width)
-              {
-                  let zoom =((width-10)/postmapping.results[key].crop_width);
-                  setAutozoom(zoom);
-              }
-              // else if(width > postmapping.results[key].crop_width)
-              // {
-              //   let zoom = postmapping.results[key].crop_width;
-              //   setAutozoom(zoom);
-              //   console.log(zoom);
-              //   console.log("width > postmapping");
-              //   console.log(autozoom);
-              // }
-              // if(postmapping.results[key].cropImgcard === true)
-              // {
-              //   setCropwidth(1016);crop_width
-              //   setCropheight(642);
-              // }
-              // else if (postmapping.results[key].cropHuman === true)
-              // {
-              //   setCropwidth(395);
-              //   setCropheight(395);
-              // }
-            }
-          }
+      //         let box = document.getElementById('box');
+      //         let width = box.offsetWidth;
+      //         if(width <= postmapping.results[key].crop_width)
+      //         {
+      //             let zoom =((width-10)/postmapping.results[key].crop_width);
+      //             setAutozoom(zoom);
+      //         }
+      //         // else if(width > postmapping.results[key].crop_width)
+      //         // {
+      //         //   let zoom = postmapping.results[key].crop_width;
+      //         //   setAutozoom(zoom);
+      //         //   console.log(zoom);
+      //         //   console.log("width > postmapping");
+      //         //   console.log(autozoom);
+      //         // }
+      //         // if(postmapping.results[key].cropImgcard === true)
+      //         // {
+      //         //   setCropwidth(1016);crop_width
+      //         //   setCropheight(642);
+      //         // }
+      //         // else if (postmapping.results[key].cropHuman === true)
+      //         // {
+      //         //   setCropwidth(395);
+      //         //   setCropheight(395);
+      //         // }
+      //       }
+      //     }
     }
   }
 
@@ -188,6 +188,20 @@ export function ImageCropper(props) {
       })
       .then((response) => {
         setPost(response.data);
+      });
+
+      await axios
+      .post(API_GET_IMG_SIZE_URL, {
+        layout_name: layoutName,
+      })
+      .then((response) => {
+         var img_crop_size = JSON.parse(JSON.stringify(response.data.output.front[0]));
+         setCropwidth(img_crop_size['width']);
+         setCropheight(img_crop_size['height']);
+        //  console.log("response");
+        //  console.log(img_crop_size);
+        //  console.log(img_crop_size['width']);
+        //  console.log(img_crop_size['height']);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
     setChosenPhoto(true);
