@@ -198,10 +198,6 @@ export function ImageCropper(props) {
          var img_crop_size = JSON.parse(JSON.stringify(response.data.output.front[0]));
          setCropwidth(img_crop_size['width']);
          setCropheight(img_crop_size['height']);
-        //  console.log("response");
-        //  console.log(img_crop_size);
-        //  console.log(img_crop_size['width']);
-        //  console.log(img_crop_size['height']);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
     setChosenPhoto(true);
