@@ -21,8 +21,8 @@ export function ImageCropper(props) {
   const [croppedArea, setCroppedArea] = useState(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
-  const [cropwidth, setCropwidth] = useState(300);
-  const [cropheight, setCropheight] = useState(300);
+  const [cropwidth, setCropwidth] = useState(0);
+  const [cropheight, setCropheight] = useState(0);
   const [allowRemoveBG, setAllowRemoveBG] = useState(false);
   const [textRemovestatus, setTextRemovestatus] = useState("Please Comfirm Upload");
 
@@ -196,8 +196,27 @@ export function ImageCropper(props) {
       })
       .then((response) => {
          var img_crop_size = JSON.parse(JSON.stringify(response.data.output.front[0]));
-         setCropwidth(img_crop_size['width']);
-         setCropheight(img_crop_size['height']);
+         var width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+        if(width <= img_crop_size['width'])
+        {
+          let wsize = img_crop_size['width'];
+          let hsize = img_crop_size['height'];
+          for (let index = 99; index != 0; index--) {
+            let wresult = (wsize*index)/100;
+            if(wresult < width-10)
+            {
+              hsize = (hsize*index)/100;
+              setCropwidth(wresult);
+              setCropheight(hsize);
+              break;
+            }
+          }
+        }
+        else if (width > img_crop_size['width'])
+        {
+          setCropwidth(img_crop_size['width']);
+          setCropheight(img_crop_size['height']);
+        }
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
     setChosenPhoto(true);
