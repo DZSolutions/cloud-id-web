@@ -39,6 +39,9 @@ export function ImageCropper(props) {
   const [isretakephoto, setIsRetakePhoto] = useState(false);
   const [istriggeruploadFile, setIstriggeruploadFile] = useState(false);
   const [isshowGrid, setIsshowGrid] = useState(false);
+  const [codeR, setCodeR] = useState(0);
+  const [codeG, setCodeG] = useState(0);
+  const [codeB, setCodeB] = useState(0);
 
 
   const [showPreviewTake, setShowPreviewTake] = useState(false);
@@ -98,7 +101,7 @@ export function ImageCropper(props) {
 
       var payload = JSON.stringify({
         image: base64Canvas,
-        fill_color: { red: 174, green: 126, blue: 186 },
+        fill_color: { red: codeR, green: codeG, blue: codeB },
       });
 
       const response = await axios.post(
@@ -124,44 +127,51 @@ export function ImageCropper(props) {
     setIsUpLoading(false);
   };
 
-  const getWidthHeightCropper = ()=>{
+  const getCheckconfigvalue = ()=>{
     if(postmapping.results != null)
     {
-      // for(var key in postmapping.results)
-      //     {
-      //       if(postmapping.results[key].layout_name === layoutName)
-      //       {
-      //         setAllowRemoveBG(postmapping.results[key].removeBG);
-      //         setCropwidth(postmapping.results[key].crop_width);
-      //         setCropheight(postmapping.results[key].crop_height);
+      for(var key in postmapping.results)
+          {
+            if(postmapping.results[key].layout_name === layoutName)
+            {
+              setAllowRemoveBG(postmapping.results[key].removeBG);
+              if(postmapping.results[key].removeBG)
+              {
+                setCodeR(postmapping.results[key].r);
+                setCodeG(postmapping.results[key].g);
+                setCodeB(postmapping.results[key].b);
+              }
+              break;
+              // setCropwidth(postmapping.results[key].crop_width);
+              // setCropheight(postmapping.results[key].crop_height);
 
-      //         let box = document.getElementById('box');
-      //         let width = box.offsetWidth;
-      //         if(width <= postmapping.results[key].crop_width)
-      //         {
-      //             let zoom =((width-10)/postmapping.results[key].crop_width);
-      //             setAutozoom(zoom);
-      //         }
-      //         // else if(width > postmapping.results[key].crop_width)
-      //         // {
-      //         //   let zoom = postmapping.results[key].crop_width;
-      //         //   setAutozoom(zoom);
-      //         //   console.log(zoom);
-      //         //   console.log("width > postmapping");
-      //         //   console.log(autozoom);
-      //         // }
-      //         // if(postmapping.results[key].cropImgcard === true)
-      //         // {
-      //         //   setCropwidth(1016);crop_width
-      //         //   setCropheight(642);
-      //         // }
-      //         // else if (postmapping.results[key].cropHuman === true)
-      //         // {
-      //         //   setCropwidth(395);
-      //         //   setCropheight(395);
-      //         // }
-      //       }
-      //     }
+              // let box = document.getElementById('box');
+              // let width = box.offsetWidth;
+              // if(width <= postmapping.results[key].crop_width)
+              // {
+              //     let zoom =((width-10)/postmapping.results[key].crop_width);
+              //     setAutozoom(zoom);
+              // }
+              // else if(width > postmapping.results[key].crop_width)
+              // {
+              //   let zoom = postmapping.results[key].crop_width;
+              //   setAutozoom(zoom);
+              //   console.log(zoom);
+              //   console.log("width > postmapping");
+              //   console.log(autozoom);
+              // }
+              // if(postmapping.results[key].cropImgcard === true)
+              // {
+              //   setCropwidth(1016);crop_width
+              //   setCropheight(642);
+              // }
+              // else if (postmapping.results[key].cropHuman === true)
+              // {
+              //   setCropwidth(395);
+              //   setCropheight(395);
+              // }
+            }
+          }
     }
   }
 
@@ -178,6 +188,7 @@ export function ImageCropper(props) {
       .then((response) => {
         setPostMapping(response.data);
         setMappingList(response.data.results);
+
       });
 
     await axios
@@ -591,7 +602,7 @@ export function ImageCropper(props) {
               className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               onClick={() => {
                         triggerFileSelectPopup();
-                        getWidthHeightCropper();
+                        getCheckconfigvalue();
                         setIstriggeruploadFile(true);
                         setIsRetake(false);
                         stopCam();
@@ -949,7 +960,7 @@ export function ImageCropper(props) {
                       setIstakephoto(true);
                       setChosenPhoto(false);
                       setIschoosephoto(true);
-                      getWidthHeightCropper();
+                      getCheckconfigvalue();
                       onGetUserMediaButtonClick();
 
 
@@ -965,7 +976,7 @@ export function ImageCropper(props) {
                       setIschoosephoto(true);
                       setChosenPhoto(false);
                       triggerFileSelectPopup();
-                      getWidthHeightCropper();
+                      getCheckconfigvalue();
 
                     }}>
                       {/* <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
