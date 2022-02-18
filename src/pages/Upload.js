@@ -1236,7 +1236,7 @@ export function Upload(props) {
     }
     else if ( backcrop ===true)
     {
-      props.history.push({pathname:"CropImage",state:{id:layoutName}});
+      props.history.push({pathname:"CropImage",state:{id:layoutName+"~show"}});
       window.location.reload();
     }
 

@@ -18,6 +18,7 @@ export function ImageCropper(props) {
   const triggerFileSelectPopup = () => inputRef.current.click();
 
   const [image, setImage] = useState(null);
+  const [imageOri, setImageOri] = useState(null);
   const [croppedArea, setCroppedArea] = useState(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -27,6 +28,7 @@ export function ImageCropper(props) {
   const [textRemovestatus, setTextRemovestatus] = useState("Please Comfirm Upload");
 
   const [ChosenPhoto, setChosenPhoto] = useState(false);
+  const [AutoGetImage, setAutoGetImage] = useState(false);
 
   const [uploaded, setUploaded] = useState([]);
   const cancelButtonRef = useRef(null);
@@ -59,7 +61,10 @@ export function ImageCropper(props) {
     setCroppedArea(croppedAreaPixels);
   };
 
-  const layoutName = props.history.location.state?.id
+  const layoutName = props.history.location.state?.id.split("~")[0];
+  if(props.history.location.state?.id.split("~")[1] ==="show")
+  {
+  }
 
   const onSelectFile = (event) => {
     if (event.target.files && event.target.files.length > 0) {
@@ -67,6 +72,7 @@ export function ImageCropper(props) {
       reader.readAsDataURL(event.target.files[0]);
       reader.addEventListener("load", () => {
         setImage(reader.result);
+        setImageOri(reader.result);
       });
     }
   };
@@ -191,16 +197,6 @@ export function ImageCropper(props) {
 
       });
 
-    await axios
-      .get(API_BASE_URL + "/v1/userlist", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-      .then((response) => {
-        setPost(response.data);
-      });
-
       await axios
       .post(API_GET_IMG_SIZE_URL, {
         layout_name: layoutName,
@@ -229,6 +225,22 @@ export function ImageCropper(props) {
           setCropheight(img_crop_size['height']);
         }
       });
+
+      await axios
+      .get(API_BASE_URL + "/v1/userlist", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((response) => {
+        setPost(response.data);
+        if(props.history.location.state?.id.split("~")[1] ==="show")
+        {
+          setAutoGetImage(true);
+          setImage(response.data.results[0].photo_Original);
+
+        }
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
     setChosenPhoto(true);
     const canvas = canvasRef.current;
@@ -248,14 +260,17 @@ export function ImageCropper(props) {
     };
     let dataToUpload = `data:image/jpeg;base64,${uploaded.image}`;
     const file = dataURLtoFile(dataToUpload);
+    const file_2 = dataURLtoFile(imageOri);
     const data = new FormData();
     data.append("photo", file, post.results[0].id + ".jpg");
+    data.append("photo_Original", file_2, post.results[0].id + ".jpg");
     // put file into form data
     axios.patch(
       API_BASE_URL + "/v1/userlist/" + post.results[0].id + "/",
       data,
       serverHeader
     );
+
     await AutobuildCard();
 
     if(istakephoto == true)
@@ -938,22 +953,46 @@ export function ImageCropper(props) {
                       aria-hidden="true"
                     />
                   </div>
+
                   <div className="mt-3 text-center sm:mt-5">
                     <Dialog.Title
                       as="h3"
                       className="text-lg leading-6 font-medium text-gray-900"
                     >
-                      STEP 2: Upload Your Photo
+                      {AutoGetImage ? ("Check your Photo")
+
+                            :"STEP 2: Upload Your Photo"}
+
                     </Dialog.Title>
 
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
-                      Either Take a Photo or Choose a Photo​.
+
+                      {AutoGetImage ? ("move or resize for your photo.")
+
+                            :"Either Take a Photo or Choose a Photo​."}
                       </p>
                     </div>
-                    <div className="container-buttons flex justify-center space-x-4 pt-5">
 
-                  <button
+                    {AutoGetImage ? (
+                      <div className="container-buttons flex justify-center space-x-4 pt-5">
+                      <button
+                      type="button"
+                      className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
+                      onClick={() => {
+                        setIschoosephoto(true);
+                        setChosenPhoto(false);
+                        getCheckconfigvalue();
+                      }}>
+                         <p className="self-center">
+                         OK
+                        </p>
+                    </button>
+                    </div>
+
+                    ):
+                    <div className="container-buttons flex justify-center space-x-4 pt-5">
+                    <button
                     type="button"
                     className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
                     onClick={() => {
@@ -970,27 +1009,29 @@ export function ImageCropper(props) {
                       </p>
                   </button>
                   <button
-                    type="button"
-                    className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
-                    onClick={() => {
-                      setIschoosephoto(true);
-                      setChosenPhoto(false);
-                      triggerFileSelectPopup();
-                      getCheckconfigvalue();
+                  type="button"
+                  className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
+                  onClick={() => {
+                    setIschoosephoto(true);
+                    setChosenPhoto(false);
+                    getCheckconfigvalue();
+                    triggerFileSelectPopup();
 
-                    }}>
-                      {/* <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
-                        <PhotographIcon
-                        className="h-6 w-6 text-green-600"
-                        aria-hidden="true"
-                        />
-                      </div> */}
+                  }}>
+                    {/* <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+                      <PhotographIcon
+                      className="h-6 w-6 text-green-600"
+                      aria-hidden="true"
+                      />
+                    </div> */}
 
-                      <p className="self-center">
-                        Choose photo
-                      </p>
-                  </button>
-                </div>
+                    <p className="self-center">
+                      Choose photo
+                    </p>
+                  </button> </div>}
+
+
+
                   </div>
                 </div>
               </div>

@@ -127,7 +127,7 @@ export function Layout(props) {
         if(postmapping.results[layout].layout_name === selectedLayout)
         {
           if (postmapping.results[layout].upload_photo === true) {
-            history.push({pathname:"/"+ props.match.params.org+"/CropImage",state:{id:selectedLayout}});
+            history.push({pathname:"/"+ props.match.params.org+"/CropImage",state:{id:selectedLayout+"~waitimg"}});
             window.location.reload();
           }
           else if(postmapping.results[layout].upload_photo === false) {
