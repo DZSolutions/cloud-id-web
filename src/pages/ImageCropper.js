@@ -238,6 +238,7 @@ export function ImageCropper(props) {
         {
           setAutoGetImage(true);
           setImage(response.data.results[0].photo_Original);
+          //setImageOri(getBase64FromUrl(response.data.results[0].photo_Original));
 
         }
       });
@@ -260,10 +261,13 @@ export function ImageCropper(props) {
     };
     let dataToUpload = `data:image/jpeg;base64,${uploaded.image}`;
     const file = dataURLtoFile(dataToUpload);
-    const file_2 = dataURLtoFile(imageOri);
     const data = new FormData();
     data.append("photo", file, post.results[0].id + ".jpg");
-    data.append("photo_Original", file_2, post.results[0].id + ".jpg");
+    if(imageOri != null)
+    {
+      const file_2 = dataURLtoFile(imageOri);
+      data.append("photo_Original", file_2, post.results[0].id + ".jpg");
+    }
     // put file into form data
     axios.patch(
       API_BASE_URL + "/v1/userlist/" + post.results[0].id + "/",
@@ -283,6 +287,7 @@ export function ImageCropper(props) {
   const dataURLtoFile = (dataurl, filename) => {
     const arr = dataurl.split(",");
     const mime = arr[0].match(/:(.*?);/)[1];
+
     const bstr = atob(arr[1]);
     let n = bstr.length;
     const u8arr = new Uint8Array(n);
