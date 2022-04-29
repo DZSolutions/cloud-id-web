@@ -241,6 +241,8 @@ export function Layout(props) {
         let layoutname='';
         for( var layout in response.data.results)
         {
+          if(response.data.results[layout].Disable_template != true)
+          {
           arrlistlayout[arrlistlayout.length] = response.data.results[layout].layout_name;
 
           if(response.data.results[layout].custom_template == false)
@@ -253,6 +255,7 @@ export function Layout(props) {
             customtemplate[customtemplate.length] =response.data.results[layout].layout_name;
             setShowCustom(true);
           }
+        }
 
         }
         setPostMapping(response.data);
