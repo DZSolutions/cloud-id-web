@@ -2,6 +2,8 @@ import { useRef, useState, Fragment, useEffect } from "react";
 import React, { Component } from 'react';
 import Cropper from "react-easy-crop";
 import getCroppedImg, { generateDownload } from "../utils/cropImage";
+import visalogo from "../images/visa.png";
+import chip from "../images/chip.png";
 import { Dialog, Transition } from "@headlessui/react";
 import { CheckIcon,PhotographIcon,XIcon,CameraIcon,RewindIcon } from "@heroicons/react/outline";
 import { API_BASE_URL,API_GENCARD_IMG_URL,API_GET_IMG_SIZE_URL } from "../constrants/apiConstrants";
@@ -26,6 +28,8 @@ export function ImageCropper(props) {
   const [cropheight, setCropheight] = useState(0);
   const [allowRemoveBG, setAllowRemoveBG] = useState(false);
   const [textRemovestatus, setTextRemovestatus] = useState("Please Comfirm Upload");
+  const [imagevisa, setImagevisa] = useState(visalogo);
+  const [chiplogo, setchiplogo] = useState(chip);
 
   const [ChosenPhoto, setChosenPhoto] = useState(false);
   const [AutoGetImage, setAutoGetImage] = useState(false);
@@ -543,7 +547,11 @@ export function ImageCropper(props) {
 
   return (
     <>
+
       <div className="bg-gray-700 md:w-auto h-auto rounded-md relative">
+        <div className="">
+
+        </div>
         <div id="box" className="bg-black md:w-auto h-auto rounded-md relative" style={{minHeight : (cropheight + 20)+'px' , zoom : autozoom}}>
           {istakephoto &&(
             <>
@@ -572,6 +580,10 @@ export function ImageCropper(props) {
               />
             </>
           ) : null}
+          <img className="absolute block h-14 bottom-56 left-48 z-40" src={chiplogo} alt="" />
+          <p className="absolute block h-14 bottom-32 left-48 z-40 text-gray-900 text-2xl font-bold">9999 9999 9999 9999</p>
+          <p className="absolute block h-14 bottom-10 left-48 z-40 text-gray-900 text-xl font-bold">FIRSTNAME LASTNAME</p>
+          <img className="absolute block h-14 bottom-10 right-32 z-40" src={imagevisa} alt="" />
         </div>
         {image ? (
           <div className="flex justify-center pt-5">
@@ -1004,10 +1016,10 @@ export function ImageCropper(props) {
                       setIstakephoto(true);
                       setChosenPhoto(false);
                       setIschoosephoto(true);
+                      setImagevisa(visalogo);
+                      setchiplogo(chip);
                       getCheckconfigvalue();
                       onGetUserMediaButtonClick();
-
-
                     }}>
                        <p className="self-center">
                        Take photo
@@ -1019,6 +1031,8 @@ export function ImageCropper(props) {
                   onClick={() => {
                     setIschoosephoto(true);
                     setChosenPhoto(false);
+                    setImagevisa(visalogo);
+                    setchiplogo(chip);
                     getCheckconfigvalue();
                     triggerFileSelectPopup();
 
