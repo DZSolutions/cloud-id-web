@@ -4,6 +4,7 @@ import Cropper from "react-easy-crop";
 import getCroppedImg, { generateDownload } from "../utils/cropImage";
 import visalogo from "../images/visa.png";
 import chip from "../images/chip.png";
+import abc from "../images/abc.PNG";
 import { Dialog, Transition } from "@headlessui/react";
 import { CheckIcon,PhotographIcon,XIcon,CameraIcon,RewindIcon } from "@heroicons/react/outline";
 import { API_BASE_URL,API_GENCARD_IMG_URL,API_GET_IMG_SIZE_URL } from "../constrants/apiConstrants";
@@ -28,8 +29,10 @@ export function ImageCropper(props) {
   const [cropheight, setCropheight] = useState(0);
   const [allowRemoveBG, setAllowRemoveBG] = useState(false);
   const [textRemovestatus, setTextRemovestatus] = useState("Please Comfirm Upload");
+
   const [imagevisa, setImagevisa] = useState(visalogo);
   const [chiplogo, setchiplogo] = useState(chip);
+  const [abclogo, setabclogo] = useState(abc);
 
   const [ChosenPhoto, setChosenPhoto] = useState(false);
   const [AutoGetImage, setAutoGetImage] = useState(false);
@@ -549,9 +552,6 @@ export function ImageCropper(props) {
     <>
 
       <div className="bg-gray-700 md:w-auto h-auto rounded-md relative">
-        <div className="">
-
-        </div>
         <div id="box" className="bg-black md:w-auto h-auto rounded-md relative" style={{minHeight : (cropheight + 20)+'px' , zoom : autozoom}}>
           {istakephoto &&(
             <>
@@ -580,10 +580,15 @@ export function ImageCropper(props) {
               />
             </>
           ) : null}
-          <img className="absolute block h-14 bottom-56 left-48 z-40" src={chiplogo} alt="" />
-          <p className="absolute block h-14 bottom-32 left-48 z-40 text-gray-900 text-2xl font-bold">9999 9999 9999 9999</p>
-          <p className="absolute block h-14 bottom-10 left-48 z-40 text-gray-900 text-xl font-bold">FIRSTNAME LASTNAME</p>
-          <img className="absolute block h-14 bottom-10 right-32 z-40" src={imagevisa} alt="" />
+          <img className="absolute block h-14 bottom-56 left-48 z-0" src={chiplogo} alt="" />
+          <img className="absolute block h-14 top-10 right-52 z-0" src={abclogo} alt="" />
+          <p className="absolute block h-14 bottom-32 left-48 z-0 text-gray-900 text-2xl font-bold">9999 9999 9999 9999 </p>
+          <p className="absolute block h-14 bottom-24 left-48 z-0 text-gray-900 text-sm font-bold">VALID FROM</p>
+          <p className="absolute block h-14 bottom-20 left-48 z-0 text-gray-900 text-l font-bold">05/22</p>
+          <p className="absolute block h-14 bottom-24 left-80 z-0 text-gray-900 text-sm font-bold">VALID THRU</p>
+          <p className="absolute block h-14 bottom-20 left-80 -z-0 text-gray-900 text-l font-bold">05/27</p>
+          <p className="absolute block h-14 bottom-10 left-48 z-0 text-gray-900 text-xl font-bold">FIRSTNAME   LASTNAME</p>
+          <img className="absolute block h-14 bottom-10 right-32 z-0" src={imagevisa} alt="" />
         </div>
         {image ? (
           <div className="flex justify-center pt-5">
@@ -741,7 +746,7 @@ export function ImageCropper(props) {
             handleClose(event, reason);
         }}
         >
-          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0 z-20">
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
@@ -847,7 +852,7 @@ export function ImageCropper(props) {
           className="fixed z-10 inset-0 overflow-y-auto"
           onClose={setConfirm}
         >
-          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0 z-30">
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
@@ -924,7 +929,7 @@ export function ImageCropper(props) {
             handleClose(event, reason);
         }}
         >
-          <div className="flex items-start justify-center min-h-screen pt-4 px-4 pb-20 text-center">
+          <div className="flex items-start justify-center min-h-screen pt-4 px-4 pb-20 text-center Z-10">
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
@@ -1018,6 +1023,7 @@ export function ImageCropper(props) {
                       setIschoosephoto(true);
                       setImagevisa(visalogo);
                       setchiplogo(chip);
+                      setabclogo(abc);
                       getCheckconfigvalue();
                       onGetUserMediaButtonClick();
                     }}>
@@ -1033,6 +1039,7 @@ export function ImageCropper(props) {
                     setChosenPhoto(false);
                     setImagevisa(visalogo);
                     setchiplogo(chip);
+                    setabclogo(abc);
                     getCheckconfigvalue();
                     triggerFileSelectPopup();
 
