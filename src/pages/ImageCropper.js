@@ -26,6 +26,7 @@ export function ImageCropper(props) {
   const [image, setImage] = useState(null);
   const [imageOri, setImageOri] = useState(null);
   const [croppedArea, setCroppedArea] = useState(null);
+  const [croppedAreaPreview, setCroppedAreaPreview] = useState(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [rotation, setRotation] = useState(0);
@@ -95,9 +96,10 @@ export function ImageCropper(props) {
     return (
       <div
         className="relative w-80 z-20 overflow-hidden shadow-gray-900 rounded-lg"
-        style={{ zIndex:3 }}
+        // className="output"
+        style={{ paddingBottom: `${100 / CROP_AREA_ASPECT}%` }}
       >
-        <img src={image} alt="" style={imageStyle} />
+        <img className="absolute top-0 left-0 origin-top-left" src={image} alt="" style={imageStyle} />
       </div>
     );
   };
@@ -183,10 +185,10 @@ export function ImageCropper(props) {
                 setCodeG(postmapping.results[key].g);
                 setCodeB(postmapping.results[key].b);
               }
-              if(postmapping.results[key].cover_layout != null)
-              {
-                setmycardlogo(postmapping.results[key].cover_layout);
-              }
+              // if(postmapping.results[key].cover_layout != null)
+              // {
+              //   setmycardlogo(postmapping.results[key].cover_layout);
+              // }
               break;
               // setCropwidth(postmapping.results[key].crop_width);
               // setCropheight(postmapping.results[key].crop_height);
@@ -633,15 +635,15 @@ export function ImageCropper(props) {
                 onCropChange={setCrop}
                 onZoomChange={setZoom}
                 onCropComplete={onCropComplete}
-                onCropAreaChange={(croppedArea) => {
-                  setCroppedArea(croppedArea);
+                onCropAreaChange={(croppedAreaPreview) => {
+                  setCroppedAreaPreview(croppedAreaPreview);
                 }}
               />
             </>
           ) : null}
           {mycardlogo ? (
             <div class="absolute bottom-3 right-3 ring-2 ring-gray-900 ring-offset-2 rounded-lg">
-              {croppedArea && <Output croppedArea={croppedArea} />}
+              {croppedAreaPreview && <Output croppedArea={croppedAreaPreview} />}
               <img className="absolute bottom-0 right-0 rounded-lg z-40" src={mycardlogo} alt=""/>
             </div>
           ):null}
@@ -666,7 +668,7 @@ export function ImageCropper(props) {
               onChange={(e) => setZoom(e.target.value)}
             ></input>
 
-            <p>Rotation</p>
+            {/* <p>Rotation</p>
             <input
               type="range"
               min="0"
@@ -674,7 +676,7 @@ export function ImageCropper(props) {
               max="360"
               value={rotation}
               onChange={(e) => setRotation(e.target.value)}
-            ></input>
+            ></input> */}
 
           </div>
         ) : null}
@@ -1111,7 +1113,7 @@ export function ImageCropper(props) {
                     setIschoosephoto(true);
                     setChosenPhoto(false);
                     getCheckconfigvalue();
-                    //setmycardlogo(mycard);
+                    setmycardlogo(mycard);
                     // MockupCard();
                     triggerFileSelectPopup();
 
