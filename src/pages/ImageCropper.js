@@ -2,7 +2,8 @@ import { useRef, useState, Fragment, useEffect } from "react";
 import React, { Component } from 'react';
 import Cropper from "react-easy-crop";
 import getCroppedImg, { generateDownload } from "../utils/cropImage";
-import mycard from "../images/my-business-card1-removebg.png";
+// import mycard from "../images/my-business-card1-removebg.png";
+// import mycard from "../images/my-business-card (5).png";
 
 import { Dialog, Transition } from "@headlessui/react";
 import { CheckIcon,PhotographIcon,XIcon,CameraIcon,RewindIcon } from "@heroicons/react/outline";
@@ -185,10 +186,10 @@ export function ImageCropper(props) {
                 setCodeG(postmapping.results[key].g);
                 setCodeB(postmapping.results[key].b);
               }
-              // if(postmapping.results[key].cover_layout != null)
-              // {
-              //   setmycardlogo(postmapping.results[key].cover_layout);
-              // }
+              if(postmapping.results[key].cover_layout != null)
+              {
+                setmycardlogo(postmapping.results[key].cover_layout);
+              }
               break;
               // setCropwidth(postmapping.results[key].crop_width);
               // setCropheight(postmapping.results[key].crop_height);
@@ -628,9 +629,9 @@ export function ImageCropper(props) {
                 restrictPosition={false}
                 cropSize={{width: cropwidth, height: cropheight}}
                 rotation={rotation}
-                style={{containerStyle:{ position: "absolute",zIndex:1 ,opacity:0.6},
+                style={{containerStyle:{ position: "absolute"},
                 mediaStyle: { height: "100%", display: "block" },
-                cropAreaStyle: {position: "absolute",opacity:0.5 }}}
+                cropAreaStyle: {position: "absolute",opacity:0.5,borderRadius:"8px" }}}
                 onRotationChange={setRotation}
                 onCropChange={setCrop}
                 onZoomChange={setZoom}
@@ -641,19 +642,19 @@ export function ImageCropper(props) {
               />
             </>
           ) : null}
-          {mycardlogo ? (
-            <div class="absolute bottom-3 right-3 ring-2 ring-gray-900 ring-offset-2 rounded-lg">
+          {/* {mycardlogo ? (
+            <div className="absolute bottom-3 right-3 ring-2 ring-gray-900 ring-offset-2 rounded-lg">
               {croppedAreaPreview && <Output croppedArea={croppedAreaPreview} />}
               <img className="absolute bottom-0 right-0 rounded-lg z-40" src={mycardlogo} alt=""/>
             </div>
-          ):null}
+          ):null} */}
 
-            {/* <div className="flex justify-center">
+            <div className="flex justify-center pointer-events-none">
 
           {mycardlogo ? (
-            <img className="absolute bottom-3 right-3 rounded-lg" src={mycardlogo} alt=""/>
+            <img className="absolute bottom-3 right-3 rounded-lg z-3" src={mycardlogo} alt=""/>
           ):null}
-            </div> */}
+            </div>
         </div>
         {image ? (
           <div className="flex justify-center pt-5">
@@ -1113,7 +1114,7 @@ export function ImageCropper(props) {
                     setIschoosephoto(true);
                     setChosenPhoto(false);
                     getCheckconfigvalue();
-                    setmycardlogo(mycard);
+                    // setmycardlogo(mycard);
                     // MockupCard();
                     triggerFileSelectPopup();
 
