@@ -237,12 +237,6 @@ export function ImageCropper(props) {
       .then((response) => {
         setPostMapping(response.data);
         setMappingList(response.data.results);
-        console.log(response.data);
-        if(response.data != null)
-        {
-
-        }
-
       });
 
       await axios
@@ -619,6 +613,7 @@ export function ImageCropper(props) {
             </>
           )}
            <canvas  ref={canvasRef} style={{height : '0px'}} />
+           <div className="flex justify-center">
           {image ? (
             <>
               <Cropper
@@ -649,10 +644,8 @@ export function ImageCropper(props) {
             </div>
           ):null} */}
 
-            <div className="flex justify-center pointer-events-none">
-
           {mycardlogo ? (
-            <img className="absolute bottom-3 right-3 rounded-lg z-3" src={mycardlogo} alt=""/>
+            <img id="cover" style={{height:"50%",width: "1014px",margin:"15px"}} className="rounded-lg z-10 pointer-events-none" src={mycardlogo} alt=""/>
           ):null}
             </div>
         </div>
