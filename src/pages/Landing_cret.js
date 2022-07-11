@@ -45,6 +45,7 @@ export function Landing_cret(props) {
     <>
       <div className="relative mt-12 sm:mt-4 lg:mt-12">
         <div className="lg:grid lg:grid-flow-row-dense lg:gap-8 lg:items-center">
+          {token &&(
           <div className="m-5 relative lg:mt-0 lg:col-start-1">
               {
                 isFront ? (
@@ -77,7 +78,7 @@ export function Landing_cret(props) {
             </div>
 
           </div>
-
+          )}
         </div>
       </div>
     </>
