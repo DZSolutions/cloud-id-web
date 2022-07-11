@@ -13,6 +13,7 @@ import { Register } from "./Register";
 import { Ticket } from "./Ticket";
 
 import { NavBar } from "./NavBar";
+import { Landing_cret } from "./Landing_cret";
 
 export function CompanyPage(props) {
   const { orgName } = useParams();
@@ -65,6 +66,7 @@ export function CompanyPage(props) {
           </Route>
           <Route path="/:org/register" component={Register} />
           <Route path="/:org/issue" component={Ticket} />
+          <Route path="/:org/Landing_cret" component={Landing_cret} />
         </>
       ) : (
         "THIS ORGANIZATION DOES NOT EXISTS"
