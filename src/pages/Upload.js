@@ -64,6 +64,13 @@ export function Upload(props) {
   const [openDepartment, setOpenDepartment] = useState(ennabelEdit);
   const [openFaculty, setOpenFaculty] = useState(ennabelEdit);
   const [openMajor, setOpenMajor] = useState(ennabelEdit);
+  const [openbirthDate, setopenBirthDate] = useState(ennabelEdit);
+  const [openGender, setopenGender] = useState(ennabelEdit);
+  const [openFacebook, setopenFacebook] = useState(ennabelEdit);
+  const [openLineID, setopenLineID] = useState(ennabelEdit);
+  const [openLinkedin, setopenLinkedin] = useState(ennabelEdit);
+  const [openAddress, setopenAddress] = useState(ennabelEdit);
+  const [openOther, setopenOther] = useState(ennabelEdit);
 
   const [employId, setEmployId,refEmployId] = usestateref(null);
   const [titleTh, settitleTh,reftitleTh] = usestateref(null);
@@ -79,6 +86,13 @@ export function Upload(props) {
   const [Department, setDepartment,refDepartment] = usestateref(null);
   const [Faculty, setFaculty,refFaculty] = usestateref(null);
   const [Major, setMajor,refMajor] = usestateref(null);
+  const [BirthDate, setBirthDate,refBirthDate] = usestateref(null);
+  const [Gender, setGender,refGender] = usestateref(null);
+  const [Facebook, setFacebook,refFacebook] = usestateref(null);
+  const [LineID, setLineID,refLineID] = usestateref(null);
+  const [Linkedin, setLinkedin,refLinkedin] = usestateref(null);
+  const [Address, setAddress,refAddress] = usestateref(null);
+  const [Other, setOther,refOther] = usestateref(null);
   const [PhotoImage, setPhotoImage,refPhotoImage] = usestateref(null);
 
   const [ReadOnly, setReadOnly,refReadOnly] = usestateref(false);
@@ -462,6 +476,34 @@ export function Upload(props) {
               {
                 setPhotoImage(post.results[0].user.photo);
               }
+              else if(columnName ==="birthDate")
+              {
+                setopenBirthDate(true);
+              }
+              else if(columnName ==="gender")
+              {
+                setopenGender(true);
+              }
+              else if(columnName ==="facebook")
+              {
+                setopenFacebook(true);
+              }
+              else if(columnName ==="lineID")
+              {
+                setopenLineID(true);
+              }
+              else if(columnName ==="linkedin")
+              {
+                setopenLinkedin(true);
+              }
+              else if(columnName ==="address")
+              {
+                setopenAddress(true);
+              }
+              else if(columnName ==="other")
+              {
+                setopenOther(true);
+              }
             }
             break;
           }
@@ -707,6 +749,53 @@ export function Upload(props) {
   }
   const handleMajorChange  = (e) => {
     setMajor(e.target.value);
+    setIsEditData(true);
+    setallowBuild(true);
+    setPreview_mode(true);
+  }
+  const handleBirthDateChange  = (e) => {
+    setBirthDate(e.target.value);
+    setIsEditData(true);
+    setallowBuild(true);
+    setPreview_mode(true);
+  }
+  const handleGenderChange  = (e) => {
+    setGender(e.target.value);
+    setIsEditData(true);
+    setallowBuild(true);
+    setPreview_mode(true);
+  }
+
+  const handleFacebookChange  = (e) => {
+    setFacebook(e.target.value);
+    setIsEditData(true);
+    setallowBuild(true);
+    setPreview_mode(true);
+  }
+
+  const handleLineIDChange  = (e) => {
+    setLineID(e.target.value);
+    setIsEditData(true);
+    setallowBuild(true);
+    setPreview_mode(true);
+  }
+
+  const handleLinkedinChange  = (e) => {
+    setLinkedin(e.target.value);
+    setIsEditData(true);
+    setallowBuild(true);
+    setPreview_mode(true);
+  }
+
+  const handleAddressChange  = (e) => {
+    setAddress(e.target.value);
+    setIsEditData(true);
+    setallowBuild(true);
+    setPreview_mode(true);
+  }
+
+  const handleOtherChange  = (e) => {
+    setOther(e.target.value);
     setIsEditData(true);
     setallowBuild(true);
     setPreview_mode(true);
@@ -1121,7 +1210,10 @@ export function Upload(props) {
     }
     return new File([u8arr], filename, { type: mime });
   };
-
+  const goLandingCret =()=>{
+    history.push({pathname:"/"+ props.match.params.org+"/Landing_cret",state:{id:""}});
+    window.location.reload();
+  }
   if (post.results[0].photo === null && start === 0) {
     //mixImagedummy();
     setStart(1);
@@ -1569,6 +1661,106 @@ export function Upload(props) {
                         />
                       </div>
                       )}
+
+                      {openbirthDate && (
+                        <div className="col-span-6">
+                        <p className="block text-gray-700 text-sm font-medium">
+                        Birth Date
+                        </p>
+                        <input
+                          readOnly= {ReadOnly}
+                          type="date"
+                          value={BirthDate} onChange={handleBirthDateChange}
+                          className="block mt-1 w-full border-gray-300 focus:border-blue-500 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
+                        />
+                      </div>
+                      )}
+
+                      {openGender && (
+                        <div className="col-span-6">
+                        <p className="block text-gray-700 text-sm font-medium">
+                        Gender
+                        </p>
+
+                         <select
+                            value={Gender}
+                            onChange={handleGenderChange}
+                            className="block mt-1 w-full border-gray-300 focus:border-blue-500 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm">
+                            <option defaultValue value="0">Male</option>
+                            <option value="1">Female</option>
+                            <option value="2">Other</option>
+                          </select>
+                      </div>
+                      )}
+
+                      {openFacebook && (
+                        <div className="col-span-6">
+                        <p className="block text-gray-700 text-sm font-medium">
+                        Facebook
+                        </p>
+                        <input
+                          readOnly= {ReadOnly}
+                          type="text"
+                          value={Facebook} onChange={handleFacebookChange}
+                          className="block mt-1 w-full border-gray-300 focus:border-blue-500 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
+                        />
+                      </div>
+                      )}
+
+                      {openLineID && (
+                        <div className="col-span-6">
+                        <p className="block text-gray-700 text-sm font-medium">
+                        Line ID
+                        </p>
+                        <input
+                          readOnly= {ReadOnly}
+                          type="text"
+                          value={LineID} onChange={handleLineIDChange}
+                          className="block mt-1 w-full border-gray-300 focus:border-blue-500 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
+                        />
+                      </div>
+                      )}
+
+                      {openLinkedin && (
+                        <div className="col-span-6">
+                        <p className="block text-gray-700 text-sm font-medium">
+                        Linkedin
+                        </p>
+                        <input
+                          readOnly= {ReadOnly}
+                          type="text"
+                          value={Linkedin} onChange={handleLinkedinChange}
+                          className="block mt-1 w-full border-gray-300 focus:border-blue-500 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
+                        />
+                      </div>
+                      )}
+                       {openAddress && (
+                        <div className="col-span-6">
+                        <p className="block text-gray-700 text-sm font-medium">
+                        Address
+                        </p>
+                        <input
+                          readOnly= {ReadOnly}
+                          type="text"
+                          value={Address} onChange={handleAddressChange}
+                          className="block mt-1 w-full border-gray-300 focus:border-blue-500 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
+                        />
+                      </div>
+                      )}
+                      {openOther && (
+                        <div className="col-span-6">
+                        <p className="block text-gray-700 text-sm font-medium">
+                        Other
+                        </p>
+                        <input
+                          readOnly= {ReadOnly}
+                          type="text"
+                          value={Other} onChange={handleOtherChange}
+                          className="block mt-1 w-full border-gray-300 focus:border-blue-500 rounded-md shadow-sm focus:ring-blue-500 sm:text-sm"
+                        />
+                      </div>
+                      )}
+
 
                       {/* <div className="col-span-6 sm:col-span-6 lg:col-span-2">
                         <p className="block text-gray-700 text-sm font-medium">
@@ -2136,6 +2328,16 @@ export function Upload(props) {
                     }}
                   >
                     Close
+                  </button>
+
+                  <button
+                    type="button"
+                    href={"logout"}
+                    className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
+                    onClick={AuthService.logout}
+
+                  >
+                    Logout
                   </button>
                 </div>
               </div>
