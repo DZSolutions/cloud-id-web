@@ -10,25 +10,42 @@ export function Landing_cret(props) {
   const [isFront, setIsFront] = useState(true);
 
   const queryParams = new URLSearchParams(window.location.search);
-  const [token, setToken] = useState(queryParams.get('token'));
+  //const [token, setToken] = useState(queryParams.get('token'));
 
+  //const [profileID, setProfileID] = useState("22");profile-id
+  const [profileID, setProfileID] = useState(queryParams.get('profile-id'));
+  const [token, setToken] = useState("4788576735c2d6999eee711840d73df0d73c906a"); //local admin dz
 
   useEffect(async() => {
     defaultImg();
 
-    axios
-    .get(API_BASE_URL + "/v1/userlist", {
-      headers: {
-        Authorization: `Token ${token}`,
-      },
-    })
-      .then(response => {
-        setImage(response.data.results[0].img_card_front);
-        setImageBack(response.data.results[0].img_card_back);
+    // axios
+    // .get(API_BASE_URL + "/v1/userlist", {
+    //   headers: {
+    //     Authorization: `Token ${token}`,
+    //   },
+    // })
+    //   .then(response => {
+    //     setImage(response.data.results[0].img_card_front);
+    //     setImageBack(response.data.results[0].img_card_back);
+    //   })
+    //   .catch((error) => {
+    //       console.log('error ' + error);
+    //   });
+
+      axios
+      .get(API_BASE_URL + "/v1/userlist/"+profileID, {
+        headers: {
+          Authorization: `Token ${token}`,
+        },
       })
-      .catch((error) => {
-          console.log('error ' + error);
-      });
+        .then(response => {
+          setImage(response.data.img_card_front);
+          setImageBack(response.data.img_card_back);
+        })
+        .catch((error) => {
+            console.log('error ' + error);
+        });
 
   }, []);
 
