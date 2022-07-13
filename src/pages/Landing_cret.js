@@ -62,40 +62,45 @@ export function Landing_cret(props) {
     <>
       <div className="relative mt-12 sm:mt-4 lg:mt-12">
         <div className="lg:grid lg:grid-flow-row-dense lg:gap-8 lg:items-center">
-          {token &&(
-          <div className="m-5 relative lg:mt-0 lg:col-start-1">
-              {
-                isFront ? (
-                  <img className="mx-auto" src={image} alt="" />
-                ) : (
-                  <img className="mx-auto" src={imageB} alt="" />
-              )}
+            {image ?(
+            <div className="m-5 relative lg:mt-0 lg:col-start-1">
+                {
+                  isFront ? (
+                    <img className="mx-auto" src={image} alt="" />
+                  ) : (
+                    <img className="mx-auto" src={imageB} alt="" />
+                )}
 
 
-            <div className="flex justify-center mt-2 space-x-5">
-              <span className="relative z-0 inline-flex shadow-sm rounded-md">
-                <button
-                  type="button"
-                  onClick={() => setIsFront(true)}
-                  autoFocus
-                  className={
-                    "relative inline-flex items-center px-4 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
-                  }
-                >
-                  Front
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsFront(false)}
-                  className="-ml-px relative inline-flex items-center px-4 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
-                >
-                  Back
-                </button>
-              </span>
+              <div className="flex justify-center mt-2 space-x-5">
+                <span className="relative z-0 inline-flex shadow-sm rounded-md">
+                  <button
+                    type="button"
+                    onClick={() => setIsFront(true)}
+                    autoFocus
+                    className={
+                      "relative inline-flex items-center px-4 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+                    }
+                  >
+                    Front
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsFront(false)}
+                    className="-ml-px relative inline-flex items-center px-4 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+                  >
+                    Back
+                  </button>
+                </span>
+              </div>
+
             </div>
+            ): (
+              <div className="m-5 relative text-center">
+                <p >No data</p>
 
-          </div>
-          )}
+              </div>
+            )}
         </div>
       </div>
     </>
