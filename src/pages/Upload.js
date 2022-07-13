@@ -1354,9 +1354,9 @@ export function Upload(props) {
           )}
               {
                 isFront ? (
-                  <img className="mx-auto" src={image} alt="" />
+                  <img className="mx-auto rounded-3xl"  src={image} alt="" />
                 ) : (
-                  <img className="mx-auto" src={imageB} alt="" />
+                  <img className="mx-auto rounded-3xl"  src={imageB} alt="" />
               )}
 
             {/* <div className="px-4 py-5 bg-white sm:p-6">

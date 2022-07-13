@@ -626,7 +626,7 @@ export function ImageCropper(props) {
                 rotation={rotation}
                 style={{containerStyle:{ position: "absolute"},
                 mediaStyle: { height: "100%", display: "block" },
-                cropAreaStyle: {position: "absolute",opacity:0.5,borderRadius:"8px" }}}
+                cropAreaStyle: {position: "absolute",opacity:0.5,borderRadius:"40px" }}}
                 onRotationChange={setRotation}
                 onCropChange={setCrop}
                 onZoomChange={setZoom}
