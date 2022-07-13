@@ -64,12 +64,13 @@ export function CompanyPage(props) {
           <Route exact path="/:org">
             <Redirect to={`/${orgName}/login`} />
           </Route>
-          <Route path="/:org/register" component={Register}/>
+          <Route path="/:org/register" component={Register} />
           <Route path="/:org/issue" component={Ticket} />
         </>
       ) : (
         <>
-          <Route path="/Landing_cret" component={Landing_cret}/>
+        <Route path="/Landing_cret" component={Landing_cret} />
+        "THIS ORGANIZATION DOES NOT EXISTS"
         </>
       )}
       {organizationExists && accessToken ? <NavBar /> : null}
