@@ -14,7 +14,8 @@ export function Landing_cret(props) {
 
   //const [profileID, setProfileID] = useState("22");profile-id
   const [profileID, setProfileID] = useState(queryParams.get('profile-id'));
-  const [token, setToken] = useState("4788576735c2d6999eee711840d73df0d73c906a"); //local admin dz
+  //const [token, setToken] = useState("4788576735c2d6999eee711840d73df0d73c906a"); //local admin dz
+  const [token, setToken] = useState("9e993989ceda329fc93aad40a93aaca79379cabf"); //photodev admin dz
 
   useEffect(async() => {
     defaultImg();
