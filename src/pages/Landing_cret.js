@@ -17,8 +17,8 @@ export function Landing_cret(props) {
   const [verify, setVerify] = useState(queryParams.get('verify'));
   const [statusverify, setStatusVerify] = useState("Fail");
 
-  const [token, setToken] = useState("4788576735c2d6999eee711840d73df0d73c906a"); //local admin dz
-  // const [token, setToken] = useState("9e993989ceda329fc93aad40a93aaca79379cabf"); //photodev admin dz
+  // const [token, setToken] = useState("4788576735c2d6999eee711840d73df0d73c906a"); //local admin dz
+  const [token, setToken] = useState("9e993989ceda329fc93aad40a93aaca79379cabf"); //photodev admin dz
 
   useEffect(async() => {
     //defaultImg();
