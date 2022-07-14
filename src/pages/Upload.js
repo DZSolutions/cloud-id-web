@@ -1345,11 +1345,11 @@ export function Upload(props) {
 
   return (
     <>
-      <div className="relative mt-12 sm:mt-4 lg:mt-12">
+      <div className="relative mt-12 sm:mt-4 lg:mt-12 ">
         <div className="lg:grid lg:grid-flow-row-dense lg:grid-cols-2 lg:gap-8 lg:items-center">
           {/* {showcardImgage && */}
 
-          <div className="mt-10 -mx-4 relative lg:mt-0 lg:col-start-1">
+          <div className="mt-10 -mx-4 relative lg:mt-0 lg:col-start-1 ">
 
           {loadingimge && (
             <div className="justify-items-center">
@@ -1382,8 +1382,8 @@ export function Upload(props) {
                   getOptionLabel={(option) => option.layout_name}
                   />
             </div> */}
-            <div className="flex justify-center mt-2 space-x-5">
-              <span className="relative z-0 inline-flex shadow-sm rounded-md">
+            <div className="flex justify-center mt-2 space-x-5 ">
+              <span className="relative z-0 inline-flex shadow-sm rounded-md ">
                 <button
                   type="button"
                   onClick={() => setIsFront(true)}

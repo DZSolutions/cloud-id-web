@@ -270,7 +270,7 @@ export function NavBar(props) {
           </h1>
         </div>
       </header>
-      <main>
+      <main style={{background: "linear-gradient(0deg, rgb(255, 255, 255) 0%, rgb(207 235 255) 100%)"}}>
         <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
           <Switch>
           <Route path="/:org/Home" component={Home} />
