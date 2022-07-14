@@ -41,6 +41,7 @@ export function Upload(props) {
   const [preview_mode, setPreview_mode] = useState(false);
   const [status_view, setStatus_view] = useState(false);
   const [status_text, setStatus_text,refstatus_text] = usestateref(null);
+  const [profileID, setProfileID,refProfileID] = usestateref(null);
   // const [selectedMapping, setSelectMapping,refselectmapping] = usestateref(null);
 
 
@@ -107,6 +108,7 @@ export function Upload(props) {
   const [loadingimge, setloadingimge] = useState(false);
   const [sendingtoprint, setsendingtoprint] = useState(false);
   const [allowPrint, setallowPrint,refallowPrint] = usestateref(false);
+  const [allowQrcode, setallowQrcode,refallowQrcode] = usestateref(false);
   const [allowBuild, setallowBuild,refallowBuild] = usestateref(false);
   const [showcardImgage, setShowcardImgage,refShowcardImgage] = usestateref(false);
   const [adminApprove, setadminApprove] = useState(false);
@@ -368,6 +370,7 @@ export function Upload(props) {
 
     setallowBuild(false);
     setallowPrint(true);
+    setallowQrcode(false);
 
   }
 
@@ -936,7 +939,10 @@ export function Upload(props) {
       })
       .then((response) => {
         setPost(response.data);
+        console.log(response.data);
+
         setlayoutName(response.data.results[0].layout_name);
+        setProfileID(response.data.results[0].id);
         if(response.data.results[0].ref_id.split('_')[2] === "igree")//layoutName ==="preview"
         {
           setPreview_mode(false);
@@ -946,12 +952,14 @@ export function Upload(props) {
           // layoutName = response.data.results[0].layout_name;
         }
         if (response.data.results[0].status ===0) {
-          setStatus_text("No action");
-          setstatus_text2("No action");
+          setStatus_text("Watting admin approve");
+          setstatus_text2("Watting admin approve");
+          setallowQrcode(true);
         }
         else if (response.data.results[0].status ===1) {
           setStatus_text("Pending");
           setstatus_text2("Pending");
+          setallowQrcode(true);
         }
         else if (response.data.results[0].status ===2) {
           setStatus_text("Approve1");
@@ -1297,7 +1305,7 @@ export function Upload(props) {
         setPost(response.data);
 
         if (response.data.results[0].status ===0) {
-          setStatus_text("No action");
+          setStatus_text("Watting admin approve");
         }
         else if (response.data.results[0].status ===1) {
           setStatus_text("Pending");
@@ -1393,6 +1401,18 @@ export function Upload(props) {
                 >
                   Back
                 </button>
+                <Collapse isOpened={allowQrcode} high={"auto"}>
+                     <button
+                    type="button"
+                    onClick={() => { setDialogsuccess(true); }}
+                    className="inline-flex justify-center px-4 py-2 text-white text-3xl font-medium border-gray-300 hover:border-gray-400 border border-transparent rounded-full focus:outline-none shadow-sm focus:ring-indigo-500 focus:ring-offset-2 focus:ring-2"
+                    >
+                     <QrcodeIcon
+                      className="h-6 w-6 text-green-600"
+                      aria-hidden="true"
+                    />
+                    </button>
+                   </Collapse>
               </span>
 
               {/* <button
@@ -1478,7 +1498,7 @@ export function Upload(props) {
                       onClick={() => sendPrint()}
                       className="inline-flex justify-center px-4 py-2 text-white text-3xl font-medium bg-blue-600 hover:bg-blue-500 border border-transparent rounded-full focus:outline-none shadow-sm focus:ring-blue-500 focus:ring-offset-2 focus:ring-2"
                     >
-                      Print Card
+                      Request to print
                     </button>
                   </div>
 
@@ -1491,9 +1511,14 @@ export function Upload(props) {
                           Status: {status_text}
                         </p>
                       </div>)}
+
                   <div className="px-4 py-5 bg-white sm:p-6">
                     <div className="grid grid-cols-3 gap-4 ">
-
+                      <div className="sm:col-span-2">
+                          <p className="block text-gray-700 text-sm font-medium">
+                          ID: {profileID}
+                          </p>
+                      </div>
 
                       {openemployId && (
                       <div className="col-span-6 sm:col-span-4">
@@ -1787,9 +1812,11 @@ export function Upload(props) {
                       </div> */}
                     </div>
                   </div>
+
                   {preview_mode &&(
 
                   <div className="px-4 py-3 text-center bg-gray-100 sm:px-6">
+
                     <Collapse isOpened={!allowPrint} high={"auto"}>
                     <div className="flex items-center justify-center col-span-2">
                       <input
@@ -1817,6 +1844,7 @@ export function Upload(props) {
                 <RewindIcon className="h-6 w-6" aria-hidden="true" />
                 Back
               </button>
+
                     {/* <Link
                       to={"/" + props.match.params.org + "/CropImage"}
                       className="inline-flex justify-center px-4 py-2 text-white text-3xl font-medium bg-rose-600 hover:bg-rose-500 border border-transparent rounded-full focus:outline-none shadow-sm focus:ring-rose-500 focus:ring-offset-2 focus:ring-2"
@@ -1848,9 +1876,11 @@ export function Upload(props) {
                     onClick={() => sendPrint()}
                     className="inline-flex justify-center px-4 py-2 text-white text-3xl font-medium bg-rose-600 hover:bg-rose-500 border border-transparent rounded-full focus:outline-none shadow-sm focus:ring-rose-500 focus:ring-offset-2 focus:ring-2"
                     >
-                     Print
+                     Request to print
                     </button>
                    </Collapse>
+
+
 
                   </div>
                   )
@@ -1927,6 +1957,7 @@ export function Upload(props) {
                     className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
                     onClick={() => {
                       setallowPrint(false);
+                      setallowQrcode(true);
                       togglePrint(false);
                       setConfirm(false);
                     }}
@@ -2333,8 +2364,12 @@ export function Upload(props) {
                   <button
                     type="button"
                     href={"logout"}
-                    className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
-                    onClick={AuthService.logout}
+                    className="inline-flex justify-center w-full mt-1.5 rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
+                    onClick={() => {
+                      AuthService.logout();
+                      props.history.push({pathname:"login"});
+                      window.location.reload();
+                    }}
 
                   >
                     Logout
