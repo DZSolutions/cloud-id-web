@@ -292,7 +292,7 @@ export function Register(props) {
                 htmlFor="username"
                 className="block text-sm font-medium text-gray-700"
               >
-                User Name
+                *User Name
               </label>
               <div className="mt-1">
                 <input
@@ -312,7 +312,7 @@ export function Register(props) {
                 htmlFor="email"
                 className="block text-sm font-medium text-gray-700"
               >
-                Email address
+                *Email address
               </label>
               <div className="mt-1">
                 <input
@@ -332,7 +332,7 @@ export function Register(props) {
                 htmlFor="password"
                 className="block text-sm font-medium text-gray-700"
               >
-                Password
+                *Password
               </label>
               <div className="mt-1">
                 <input
@@ -352,7 +352,7 @@ export function Register(props) {
                 htmlFor="confirmPassword"
                 className="block text-sm font-medium text-gray-700"
               >
-                Confirm Password
+                *Confirm Password
               </label>
               <div className="mt-1">
                 <input
@@ -392,7 +392,7 @@ export function Register(props) {
                   htmlFor="first-name"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  First name
+                  *First name & Last name
                 </label>
                 <input
                   value={state.firstName}
@@ -401,10 +401,11 @@ export function Register(props) {
                   name="firstName"
                   id="firstName"
                   autoComplete="given-name"
+                  required
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
                 />
               </div>
-              <div className="col-span-6">
+              {/* <div className="col-span-6">
                 <label
                   htmlFor="last-name"
                   className="block text-sm font-medium text-gray-700"
@@ -420,7 +421,7 @@ export function Register(props) {
                   autoComplete="family-name"
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
                 />
-              </div>
+              </div> */}
             </div>
 
             <div>
@@ -428,7 +429,7 @@ export function Register(props) {
                 htmlFor="tel"
                 className="block text-sm font-medium text-gray-700"
               >
-                Birth Date
+                *Birth Date
               </label>
               <div className="mt-1">
                 <input
@@ -513,7 +514,7 @@ export function Register(props) {
                 htmlFor="tel"
                 className="block text-sm font-medium text-gray-700"
               >
-                Mobile Phone
+                *Mobile Phone
               </label>
               <div className="mt-1">
                 <input
@@ -569,7 +570,7 @@ export function Register(props) {
               </div>
             </div>
 
-            <div>
+            {/* <div>
               <label
                 htmlFor="tel"
                 className="block text-sm font-medium text-gray-700"
@@ -587,9 +588,9 @@ export function Register(props) {
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
                 />
               </div>
-            </div>
+            </div> */}
 
-            <div>
+            {/* <div>
               <label
                 htmlFor="tel"
                 className="block text-sm font-medium text-gray-700"
@@ -607,9 +608,9 @@ export function Register(props) {
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
                 />
               </div>
-            </div>
+            </div> */}
 
-            <div>
+            {/* <div>
               <label
                 htmlFor="tel"
                 className="block text-sm font-medium text-gray-700"
@@ -646,7 +647,7 @@ export function Register(props) {
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
                 />
               </div>
-            </div>
+            </div> */}
 
 
             <div className="flex space-x-2">
