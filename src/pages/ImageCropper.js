@@ -7,7 +7,7 @@ import getCroppedImg, { generateDownload } from "../utils/cropImage";
 
 import { Dialog, Transition } from "@headlessui/react";
 import { CheckIcon,PhotographIcon,XIcon,CameraIcon,RewindIcon } from "@heroicons/react/outline";
-import { API_BASE_URL,API_GENCARD_IMG_URL,API_GET_IMG_SIZE_URL } from "../constrants/apiConstrants";
+import { API_BASE_URL,API_GENCARD_IMG_URL,API_GET_IMG_SIZE_URL,API_REMOVE_BG } from "../constrants/apiConstrants";
 import axios from "axios";
 import AuthService from "../services/auth.service";
 import usestateref from 'react-usestateref';
@@ -24,7 +24,10 @@ export function ImageCropper(props) {
 
   const triggerFileSelectPopup = () => inputRef.current.click();
 
-  const [image, setImage] = useState(null);
+  // const [image, setImage] = useState(null);
+  const [image, setImage,refImage] = usestateref(null);
+
+
   const [imageOri, setImageOri] = useState(null);
   const [croppedArea, setCroppedArea] = useState(null);
   const [croppedAreaPreview, setCroppedAreaPreview] = useState(null);
@@ -105,16 +108,47 @@ export function ImageCropper(props) {
     );
   };
 
-  const onSelectFile = (event) => {
+  const onSelectFile =async (event) => {
     if (event.target.files && event.target.files.length > 0) {
       const reader = new FileReader();
       reader.readAsDataURL(event.target.files[0]);
       reader.addEventListener("load", () => {
-        setImage(reader.result);
-        setImageOri(reader.result);
+        if(allowRemoveBG === true)
+        {
+          RemoveBackground(reader.result);
+        }
+        else
+        {
+          setImage(reader.result);
+          setImageOri(reader.result);
+        }
       });
+
     }
   };
+
+  const RemoveBackground = async(data) =>{
+    let config = {
+        headers: {
+          "X-Client-Secret": "DZSolution_Secret_Client",
+          "Content-Type": "application/json",
+        },
+      };
+
+      var payload = JSON.stringify({
+        image: data.split(";base64,")[1],
+        fill_color: { red: codeR, green: codeG, blue: codeB },
+      });
+      await axios
+          .post(API_REMOVE_BG,
+            payload,
+            config
+          )
+          .then((response) => {
+            console.log(response);
+            setImage("data:image/jpeg;base64,"+response.data.image);
+          });
+  }
 
   const onDownload = () => {
     generateDownload(image, croppedArea);
@@ -133,31 +167,31 @@ export function ImageCropper(props) {
   const onUpload = async () => {
 
     setIsUpLoading(true);
-    if(allowRemoveBG === true)
-    {
-      const canvas = await getCroppedImg(image, croppedArea);
-      const base64Canvas = canvas.toDataURL("image/jpeg").split(";base64,")[1];
-      let config = {
-        headers: {
-          "X-Client-Secret": "DZSolution_Secret_Client",
-          "Content-Type": "application/json",
-        },
-      };
+    // if(allowRemoveBG === true)
+    // {
+    //   const canvas = await getCroppedImg(image, croppedArea);
+    //   const base64Canvas = canvas.toDataURL("image/jpeg").split(";base64,")[1];
+    //   let config = {
+    //     headers: {
+    //       "X-Client-Secret": "DZSolution_Secret_Client",
+    //       "Content-Type": "application/json",
+    //     },
+    //   };
 
-      var payload = JSON.stringify({
-        image: base64Canvas,
-        fill_color: { red: codeR, green: codeG, blue: codeB },
-      });
+    //   var payload = JSON.stringify({
+    //     image: base64Canvas,
+    //     fill_color: { red: codeR, green: codeG, blue: codeB },
+    //   });
 
-      const response = await axios.post(
-        "https://api.dzcardsolutions.com/api/v1/image/background/remove",
-        payload,
-        config
-      );
-      setUploaded(response.data);
-      setTextRemovestatus("Remove Background Successful");
-    }
-    else if(allowRemoveBG === false)
+    //   const response = await axios.post(
+    //     "https://api.dzcardsolutions.com/api/v1/image/background/remove",
+    //     payload,
+    //     config
+    //   );
+    //   setUploaded(response.data);
+    //   setTextRemovestatus("Remove Background Successful");
+    // }
+    // else if(allowRemoveBG === false)
     {
       const canvas = await getCroppedImg(image, croppedArea);
       const base64Canvas = await canvas.toDataURL("image/jpeg").split(";base64,")[1];
