@@ -16,6 +16,8 @@ export function Landing_cret(props) {
   const [profileID, setProfileID] = useState(queryParams.get('profile-id'));
   const [verify, setVerify] = useState(queryParams.get('verify'));
   const [statusverify, setStatusVerify] = useState("Fail");
+  const [username, setStatusUsername] = useState(null);
+
 
   // const [token, setToken] = useState("4788576735c2d6999eee711840d73df0d73c906a"); //local admin dz
   const [token, setToken] = useState("9e993989ceda329fc93aad40a93aaca79379cabf"); //photodev admin dz
@@ -37,6 +39,19 @@ export function Landing_cret(props) {
     //       console.log('error ' + error);
     //   });
 
+      // axios
+      // .get(API_BASE_URL + "/v1/user/"+profileID, {
+      //   headers: {
+      //     Authorization: `Token ${token}`,
+      //   },
+      // })
+      //   .then(response => {
+      //     setStatusUsername(response.username);
+      //   })
+      //   .catch((error) => {
+      //       console.log('error ' + error);
+      //   });
+
       axios
       .get(API_BASE_URL + "/v1/userlist/"+profileID, {
         headers: {
@@ -44,13 +59,14 @@ export function Landing_cret(props) {
         },
       })
         .then(response => {
+
           setImage(response.data.img_card_front);
           setImageBack(response.data.img_card_back);
-          if(verify ==="true")
+          if(verify.toUpperCase() ==="TRUE")
           {
             setStatusVerify("Pass");
           }
-          else if (verify ==="false")
+          else if (verify.toUpperCase() ==="FALSE")
           {
             setStatusVerify("Fail");
           }
@@ -113,7 +129,6 @@ export function Landing_cret(props) {
             ): (
               <div className="m-5 relative text-center">
                 <p >No data</p>
-
               </div>
             )}
         </div>
