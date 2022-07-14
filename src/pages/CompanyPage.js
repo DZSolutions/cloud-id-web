@@ -70,7 +70,6 @@ export function CompanyPage(props) {
       ) : (
         <>
         <Route path="/Landing_cret" component={Landing_cret} />
-        "THIS ORGANIZATION DOES NOT EXISTS"
         </>
       )}
       {organizationExists && accessToken ? <NavBar /> : null}

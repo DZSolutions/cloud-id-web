@@ -5,8 +5,8 @@ import axios from "axios";
 import { API_BASE_URL } from "../constrants/apiConstrants";
 
 export function Landing_cret(props) {
-  const [image, setImage] = useState(templateDZ);
-  const [imageB, setImageBack] = useState(templateDZ_Back);
+  const [image, setImage] = useState(null);
+  const [imageB, setImageBack] = useState(null);
   const [isFront, setIsFront] = useState(true);
 
   const queryParams = new URLSearchParams(window.location.search);
@@ -14,11 +14,14 @@ export function Landing_cret(props) {
 
   //const [profileID, setProfileID] = useState("22");profile-id
   const [profileID, setProfileID] = useState(queryParams.get('profile-id'));
-  //const [token, setToken] = useState("4788576735c2d6999eee711840d73df0d73c906a"); //local admin dz
-  const [token, setToken] = useState("9e993989ceda329fc93aad40a93aaca79379cabf"); //photodev admin dz
+  const [verify, setVerify] = useState(queryParams.get('verify'));
+  const [statusverify, setStatusVerify] = useState("Fail");
+
+  const [token, setToken] = useState("4788576735c2d6999eee711840d73df0d73c906a"); //local admin dz
+  // const [token, setToken] = useState("9e993989ceda329fc93aad40a93aaca79379cabf"); //photodev admin dz
 
   useEffect(async() => {
-    defaultImg();
+    //defaultImg();
 
     // axios
     // .get(API_BASE_URL + "/v1/userlist", {
@@ -43,6 +46,14 @@ export function Landing_cret(props) {
         .then(response => {
           setImage(response.data.img_card_front);
           setImageBack(response.data.img_card_back);
+          if(verify ==="true")
+          {
+            setStatusVerify("Pass");
+          }
+          else if (verify ==="false")
+          {
+            setStatusVerify("Fail");
+          }
         })
         .catch((error) => {
             console.log('error ' + error);
@@ -61,10 +72,10 @@ export function Landing_cret(props) {
 
   return (
     <>
-      <div className="relative mt-12 sm:mt-4 lg:mt-12">
+      <div className="relative mt-5 sm:mt-4 lg:mt-5">
         <div className="lg:grid lg:grid-flow-row-dense lg:gap-8 lg:items-center">
             {image ?(
-            <div className="m-5 relative lg:mt-0 lg:col-start-1">
+            <div className="m-2 relative lg:mt-0 lg:col-start-1">
                 {
                   isFront ? (
                     <img className="mx-auto" src={image} alt="" />
@@ -72,6 +83,9 @@ export function Landing_cret(props) {
                     <img className="mx-auto" src={imageB} alt="" />
                 )}
 
+              <div className="relative text-center">
+                <p >Verify: {statusverify}</p>
+              </div>
 
               <div className="flex justify-center mt-2 space-x-5">
                 <span className="relative z-0 inline-flex shadow-sm rounded-md">
