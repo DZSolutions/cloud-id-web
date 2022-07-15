@@ -174,7 +174,9 @@ export function Register(props) {
         title: state.title,
         password: state.password,
         firstName: state.firstName,
-        lastName: state.lastName,
+        // lastName: state.lastName,
+        lastName: "-",
+
         // faculty: state.faculty,
         // major: state.major,
         faculty: "-",
