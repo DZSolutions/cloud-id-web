@@ -695,7 +695,7 @@ export function ImageCropper(props) {
         {image ? (
           <div className="flex justify-center pt-5">
 
-            <p>Zoom {zoom}</p>
+            <p>Zoom x{zoom}</p>
             <input
               type="range"
               min="0"
