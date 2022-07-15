@@ -44,6 +44,8 @@ export function ImageCropper(props) {
   const ref = useRef(null)
   const [ChosenPhoto, setChosenPhoto] = useState(false);
   const [Removingbg ,setRemoving] = useState(false);
+  const [Removingbgstatus ,setRemovingRemovingbgstatus] = useState(false);
+
   const [AutoGetImage, setAutoGetImage] = useState(false);
 
   const [uploaded, setUploaded] = useState([]);
@@ -150,7 +152,11 @@ export function ImageCropper(props) {
           .then((response) => {
             setImage("data:image/jpeg;base64,"+response.data.image);
             setRemoving(false);
-          });
+          })
+          .catch((error) => {
+            setRemovingRemovingbgstatus('error ' + error);
+        });
+
   }
 
   const onDownload = () => {
@@ -1241,6 +1247,9 @@ export function ImageCropper(props) {
                       Loading Photo...
                       </div>
                     </Dialog.Title>
+                    <div className="mt-2">
+                      <p className="text-sm text-gray-500">{Removingbgstatus}</p>
+                    </div>
 
 
                    {/* <button type="button"
