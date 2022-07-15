@@ -90,7 +90,8 @@ export function Login(props) {
     );
   };
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8"
+    style={{background: "linear-gradient(0deg, rgb(255, 255, 255) 0%, rgb(207 235 255) 100%)"}}>
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         {/* <img className="mx-auto h-20 w-auto" src={DZLOGO} alt="org_image" /> */}
         <img className="mx-auto h-20 w-auto" src={logo} alt="org_image" />
@@ -99,7 +100,8 @@ export function Login(props) {
         </h2>
       </div>
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10"
+        style={{background: "linear-gradient(0deg, rgb(255, 255, 255) 0%, rgb(207 235 255) 100%)"}}>
           <form className="space-y-6" action="#" method="POST">
             {state ? (
               <div className="rounded-md bg-green-50 p-4">

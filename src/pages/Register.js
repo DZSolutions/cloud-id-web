@@ -218,7 +218,7 @@ export function Register(props) {
   return (
 
 
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-4 sm:px-6 lg:px-8" >
 
 {/* <Fragment>
             <Grid container
@@ -260,7 +260,7 @@ export function Register(props) {
       </div>
 
       <div className="mt-4 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10" style={{background: "linear-gradient(0deg, rgb(255, 255, 255) 0%, rgb(207 235 255) 100%)"}}>
           <form className="space-y-3" onSubmit={handleSubmitClick}>
             <div>
               <div className="mt-1">
