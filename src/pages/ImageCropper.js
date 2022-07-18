@@ -37,7 +37,7 @@ export function ImageCropper(props) {
   const [cropwidth, setCropwidth] = useState(0);
   const [cropheight, setCropheight] = useState(0);
   const [allowRemoveBG, setAllowRemoveBG] = useState(false);
-  const [textRemovestatus, setTextRemovestatus] = useState("Please Comfirm Upload");
+  const [textRemovestatus, setTextRemovestatus] = useState("Please Confirm Upload");
 
   const [mycardlogo, setmycardlogo] = useState(null);
 
