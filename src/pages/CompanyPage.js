@@ -69,7 +69,7 @@ export function CompanyPage(props) {
         </>
       ) : (
         <>
-        <Route path="/landing-cert" component={Landing_cret} />
+        <Route path="/landing-cret" component={Landing_cret} />
         </>
       )}
       {organizationExists && accessToken ? <NavBar /> : null}
