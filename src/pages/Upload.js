@@ -28,6 +28,7 @@ export function Upload(props) {
 
   const [consoleList, setConsoleList] = useState(null);
   const [printerList, setPrinterList] = useState(null);
+  const [usePrinter, setUsePrinter] = useState(null);
   const [printerOptionList, setPrinterOptionList] = useState([{type:"auto"},{type:"manual"}]);
 
   const [mappingList, setMappingList,refmappingList] = usestateref(null);
@@ -400,7 +401,8 @@ export function Upload(props) {
           // if(postmapping.results[layout].layout_name === selectedLayout)
           if(postmapping.results[layout].layout_name === layoutName)
           {
-            setbackcrop(postmapping.results[layout].upload_photo)
+            setbackcrop(postmapping.results[layout].upload_photo);
+            setUsePrinter(postmapping.results[layout].consolse_printer);
             var keyjson= Object.keys(postmapping.results[layout].api_field_name);
             var valuejson= Object.values(postmapping.results[layout].api_field_name);
             setQrcodeData(postmapping.results[layout].QRCODE);
@@ -940,8 +942,6 @@ export function Upload(props) {
       })
       .then((response) => {
         setPost(response.data);
-        console.log(response.data);
-
         setlayoutName(response.data.results[0].layout_name);
         setProfileID(response.data.results[0].id);
         setuniqueProfileID(response.data.results[0].profile_id);
@@ -1264,24 +1264,40 @@ export function Upload(props) {
       photoF = await getBase64FromUrl(image);
       photoB = await getBase64FromUrl(imageB);
      let printerOption ;
+     let numberprinter=0;
+     for (var list in configPrinter.results)
+        {
+          if(configPrinter.results[list].id === usePrinter)
+          {
+            break;
+          }
+          numberprinter++
+        }
 
-     if(configPrinter.results[0].printer_type === 0)
+     if(configPrinter.results[numberprinter].printer_type === 0)
      {
       printerOption = "auto";
      }
-     else if(configPrinter.results[0].printer_type === 1)
+     else if(configPrinter.results[numberprinter].printer_type === 1)
      {
       printerOption = "manual";
      }
-
+    //  console: console_name,
+    //  printer: printer_name,
+    //  print_option: printerOption,
+    //  front_card: fronCard64,
+    //  back_card: backcard64,
+    //  name: 'send to print ' + user.first_name_en+user.layout_name + console_name + printer_name,
+    //  submitted_by: username,
+    //  card_layout: user.layout_name,
       await axios
          .post(API_POST_PRINT_URL, {
-           console: configPrinter.results[0].consoleID,
-           printer: configPrinter.results[0].printer_ID,
+           console: configPrinter.results[numberprinter].consoleID,
+           printer: configPrinter.results[numberprinter].printer_ID,
            print_option:printerOption,
            front_card: photoF,
            back_card:photoF,
-           name: "send to ptint "+selectedLayout+configPrinter.results[0].printer_ID,
+           name: "send to ptint "+selectedLayout+configPrinter.results[numberprinter].printer_ID,
            submitted_by: currentUser,
            card_layout: selectedLayout,
          })
