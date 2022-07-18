@@ -460,13 +460,11 @@ export function ImageCropper(props) {
   }
 
   async function requestCardimg(dataInput) {
-    // return new Promise(resolve => {
     var date = new Date();
     var dateandtime = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
     let imgfs={};
     await axios
       .post(API_GENCARD_IMG_URL, {
-        // layout_name: postmapping.results[0].layout_name,
         with_background:true,
         layout_name: layoutName,
         tag: dateandtime,
@@ -475,8 +473,6 @@ export function ImageCropper(props) {
       .then((response) => {
          tempimg = JSON.parse(JSON.stringify(response.data.output[0]));
       });
-      // resolve(imgfs);
-    // });
   }
   const currentUser = AuthService.getCurrentUser();
 
@@ -589,9 +585,6 @@ export function ImageCropper(props) {
       let objImg={};
 
       objImg["image"]=base64Canvas;
-      // setUploaded([]);
-      // setUploaded(objImg);
-      // setOpen(true);
       setImage(await canvas.toDataURL("image/jpeg"));
       stopCam();
       setIstriggeruploadFile(false);
@@ -632,9 +625,6 @@ export function ImageCropper(props) {
      stopCam();
      setIsRetakePhoto(true);
 
-    //  setUploaded([]);
-    //  setUploaded(objImg);
-    //  setOpen(true);
      }
   }
 
@@ -677,7 +667,11 @@ export function ImageCropper(props) {
                 onCropAreaChange={(croppedAreaPreview) => {
                   setCroppedAreaPreview(croppedAreaPreview);
                 }}
-              />
+
+                />
+                {/* {mycardlogo ?(
+                  <img id="cover" style={{height:"50%",width: "1014px",margin:"15px"}} className="rounded-lg z-10 pointer-events-none" src={mycardlogo} alt=""/>
+                ):null} */}
             </>
           ) : null}
           {/* {mycardlogo ? (
@@ -764,35 +758,6 @@ export function ImageCropper(props) {
 
           )}
 
-          {/* <button
-                type="button"
-                className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                onClick={nextPage}
-              >
-                {isUploading ? (
-                    <svg
-                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      />
-                    </svg>
-                  ) : null}
-                next step
-              </button> */}
-
         </div>
 
         <div className="container-buttons flex justify-center space-x-4 pt-5 pb-2">
@@ -801,7 +766,6 @@ export function ImageCropper(props) {
                 className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 onClick={() => {
                   props.history.push({pathname:"Layout",state:{id:layoutName}});
-                  //props.history.goBack();
                   window.location.reload();
                 }}
               >
@@ -1129,7 +1093,7 @@ export function ImageCropper(props) {
 
                     ):
                     <div className="container-buttons flex justify-center space-x-4 pt-5">
-                    <button
+                    {/* <button
                     type="button"
                     className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
                     onClick={() => {
@@ -1142,7 +1106,7 @@ export function ImageCropper(props) {
                        <p className="self-center">
                        Take photo
                       </p>
-                  </button>
+                  </button> */}
                   <button
                   type="button"
                   className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
@@ -1250,20 +1214,6 @@ export function ImageCropper(props) {
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">{Removingbgstatus}</p>
                     </div>
-
-
-                   {/* <button type="button"
-                    className="mt-2 inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
-                    onClick={() => {
-                    setIschoosephoto(true);
-                    setChosenPhoto(false);
-                    getCheckconfigvalue();
-                    triggerFileSelectPopup();
-                    }}>
-                    <p className="self-center">
-                      Choose photo
-                    </p>
-                  </button> */}
                   </div>
                 </div>
               </div>
