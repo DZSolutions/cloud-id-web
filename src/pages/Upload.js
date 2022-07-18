@@ -42,6 +42,7 @@ export function Upload(props) {
   const [status_view, setStatus_view] = useState(false);
   const [status_text, setStatus_text,refstatus_text] = usestateref(null);
   const [profileID, setProfileID,refProfileID] = usestateref(null);
+  const [uniqueprofileID, setuniqueProfileID,refuniqueProfileID] = usestateref(null);
   // const [selectedMapping, setSelectMapping,refselectmapping] = usestateref(null);
 
 
@@ -943,6 +944,7 @@ export function Upload(props) {
 
         setlayoutName(response.data.results[0].layout_name);
         setProfileID(response.data.results[0].id);
+        setuniqueProfileID(response.data.results[0].profile_id);
         if(response.data.results[0].ref_id.split('_')[2] === "igree")//layoutName ==="preview"
         {
           setPreview_mode(false);
@@ -1519,6 +1521,12 @@ export function Upload(props) {
                           ID: {profileID}
                           </p>
                       </div>
+                      <div className="sm:col-span-2">
+                          <p className="block text-gray-700 text-sm font-medium">
+                         Profile ID: {uniqueprofileID}
+                          </p>
+                      </div>
+
 
                       {openemployId && (
                       <div className="col-span-6 sm:col-span-4">
