@@ -1273,7 +1273,7 @@ export function Upload(props) {
      }
 
       await axios
-         .post("http://122.248.202.159/api/jobs/", {
+         .post(API_REQUEST_PRINTER_URL, {
            console: configPrinter.results[0].consoleID,
            printer: configPrinter.results[0].printer_ID,
            print_option:printerOption,
