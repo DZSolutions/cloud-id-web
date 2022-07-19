@@ -682,7 +682,7 @@ export function ImageCropper(props) {
           ):null} */}
 
           {mycardlogo ? (
-            <img id="cover" style={{height:"50%",width: "1014px",margin:"15px"}} className="rounded-lg z-10 pointer-events-none" src={mycardlogo} alt=""/>
+            <img id="cover" style={{margin:"0",position: "absolute",top:"50%",left:"50%",display:"block",transform:"translate(-50%,-50%)",width:cropwidth,height:cropheight}} className="rounded-lg z-10 pointer-events-none" src={mycardlogo} alt=""/>
           ):null}
             </div>
         </div>
