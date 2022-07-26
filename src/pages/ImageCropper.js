@@ -2,6 +2,7 @@ import { useRef, useState, Fragment, useEffect } from "react";
 import React, { Component } from 'react';
 import Cropper from "react-easy-crop";
 import getCroppedImg, { generateDownload } from "../utils/cropImage";
+import Resizer from "react-image-file-resizer";
 // import mycard from "../images/my-business-card1-removebg.png";
 // import mycard from "../images/my-business-card (5).png";
 
@@ -111,25 +112,60 @@ export function ImageCropper(props) {
     );
   };
 
-  const onSelectFile =async (event) => {
+  const onSelectFile = async(event) => {
     if (event.target.files && event.target.files.length > 0) {
       const reader = new FileReader();
       reader.readAsDataURL(event.target.files[0]);
       reader.addEventListener("load", () => {
-        if(allowRemoveBG === true)
+      onChangeCheckSizeImg(event.target.files[0],reader.result);
+      });
+    }
+  };
+  const onChangeCheckSizeImg = async (path,render) => {
+    try {
+      const file = path;
+      const imgWH = await createImage(render);
+      const image = await resizeFile(file,imgWH);
+      if(allowRemoveBG === true)
         {
-
-          RemoveBackground(reader.result);
+          RemoveBackground(image);
         }
         else
         {
-          setImage(reader.result);
-          setImageOri(reader.result);
+          setImage(image);
+          setImageOri(render);
         }
-      });
-
+    } catch (err) {
+      console.log(err);
     }
   };
+
+  const resizeFile = (file,imgWH) =>
+  new Promise((resolve) => {
+
+      if (window.innerWidth < imgWH.width) {
+        while (true) {
+          imgWH.width = imgWH.width / 2;
+          imgWH.height = imgWH.height / 2;
+          console.log("imgWH.width",imgWH.width);
+          if (window.innerWidth > imgWH.width) {
+            break;
+          }
+        }
+      }
+    Resizer.imageFileResizer(
+      file,
+      imgWH.width,
+      imgWH.height,
+      "JPEG",
+      100,
+      0,
+      (uri) => {
+        resolve(uri);
+      },
+      "base64"
+    );
+  });
 
   const RemoveBackground = async(data) =>{
     setRemoving(true);
@@ -158,6 +194,15 @@ export function ImageCropper(props) {
         });
 
   }
+
+  const createImage = (url) =>
+  new Promise((resolve, reject) => {
+    const image = new Image();
+    image.addEventListener("load", () => resolve(image));
+    image.addEventListener("error", (error) => reject(error));
+    image.setAttribute("crossOrigin", "anonymous"); // needed to avoid cross-origin issues on CodeSandbox
+    image.src = url;
+  });
 
   const onDownload = () => {
     generateDownload(image, croppedArea);
