@@ -143,20 +143,32 @@ export function ImageCropper(props) {
   const resizeFile = (file,imgWH) =>
   new Promise((resolve) => {
 
-      if (window.innerWidth < imgWH.width) {
-        while (true) {
-          imgWH.width = imgWH.width / 2;
-          imgWH.height = imgWH.height / 2;
-          console.log("imgWH.width",imgWH.width);
-          if (window.innerWidth > imgWH.width) {
-            break;
+    let wsize = imgWH.width;
+    let hsize = imgWH.height;
+    let wresult =imgWH.width;
+
+    var width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    if (width < imgWH.width) {
+        // while (true) {
+        //   imgWH.width = imgWH.width / 2;
+        //   imgWH.height = imgWH.height / 2;
+        //   if (window.innerWidth > imgWH.width) {
+        //     break;
+        //   }
+        // }
+          for (let index = 99; index != 0; index--) {
+             wresult = (wsize*index)/100;
+            if(wresult < width-10)
+            {
+              hsize = (hsize*index)/100;
+              break;
+            }
           }
-        }
-      }
+    }
     Resizer.imageFileResizer(
       file,
-      imgWH.width,
-      imgWH.height,
+      wresult,
+      hsize,
       "JPEG",
       100,
       0,
@@ -247,9 +259,8 @@ export function ImageCropper(props) {
     // }
     // else if(allowRemoveBG === false)
     {
-      const canvas = await getCroppedImg(image, croppedArea);
+      const canvas = await getCroppedImg(image, croppedArea,rotation);
       const base64Canvas = await canvas.toDataURL("image/jpeg").split(";base64,")[1];
-
       let objImg={};
       objImg["image"]=base64Canvas;
       setUploaded(objImg);
@@ -338,6 +349,8 @@ export function ImageCropper(props) {
         {
           let wsize = img_crop_size['width'];
           let hsize = img_crop_size['height'];
+
+
           for (let index = 99; index != 0; index--) {
             let wresult = (wsize*index)/100;
             if(wresult < width-10)
@@ -698,7 +711,7 @@ export function ImageCropper(props) {
                 image={image}
                 crop={crop}
                 zoom={zoom}
-                aspect={1}
+                aspect={4 / 3}
                 restrictPosition={false}
                 cropSize={{width: cropwidth, height: cropheight}}
                 rotation={rotation}
@@ -709,9 +722,9 @@ export function ImageCropper(props) {
                 onCropChange={setCrop}
                 onZoomChange={setZoom}
                 onCropComplete={onCropComplete}
-                onCropAreaChange={(croppedAreaPreview) => {
-                  setCroppedAreaPreview(croppedAreaPreview);
-                }}
+                // onCropAreaChange={(croppedAreaPreview) => {
+                //   setCroppedAreaPreview(croppedAreaPreview);
+                // }}
 
                 />
                 {/* {mycardlogo ?(
