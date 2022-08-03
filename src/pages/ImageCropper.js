@@ -1,6 +1,7 @@
 import { useRef, useState, Fragment, useEffect } from "react";
 import React, { Component } from 'react';
 import Cropper from "react-easy-crop";
+import Jimp from 'jimp';
 import getCroppedImg, { generateDownload } from "../utils/cropImage";
 import Resizer from "react-image-file-resizer";
 // import mycard from "../images/my-business-card1-removebg.png";
@@ -125,19 +126,56 @@ export function ImageCropper(props) {
     try {
       const file = path;
       const imgWH = await createImage(render);
-      const image = await resizeFile(file,imgWH);
-      if(allowRemoveBG === true)
+      //const image = await resizeFile(file,imgWH);
+
+      let wsize = imgWH.width;
+      let hsize = imgWH.height;
+      let wresult =imgWH.width;
+
+      var width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+      if (width < imgWH.width) {
+          setRemoving(true);
+          setRemovingRemovingbgstatus('Processing photo...');
+
+            for (let index = 99; index != 0; index--) {
+               wresult = (wsize*index)/100;
+              if(wresult < width-10)
+              {
+                hsize = (hsize*index)/100;
+                break;
+              }
+            }
+            const image = await Jimp.read(render);
+            await image.resize(wresult, hsize);
+            const image_resize= await image.getBase64Async(Jimp.MIME_JPEG);
+            if(allowRemoveBG === true)
+              {
+                RemoveBackground(image_resize);
+              }
+              else
+              {
+                setImage(image_resize);
+                setImageOri(render);
+              }
+              setRemoving(false);
+      }
+      else
+      {
+        if(allowRemoveBG === true)
         {
-          RemoveBackground(image);
+          RemoveBackground(render);
         }
         else
         {
-          setImage(image);
+          setImage(render);
           setImageOri(render);
         }
+      }
+
     } catch (err) {
       console.log(err);
     }
+
   };
 
   const resizeFile = (file,imgWH) =>
@@ -747,7 +785,7 @@ export function ImageCropper(props) {
         {image ? (
           <div className="flex justify-center pt-5">
 
-            <p>Zoom x{zoom}</p>
+            <p className="inline-flex items-center px-3 py-1.5">Zoom x{zoom}</p>
             <input
               type="range"
               min="0"
@@ -756,21 +794,7 @@ export function ImageCropper(props) {
               value={zoom}
               onChange={(e) => setZoom(e.target.value)}
             ></input>
-
-            {/* <p>Rotation</p>
             <input
-              type="range"
-              min="0"
-              step="1"
-              max="360"
-              value={rotation}
-              onChange={(e) => setRotation(e.target.value)}
-            ></input> */}
-
-          </div>
-        ) : null}
-        <div className="container-buttons flex justify-center space-x-4 pt-5">
-          <input
             className="hidden"
             type="file"
             accept="image/*"
@@ -778,28 +802,7 @@ export function ImageCropper(props) {
             onChange={onSelectFile}
           ></input>
 
-          {istakephoto && (
-            <button
-              type="button"
-              className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              onClick={takepicture}
-            >
-              {isretakephoto ? (
-                      <div>
-                        <span className="relative z-0 inline-flex shadow-sm rounded-md">
-                        <CameraIcon className="h-6 w-6" aria-hidden="true" />
-                        <p className="self-center">Retake</p>
-                        </span>
-                      </div>
-                    ) : (
-                      <CameraIcon className="h-6 w-6" aria-hidden="true" />
-                    )}
-
-
-            </button>
-            )
-          }
-          {ischoosephoto && (
+            {ischoosephoto && (
             <button
               type="button"
               className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -816,7 +819,62 @@ export function ImageCropper(props) {
 
           )}
 
-        </div>
+            {/* <p>Rotation</p>
+            <input
+              type="range"
+              min="0"
+              step="1"
+              max="360"
+              value={rotation}
+              onChange={(e) => setRotation(e.target.value)}
+            ></input> */}
+
+          </div>
+        ) :
+          <div className="flex justify-center pt-5">
+            <input
+            className="hidden"
+            type="file"
+            accept="image/*"
+            ref={inputRef}
+            onChange={onSelectFile}
+          ></input>
+            {istakephoto && (
+            <button
+              type="button"
+              className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              onClick={takepicture}
+            >
+              {isretakephoto ? (
+                      <div>
+                        <span className="relative z-0 inline-flex shadow-sm rounded-md">
+                        <CameraIcon className="h-6 w-6" aria-hidden="true" />
+                        <p className="self-center">Retake</p>
+                        </span>
+                      </div>
+                    ) : (
+                      <CameraIcon className="h-6 w-6" aria-hidden="true" />
+                    )}
+
+            </button>
+            )
+          }
+            <button
+              type="button"
+              className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              onClick={() => {
+                        triggerFileSelectPopup();
+                        getCheckconfigvalue();
+                        setIstriggeruploadFile(true);
+                        setIsRetake(false);
+                        stopCam();
+                      }}
+            >
+              <PhotographIcon className="h-6 w-6" aria-hidden="true" />
+            </button>
+          </div>
+        }
+
 
         <div className="container-buttons flex justify-center space-x-4 pt-5 pb-2">
              <button
