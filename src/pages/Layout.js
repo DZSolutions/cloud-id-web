@@ -23,6 +23,8 @@ export function Layout(props) {
   const [start, setStart] = useState(0);
   const [isFront, setIsFront] = useState(true);
   const [print, setPrint] = useState(false);
+  const [statusLoading, setStatusLoading] = useState("Loading...");
+
 
   const [consoleList, setConsoleList] = useState(null);
   const [printerList, setPrinterList] = useState(null);
@@ -228,6 +230,9 @@ export function Layout(props) {
           }
         }
 
+      })
+      .catch((error) => {
+        setStatusLoading('Loading organization fail.');
       });
       let normaltemplate =[];
       let customtemplate =[];
@@ -262,6 +267,9 @@ export function Layout(props) {
 
         //setLayoutlist()
         //setMappingList(response.data.results);
+      })
+      .catch((error) => {
+        setStatusLoading('Loading mapping fail.');
       });
 
 
@@ -273,6 +281,9 @@ export function Layout(props) {
       .then((response) => {
         // setMappingList(response.data.output);
         setNormalTemplate(response.data.output);
+      })
+      .catch((error) => {
+        setStatusLoading('Loading template fail.');
       });
 
       await axios // get custom template
@@ -282,6 +293,7 @@ export function Layout(props) {
       .then((response) => {
         setCustomTemplate(response.data.output);
       });
+
       try
       {
       await axios
@@ -292,6 +304,9 @@ export function Layout(props) {
       })
       .then((response) => {
         setPost(response.data);
+      })
+      .catch((error) => {
+        setStatusLoading('Loading user fail.');
       });
     }
       catch(err) {
@@ -302,7 +317,7 @@ export function Layout(props) {
   }, []);
 
 
-  if (!post) return ("Loading..." );
+  if (!post) return (statusLoading );
 
   var daatajson ="";
 
