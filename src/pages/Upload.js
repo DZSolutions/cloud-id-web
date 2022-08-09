@@ -8,7 +8,7 @@ import mergeImages from "merge-images";
 import { API_BASE_URL,API_GENCARD_IMG_URL,API_REQUEST_PRINTER_URL,API_POST_PRINT_URL } from "../constrants/apiConstrants";
 import Select, { components } from "react-select";
 import { Dialog, Transition } from "@headlessui/react";
-import { CheckIcon,CreditCardIcon,IdentificationIcon,QrcodeIcon,RewindIcon } from "@heroicons/react/outline";
+import { CheckIcon,CreditCardIcon,IdentificationIcon,QrcodeIcon,RewindIcon ,PrinterIcon} from "@heroicons/react/outline";
 import usestateref from 'react-usestateref';
 import {Collapse} from 'react-collapse';
 import { useHistory } from "react-router-dom";
@@ -25,6 +25,10 @@ export function Upload(props) {
   const [start, setStart] = useState(0);
   const [isFront, setIsFront] = useState(true);
   const [print, setPrint] = useState(false);
+
+  const [printerror, setPrinterror] = useState(false);
+  const [statusprinter, setStatusPrinter] = useState();
+
 
   const [consoleList, setConsoleList] = useState(null);
   const [printerList, setPrinterList] = useState(null);
@@ -1220,16 +1224,39 @@ export function Upload(props) {
     }
     return new File([u8arr], filename, { type: mime });
   };
+
   const goLandingCret =()=>{
     history.push({pathname:"/"+ props.match.params.org+"/Landing_cret",state:{id:""}});
     window.location.reload();
   }
+
   if (post.results[0].photo === null && start === 0) {
     //mixImagedummy();
     setStart(1);
   }
 
+  const checkstatusprinter =(printerID)=>{
+    let status = "connection lose";
+    setStatusPrinter("connection lose");
+     axios
+      .get(API_REQUEST_PRINTER_URL +printerID, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((response) => {
+        setStatusPrinter(response.data.status);
+        status = response.data.status
+      })
+      .catch((error) => {
+        setStatusPrinter("printer error");
+        status = "printer error";
+      });
+      return status;
+  }
+
    const sendPrint = async() => {
+    let status = "admin_approve";
     if (whitecard === true)
     {
       setsendingtoprint(true);
@@ -1261,6 +1288,7 @@ export function Upload(props) {
     }
     else if(adminApprove === false)
     {
+
       photoF = await getBase64FromUrl(image);
       photoB = await getBase64FromUrl(imageB);
      let printerOption ;
@@ -1273,75 +1301,106 @@ export function Upload(props) {
           }
           numberprinter++
         }
+      const statusprint = checkstatusprinter(configPrinter.results[numberprinter].id);
+      if(statusprint ==="Console offline")
+      {
+        setStatus_text("Console offline");
+        status = "Console offline";
+        setPrinterror(true);
+      }
+      else if(statusprint ==="Not connected")
+      {
+        setStatus_text("Not connected");
+        status = "Not connected";
 
-     if(configPrinter.results[numberprinter].printer_type === 0)
-     {
-      printerOption = "auto";
-     }
-     else if(configPrinter.results[numberprinter].printer_type === 1)
-     {
-      printerOption = "manual";
-     }
-    //  console: console_name,
-    //  printer: printer_name,
-    //  print_option: printerOption,
-    //  front_card: fronCard64,
-    //  back_card: backcard64,
-    //  name: 'send to print ' + user.first_name_en+user.layout_name + console_name + printer_name,
-    //  submitted_by: username,
-    //  card_layout: user.layout_name,
+        setPrinterror(true);
+      }
+      else if(statusprint ==="printer error")
+      {
+        setStatus_text("printer error");
+        status = "printer error";
+
+        setPrinterror(true);
+      }
+      else if(statusprint ==="connection lose")
+      {
+        setStatus_text("connection lose");
+        status = "connection lose";
+
+        setPrinterror(true);
+      }
+      else //if(statusprint ==="Printer Ready" || statusprint==="Printer Not Ready")
+      {
+        if(configPrinter.results[numberprinter].printer_type === 0)
+        {
+         printerOption = "auto";
+        }
+        else if(configPrinter.results[numberprinter].printer_type === 1)
+        {
+         printerOption = "manual";
+        }
+         //  console: console_name,
+         //  printer: printer_name,
+         //  print_option: printerOption,
+         //  front_card: fronCard64,
+         //  back_card: backcard64,
+         //  name: 'send to print ' + user.first_name_en+user.layout_name + console_name + printer_name,
+         //  submitted_by: username,
+         //  card_layout: user.layout_name,
+         await axios
+            .post(API_POST_PRINT_URL, {
+              console: configPrinter.results[numberprinter].consoleID,
+              printer: configPrinter.results[numberprinter].printer_ID,
+              print_option:printerOption,
+              front_card: photoF,
+              back_card:photoF,
+              name: "send to ptint "+selectedLayout+configPrinter.results[numberprinter].printer_ID,
+              submitted_by: currentUser,
+              card_layout: selectedLayout,
+            })
+            .then((response) => {
+              setConfirm(true);
+            });
+      }
+    }
+    if(status === "admin_approve")
+    {
+
+      if(qrcodeData != null)
+      {
+        setDialogsuccess(true);
+      }
       await axios
-         .post(API_POST_PRINT_URL, {
-           console: configPrinter.results[numberprinter].consoleID,
-           printer: configPrinter.results[numberprinter].printer_ID,
-           print_option:printerOption,
-           front_card: photoF,
-           back_card:photoF,
-           name: "send to ptint "+selectedLayout+configPrinter.results[numberprinter].printer_ID,
-           submitted_by: currentUser,
-           card_layout: selectedLayout,
-         })
-         .then((response) => {
-           setConfirm(true);
-         });
-    }
-    if(qrcodeData == null)
-    {
-      //goHistory();
-    }
-    else if(qrcodeData != null)
-    {
-      setDialogsuccess(true);
-    }
-    await axios
-      .get(API_BASE_URL + "/v1/userlist", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-      .then((response) => {
-        setPost(response.data);
+        .get(API_BASE_URL + "/v1/userlist", {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+        .then((response) => {
+          setPost(response.data);
 
-        if (response.data.results[0].status ===0) {
-          setStatus_text("Watting admin approve");
-        }
-        else if (response.data.results[0].status ===1) {
-          setStatus_text("Pending");
-        }
-        else if (response.data.results[0].status ===2) {
-          setStatus_text("Approve1");
-        }
-        else if (response.data.results[0].status ===3) {
-          setStatus_text("Approve2");
-        }
-        else if (response.data.results[0].status ===4) {
-          setStatus_text("Reject");
-        }
-      });
+          if (response.data.results[0].status ===0) {
+            setStatus_text("Watting admin approve");
+          }
+          else if (response.data.results[0].status ===1) {
+            setStatus_text("Pending");
+          }
+          else if (response.data.results[0].status ===2) {
+            setStatus_text("Approve1");
+          }
+          else if (response.data.results[0].status ===3) {
+            setStatus_text("Approve2");
+          }
+          else if (response.data.results[0].status ===4) {
+            setStatus_text("Reject");
+          }
+        });
+    }
     setStatus_view(true);
     setPreview_mode(false);
     setReadOnly(true);
   };
+
   const goHistory =()=>{
     history.push({pathname:"/"+ props.match.params.org+"/History",state:{id:selectedLayout}});
   }
@@ -2207,6 +2266,84 @@ export function Upload(props) {
                         Image Building...
                       </p>
                     </div>
+                  </div>
+                </div>
+              </div>
+            </Transition.Child>
+          </div>
+        </Dialog>
+      </Transition.Root>
+      <Transition.Root show={printerror} as={Fragment}>
+        <Dialog
+          as="div"
+          className="fixed z-10 inset-0 overflow-y-auto"
+          onClose={(event, reason) => {
+              handleClose(event, reason);
+          }}
+        >
+          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <Dialog.Overlay className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+            </Transition.Child>
+
+            {/* This element is to trick the browser into centering the modal contents. */}
+            <span
+              className="hidden sm:inline-block sm:align-middle sm:h-screen"
+              aria-hidden="true"
+            >
+              &#8203;
+            </span>
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              enterTo="opacity-100 translate-y-0 sm:scale-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+              leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+            >
+              <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6">
+                <div>
+                  <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+                    <PrinterIcon
+                      className="h-6 w-6 text-green-600"
+                      aria-hidden="true"
+                    />
+                  </div>
+                  <div className="mt-3 text-center sm:mt-5">
+                    {/* <Dialog.Title
+                      as="h3"
+                      className="text-lg leading-6 font-medium text-gray-900"
+                    >
+                      Select type card
+                    </Dialog.Title> */}
+
+                    <div className="mt-2">
+                      <p className="text-sm text-gray-500">
+                        {statusprinter} please try print nex time.
+                      </p>
+                    </div>
+                      <div className="mt-5 sm:mt-6">
+                        <button
+                        type="button"
+                        className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
+                        onClick={() => {
+                        setPrinterror(false);
+                        setStatus_view(false);
+                        setPreview_mode(true);
+                        }}
+                        >
+                          Close
+                        </button>
+                      </div>
                   </div>
                 </div>
               </div>
