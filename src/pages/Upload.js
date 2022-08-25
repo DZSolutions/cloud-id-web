@@ -1239,14 +1239,12 @@ export function Upload(props) {
     let status = "connection lose";
     setStatusPrinter("connection lose");
      axios
-      .get(API_REQUEST_PRINTER_URL +printerID, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
+      .get(API_REQUEST_PRINTER_URL +printerID+"/", {
       })
       .then((response) => {
         setStatusPrinter(response.data.status);
         status = response.data.status
+
       })
       .catch((error) => {
         setStatusPrinter("printer error");
@@ -1302,6 +1300,7 @@ export function Upload(props) {
           numberprinter++
         }
       const statusprint = checkstatusprinter(configPrinter.results[numberprinter].id);
+      console.log("statusprint",statusprint);
       if(statusprint ==="Console offline")
       {
         setStatus_text("Console offline");
@@ -1347,6 +1346,7 @@ export function Upload(props) {
          //  name: 'send to print ' + user.first_name_en+user.layout_name + console_name + printer_name,
          //  submitted_by: username,
          //  card_layout: user.layout_name,
+
          await axios
             .post(API_POST_PRINT_URL, {
               console: configPrinter.results[numberprinter].consoleID,
