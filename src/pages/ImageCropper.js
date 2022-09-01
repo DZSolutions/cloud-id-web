@@ -73,9 +73,7 @@ export function ImageCropper(props) {
 
   const [postmapping, setPostMapping,refpostmapping] = usestateref(null);
   const [mappingList, setMappingList,refmappingList] = usestateref(null);
-
   const [autozoom, setAutozoom] = useState(1);
-
 
   const onCropComplete = (croppedAreaPercentage, croppedAreaPixels) => {
     setCroppedArea(croppedAreaPixels);
@@ -133,6 +131,7 @@ export function ImageCropper(props) {
       let wresult =imgWH.width;
 
       var width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+
       if (width < imgWH.width) {
           setRemoving(true);
           setRemovingRemovingbgstatus('Processing photo...');
@@ -360,6 +359,22 @@ export function ImageCropper(props) {
           }
     }
   }
+  const getCoverimg = (postss)=>{
+    if(postss.results != null)
+    {
+      for(var key in postss.results)
+          {
+            if(postss.results[key].layout_name === layoutName)
+            {
+              if(postss.results[key].cover_layout != null)
+              {
+                setmycardlogo(postss.results[key].cover_layout);
+              }
+              break;
+            }
+          }
+    }
+  }
 
   AuthService.getAccessToken();
   const accessToken = localStorage.getItem("accessToken");
@@ -374,6 +389,8 @@ export function ImageCropper(props) {
       .then((response) => {
         setPostMapping(response.data);
         setMappingList(response.data.results);
+
+        getCoverimg(response.data);
       });
 
       await axios
@@ -644,7 +661,6 @@ export function ImageCropper(props) {
     return enumerateDevices.filter((device) => device.kind === "videoinput");
   };
 
-
   async function getMedia() {
     const constraints = { audio: false, video: { facingMode: "user" } }; // use front camera
     const stream = await navigator.mediaDevices.getUserMedia(constraints);
@@ -667,7 +683,6 @@ export function ImageCropper(props) {
         videoEl.srcObject = null;
       }
     }
-
   }
 
   async function takepicture() {
@@ -720,13 +735,11 @@ export function ImageCropper(props) {
      setImage(await canvas.toDataURL("image/jpeg"));
      stopCam();
      setIsRetakePhoto(true);
-
      }
   }
 
   return (
     <>
-
       <div className="bg-gray-700 md:w-auto h-auto rounded-md relative">
         <div ref={ref} id="box" className="bg-black md:w-auto h-auto rounded-md relative" style={{minHeight : (cropheight + 20)+'px' , zoom : autozoom}}>
           {istakephoto &&(
@@ -736,9 +749,7 @@ export function ImageCropper(props) {
                 <Collapse isOpened={showPreviewTake} high={"auto"}>
                   <canvas id="img"></canvas>
                 </Collapse>
-
             </div>
-
             </>
           )}
            <canvas  ref={canvasRef} style={{height : '0px'}} />
