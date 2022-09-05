@@ -132,6 +132,9 @@ export function ImageCropper(props) {
 
       var width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 
+      let w = canvasRef.width;
+      console.log("w:",w);
+
       if (width < imgWH.width) {
           setRemoving(true);
           setRemovingRemovingbgstatus('Processing photo...');
@@ -301,8 +304,6 @@ export function ImageCropper(props) {
       let objImg={};
       objImg["image"]=base64Canvas;
       setUploaded(objImg);
-
-
     }
     setOpen(true);
     setIsUpLoading(false);
@@ -996,16 +997,32 @@ export function ImageCropper(props) {
                     >
                       {textRemovestatus}
                     </Dialog.Title>
-                    <div className="mt-2">
+                    <div className="mt-2 relative flex justify-center">
                       <img
-                        className="mx-auto w-auto"
+                        className="mx-auto w-auto rounded-lg z-10 pointer-events-none"
+                        style={{margin:"0",
+                        transform:"translate(50%,0%)",
+                      }}
                         src={`data:image/jpeg;base64,${uploaded.image}`}
                         alt="org_image"
                       />
+                      {mycardlogo ? (
+                        <img id="cover"
+                        style={{margin:"0",
+                        //position: "absolute",
+                        // top:"50%",
+                        // left:"50%",
+                        // display:"block",
+                        transform:"translate(-50%,0%)",
+                        // width:cropwidth,
+                        // height:cropheight
+                      }}
+                        className="mx-auto w-auto rounded-lg z-10 pointer-events-none" src={mycardlogo} alt=""/>
+                      ):null}
+                    </div>
                       <p className="text-sm pt-2 text-gray-500">
                         Do you want to upload this picture?
                       </p>
-                    </div>
                   </div>
                 </div>
                 <div className="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
