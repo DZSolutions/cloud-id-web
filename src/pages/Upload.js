@@ -405,7 +405,6 @@ export function Upload(props) {
           // if(postmapping.results[layout].layout_name === selectedLayout)
           if(postmapping.results[layout].layout_name === layoutName)
           {
-            console.log('postmapping.results[layout]: ',postmapping.results[layout]);
             setbackcrop(postmapping.results[layout].upload_photo);
             setUsePrinter(postmapping.results[layout].consolse_printer);
             var keyjson= Object.keys(postmapping.results[layout].api_field_name);
@@ -1236,10 +1235,10 @@ export function Upload(props) {
     setStart(1);
   }
 
-  const checkstatusprinter =(printerID)=>{
+  const checkstatusprinter =async(printerID)=>{
     let status = "connection lose";
     setStatusPrinter("connection lose");
-     axios
+     await axios
       .get(API_REQUEST_PRINTER_URL +printerID+"/", {
       })
       .then((response) => {
@@ -1330,6 +1329,8 @@ export function Upload(props) {
       }
       else //if(statusprint ==="Printer Ready" || statusprint==="Printer Not Ready")
       {
+        setPrinterror(false);
+
         if(configPrinter.results[numberprinter].printer_type === 0)
         {
          printerOption = "auto";
