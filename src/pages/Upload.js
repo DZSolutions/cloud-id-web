@@ -405,6 +405,7 @@ export function Upload(props) {
           // if(postmapping.results[layout].layout_name === selectedLayout)
           if(postmapping.results[layout].layout_name === layoutName)
           {
+            console.log('postmapping.results[layout]: ',postmapping.results[layout]);
             setbackcrop(postmapping.results[layout].upload_photo);
             setUsePrinter(postmapping.results[layout].consolse_printer);
             var keyjson= Object.keys(postmapping.results[layout].api_field_name);
@@ -1243,7 +1244,7 @@ export function Upload(props) {
       })
       .then((response) => {
         setStatusPrinter(response.data.status);
-        status = response.data.status
+        status = response.data.status;
 
       })
       .catch((error) => {
@@ -1299,8 +1300,7 @@ export function Upload(props) {
           }
           numberprinter++
         }
-      const statusprint = checkstatusprinter(configPrinter.results[numberprinter].id);
-      console.log("statusprint",statusprint);
+      const statusprint = checkstatusprinter(configPrinter.results[numberprinter].printer_ID);
       if(statusprint ==="Console offline")
       {
         setStatus_text("Console offline");
