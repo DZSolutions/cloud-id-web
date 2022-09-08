@@ -1,7 +1,7 @@
 version: '3'
 services:
   cloud-service:
-    image: registry.dzcardsolutions.com/cloud:latest
+    image: registry.dzcardsolutions.com/cloudid-web:latest
     build: .
     ports: 
       - 3000:80
