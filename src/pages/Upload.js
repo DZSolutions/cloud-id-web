@@ -1242,6 +1242,7 @@ export function Upload(props) {
       .get(API_REQUEST_PRINTER_URL +printerID+"/", {
       })
       .then((response) => {
+        console.log('response.data',response.data);
         setStatusPrinter(response.data.status);
         status = response.data.status;
 
@@ -2329,7 +2330,7 @@ export function Upload(props) {
 
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
-                        {statusprinter} please try print nex time.
+                        {statusprinter} please try again.
                       </p>
                     </div>
                       <div className="mt-5 sm:mt-6">
