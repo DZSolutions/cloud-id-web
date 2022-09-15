@@ -1244,11 +1244,13 @@ export function Upload(props) {
       .then((response) => {
         console.log('response.data',response.data);
         setStatusPrinter(response.data.status);
+        setStatus_text(response.data.status);
         status = response.data.status;
 
       })
       .catch((error) => {
         setStatusPrinter("printer error");
+        setStatus_text("printer error");
         status = "printer error";
       });
       return status;
@@ -1301,34 +1303,8 @@ export function Upload(props) {
           numberprinter++
         }
       const statusprint = checkstatusprinter(configPrinter.results[numberprinter].printer_ID);
-      if(statusprint ==="Console offline")
-      {
-        setStatus_text("Console offline");
-        status = "Console offline";
-        setPrinterror(true);
-      }
-      else if(statusprint ==="Not connected")
-      {
-        setStatus_text("Not connected");
-        status = "Not connected";
 
-        setPrinterror(true);
-      }
-      else if(statusprint ==="printer error")
-      {
-        setStatus_text("printer error");
-        status = "printer error";
-
-        setPrinterror(true);
-      }
-      else if(statusprint ==="connection lose")
-      {
-        setStatus_text("connection lose");
-        status = "connection lose";
-
-        setPrinterror(true);
-      }
-      else //if(statusprint ==="Printer Ready" || statusprint==="Printer Not Ready")
+      if(statusprint ==="Printer Ready" || statusprint==="Printer Not Ready")
       {
         setPrinterror(false);
 
@@ -1364,6 +1340,39 @@ export function Upload(props) {
               setConfirm(true);
             });
       }
+      if(statusprint !="Printer Ready" && statusprint !="Printer Not Ready")
+      {
+        status = statusprint;
+        setPrinterror(true);
+      }
+
+      // if(statusprint ==="Console offline")
+      // {
+      //   setStatus_text("Console offline");
+      //   status = "Console offline";
+      //   setPrinterror(true);
+      // }
+      // else if(statusprint ==="Not connected")
+      // {
+      //   setStatus_text("Not connected");
+      //   status = "Not connected";
+
+      //   setPrinterror(true);
+      // }
+      // else if(statusprint ==="printer error")
+      // {
+      //   setStatus_text("printer error");
+      //   status = "printer error";
+
+      //   setPrinterror(true);
+      // }
+      // else if(statusprint ==="connection lose")
+      // {
+      //   setStatus_text("connection lose");
+      //   status = "connection lose";
+
+      //   setPrinterror(true);
+      // }
     }
     if(status === "admin_approve")
     {
