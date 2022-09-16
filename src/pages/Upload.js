@@ -1242,7 +1242,6 @@ export function Upload(props) {
       .get(API_REQUEST_PRINTER_URL +printerID+"/", {
       })
       .then((response) => {
-        console.log('response.data',response.data);
         setStatusPrinter(response.data.status);
         setStatus_text(response.data.status);
         status = response.data.status;
@@ -1302,8 +1301,8 @@ export function Upload(props) {
           }
           numberprinter++
         }
-      const statusprint = checkstatusprinter(configPrinter.results[numberprinter].printer_ID);
-
+      const statusprint = await checkstatusprinter(configPrinter.results[numberprinter].printer_ID);
+      console.log("statusprint:",statusprint);
       if(statusprint ==="Printer Ready" || statusprint==="Printer Not Ready")
       {
         setPrinterror(false);
@@ -1324,7 +1323,6 @@ export function Upload(props) {
          //  name: 'send to print ' + user.first_name_en+user.layout_name + console_name + printer_name,
          //  submitted_by: username,
          //  card_layout: user.layout_name,
-
          await axios
             .post(API_POST_PRINT_URL, {
               console: configPrinter.results[numberprinter].consoleID,
@@ -1336,8 +1334,14 @@ export function Upload(props) {
               submitted_by: currentUser,
               card_layout: selectedLayout,
             })
-            .then((response) => {
-              setConfirm(true);
+            .then(function (response) {
+              if(response.status == 200){
+                setConfirm(true);
+              }
+            })
+            .catch(function (error) {
+              status = error;
+              setPrinterror(true);
             });
       }
       if(statusprint !="Printer Ready" && statusprint !="Printer Not Ready")
